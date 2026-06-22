@@ -272,7 +272,7 @@
                             android:textColor="#636366"/>
                     </LinearLayout>
 
-                    <androidx.appcompat.widget.SwitchCompat
+                    <CheckBox
                         android:id="@+id/themeSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

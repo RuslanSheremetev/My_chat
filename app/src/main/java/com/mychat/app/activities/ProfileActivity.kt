@@ -5,22 +5,18 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.SwitchCompat
 import androidx.preference.PreferenceManager
 import com.mychat.app.R
 
 class ProfileActivity : AppCompatActivity() {
 
-    private lateinit var profileName: TextView
     private lateinit var profileStatus: TextView
-    private lateinit var profileBio: TextView
     private lateinit var statusInput: EditText
     private lateinit var editStatusSection: LinearLayout
-    private lateinit var themeSwitch: SwitchCompat
     private lateinit var themeDesc: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Применяем тему перед созданием
+        // Применяем тему
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         val isDark = prefs.getBoolean("dark_theme", true)
         if (isDark) {
@@ -38,17 +34,14 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-        profileName = findViewById(R.id.profileName)
         profileStatus = findViewById(R.id.profileStatus)
-        profileBio = findViewById(R.id.profileBio)
         statusInput = findViewById(R.id.statusInput)
         editStatusSection = findViewById(R.id.editStatusSection)
-        themeSwitch = findViewById(R.id.themeSwitch)
         themeDesc = findViewById(R.id.themeDesc)
 
+        // Загружаем состояние темы
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         val isDark = prefs.getBoolean("dark_theme", true)
-        themeSwitch.isChecked = isDark
         updateThemeDesc(isDark)
     }
 
@@ -74,6 +67,8 @@ class ProfileActivity : AppCompatActivity() {
             val newStatus = statusInput.text.toString().trim()
             if (newStatus.isNotEmpty()) {
                 profileStatus.text = newStatus
+                val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+                prefs.edit().putString("user_status", newStatus).apply()
                 editStatusSection.visibility = View.GONE
                 Toast.makeText(this, "Статус обновлён!", Toast.LENGTH_SHORT).show()
             } else {
@@ -81,8 +76,8 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
-        // Переключатель темы
-        themeSwitch.setOnCheckedChangeListener { _, isChecked ->
+        // Переключатель темы (через обычный CheckBox вместо SwitchCompat)
+        findViewById<CheckBox>(R.id.themeSwitch).setOnCheckedChangeListener { _, isChecked ->
             val prefs = PreferenceManager.getDefaultSharedPreferences(this)
             prefs.edit().putBoolean("dark_theme", isChecked).apply()
             updateThemeDesc(isChecked)
@@ -124,15 +119,17 @@ class ProfileActivity : AppCompatActivity() {
     private fun loadUserData() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         val username = prefs.getString("username", "Ruslan") ?: "Ruslan"
-        profileName.text = username
+        findViewById<TextView>(R.id.profileName).text = username
+        findViewById<TextView>(R.id.profileAvatar).text = username.take(1).uppercase()
         
-        // Аватар - первая буква имени
-        val avatarView = findViewById<TextView>(R.id.profileAvatar)
-        avatarView.text = username.take(1).uppercase()
-        
-        // Загружаем статус из SharedPreferences
+        // Загружаем статус
         val status = prefs.getString("user_status", "Живу в облаках ☁️") ?: "Живу в облаках ☁️"
         profileStatus.text = status
+        
+        // Загружаем состояние темы
+        val isDark = prefs.getBoolean("dark_theme", true)
+        findViewById<CheckBox>(R.id.themeSwitch).isChecked = isDark
+        updateThemeDesc(isDark)
     }
 
     private fun updateThemeDesc(isDark: Boolean) {
