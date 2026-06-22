@@ -44,3 +44,7 @@ dependencies {
     implementation 'org.json:json:20220924'
     implementation 'androidx.preference:preference-ktx:1.2.0'
 }
+android {
+    compileSdk 33
+    // ... остальное
+}
