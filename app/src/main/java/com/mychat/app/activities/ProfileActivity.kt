@@ -158,11 +158,40 @@ class ProfileActivity : AppCompatActivity() {
                         val prefs = PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
                         prefs.edit().putString("user_status", newStatus).apply()
                         Toast.makeText(this@ProfileActivity, "Статус обновлён!", Toast.LENGTH_SHORT).show()
+                        
+                        // Отправляем обновление через WebSocket (чтобы обновилось в MainActivity)
+                        sendStatusUpdateViaWebSocket(newStatus)
                     } else {
                         Toast.makeText(this@ProfileActivity, "Ошибка сохранения", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         })
+    }
+
+    // Отправляем обновление статуса через WebSocket
+    private fun sendStatusUpdateViaWebSocket(newStatus: String) {
+        try {
+            val wsUrl = "ws://${serverUrl.replace("http://", "")}/ws/$username?token=$token"
+            val wsClient = OkHttpClient()
+            val ws = wsClient.newWebSocket(
+                Request.Builder().url(wsUrl).build(),
+                object : WebSocketListener() {
+                    override fun onOpen(webSocket: WebSocket, response: Response) {
+                        // Отправляем обновление статуса
+                        val json = JSONObject().apply {
+                            put("type", "profile_updated")
+                            put("bio", newStatus)
+                            put("status_text", newStatus)
+                            put("avatar_url", "")
+                        }
+                        webSocket.send(json.toString())
+                        webSocket.close(1000, "Done")
+                    }
+                }
+            )
+        } catch (e: Exception) {
+            // Игнорируем ошибки WebSocket
+        }
     }
 }
