@@ -9,7 +9,7 @@
     </item>
     <item>
         <shape>
-            <solid android:color="transparent"/>
+            <solid android:color="#00000000"/>
             <corners android:radius="12dp"/>
         </shape>
     </item>
