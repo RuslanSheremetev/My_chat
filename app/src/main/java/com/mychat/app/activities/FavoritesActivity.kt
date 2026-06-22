@@ -1,6 +1,5 @@
 package com.mychat.app.activities
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -71,9 +70,6 @@ class FavoritesActivity : AppCompatActivity() {
 
         findViewById<ImageView>(R.id.backBtn).setOnClickListener {
             finish()
-        }
-
-            Toast.makeText(this, "Выберите сообщение для сохранения", Toast.LENGTH_SHORT).show()
         }
 
         clearBtn.setOnClickListener {
