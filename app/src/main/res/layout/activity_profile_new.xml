@@ -65,28 +65,7 @@
             android:background="@drawable/bg_status_edit"
             android:layout_gravity="center_horizontal"/>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginTop="6dp"
-            android:layout_gravity="center_horizontal">
-
-            <View
-                android:id="@+id/onlineIndicator"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:background="@drawable/bg_online_dot"
-                android:layout_marginEnd="6dp"/>
-
-            <TextView
-                android:id="@+id/onlineText"
-                android:text="Онлайн"
-                android:textSize="12sp"
-                android:textColor="#34c759"/>
-        </LinearLayout>
-
+        <!-- Редактирование статуса -->
         <LinearLayout
             android:id="@+id/editStatusSection"
             android:layout_width="match_parent"
@@ -113,6 +92,99 @@
 
             <Button
                 android:id="@+id/saveStatusBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:text="Сохранить"
+                android:textColor="#fff"
+                android:background="@drawable/bg_btn_primary"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:radius="22dp"
+                android:layout_marginStart="10dp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Онлайн -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center_horizontal">
+
+            <View
+                android:id="@+id/onlineIndicator"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/bg_online_dot"
+                android:layout_marginEnd="6dp"/>
+
+            <TextView
+                android:id="@+id/onlineText"
+                android:text="Онлайн"
+                android:textSize="12sp"
+                android:textColor="#34c759"/>
+        </LinearLayout>
+
+        <!-- Биография -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#1c1c1e"
+            android:padding="16dp"
+            android:layout_marginTop="20dp"
+            android:radius="12dp"
+            android:elevation="2dp">
+
+            <TextView
+                android:text="О себе"
+                android:textSize="12sp"
+                android:textColor="#636366"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:layout_marginBottom="6dp"/>
+
+            <TextView
+                android:id="@+id/profileBio"
+                android:text="Разработчик мобильных приложений"
+                android:textSize="15sp"
+                android:textColor="#fff"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4dp"/>
+        </LinearLayout>
+
+        <!-- Редактирование биографии -->
+        <LinearLayout
+            android:id="@+id/editBioSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="12dp"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/bioInput"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input"
+                android:hint="Введите биографию..."
+                android:textColor="#fff"
+                android:textColorHint="#636366"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:radius="22dp"/>
+
+            <Button
+                android:id="@+id/saveBioBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="44dp"
                 android:text="Сохранить"
