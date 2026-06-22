@@ -54,7 +54,7 @@
             android:id="@+id/profileStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Статус"
+            android:text="Живу в облаках ☁️"
             android:textSize="14sp"
             android:textColor="#8e8e93"
             android:layout_marginTop="4dp"
@@ -106,45 +106,6 @@
                 android:radius="22dp"
                 android:layout_marginStart="10dp"
                 android:textStyle="bold"/>
-        </LinearLayout>
-
-        <!-- Тема с переключателем -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="14dp"
-            android:paddingBottom="14dp"
-            android:background="#1c1c1e"
-            android:layout_marginTop="20dp"
-            android:radius="12dp">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:text="Тема"
-                    android:textSize="15sp"
-                    android:textColor="#fff"/>
-
-                <TextView
-                    android:id="@+id/themeDesc"
-                    android:text="Тёмная тема (активна)"
-                    android:textSize="12sp"
-                    android:textColor="#636366"/>
-            </LinearLayout>
-
-            <CheckBox
-                android:id="@+id/themeSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"/>
         </LinearLayout>
 
         <!-- Кнопка выхода -->
