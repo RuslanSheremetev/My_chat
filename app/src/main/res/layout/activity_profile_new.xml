@@ -35,7 +35,9 @@
             android:textStyle="bold"
             android:background="@drawable/bg_avatar_circle"
             android:layout_marginTop="20dp"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal"
+            android:clickable="true"
+            android:focusable="true"/>
 
         <!-- Имя -->
         <TextView
@@ -49,7 +51,7 @@
             android:layout_marginTop="12dp"
             android:layout_gravity="center_horizontal"/>
 
-        <!-- Статус (кликабельный) -->
+        <!-- Статус -->
         <TextView
             android:id="@+id/profileStatus"
             android:layout_width="wrap_content"
@@ -108,7 +110,7 @@
                 android:textStyle="bold"/>
         </LinearLayout>
 
-        <!-- Кнопка выхода - как в дизайне -->
+        <!-- Кнопка выхода - без border -->
         <Button
             android:id="@+id/logoutBtn"
             android:layout_width="match_parent"
@@ -123,9 +125,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:background="#1c1c1e"
-            android:radius="12dp"
-            android:borderColor="#2c2c2e"
-            android:borderWidth="1dp"/>
+            android:radius="12dp"/>
 
     </LinearLayout>
 </ScrollView>
