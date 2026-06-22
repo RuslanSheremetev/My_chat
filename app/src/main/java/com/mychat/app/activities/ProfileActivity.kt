@@ -2,6 +2,10 @@ package com.mychat.app.activities
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
@@ -16,6 +20,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import java.io.InputStream
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -32,6 +37,7 @@ class ProfileActivity : AppCompatActivity() {
     private var token = ""
     private var username = ""
     private var serverUrl = ""
+    private var avatarUrl: String? = null
 
     companion object {
         private const val PICK_IMAGE_REQUEST = 1001
@@ -73,6 +79,7 @@ class ProfileActivity : AppCompatActivity() {
         val savedBio = prefs.getString("user_bio", "Разработчик мобильных приложений") ?: "Разработчик мобильных приложений"
         profileBio.text = savedBio
 
+        // Загружаем данные с сервера
         loadUserData()
 
         findViewById<ImageView>(R.id.backBtn).setOnClickListener {
@@ -147,7 +154,7 @@ class ProfileActivity : AppCompatActivity() {
                             if (user.optString("username") == username) {
                                 val statusText = user.optString("status_text", "")
                                 val bioText = user.optString("bio", "")
-                                val avatarUrl = user.optString("avatar_url", "")
+                                val avatar = user.optString("avatar_url", "")
                                 val isOnline = user.optBoolean("online", true)
 
                                 runOnUiThread {
@@ -157,7 +164,11 @@ class ProfileActivity : AppCompatActivity() {
                                     if (bioText.isNotEmpty()) {
                                         profileBio.text = bioText
                                     }
-                                    if (avatarUrl.isNotEmpty()) {
+                                    if (avatar.isNotEmpty()) {
+                                        avatarUrl = avatar
+                                        // Загружаем фото в аватар
+                                        loadAvatarImage(avatar)
+                                    } else {
                                         profileAvatar.text = username.take(1).uppercase()
                                     }
                                     if (isOnline) {
@@ -177,6 +188,62 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    // Загрузка изображения аватара с сервера
+    private fun loadAvatarImage(url: String) {
+        try {
+            val fullUrl = if (url.startsWith("http")) url else "$serverUrl$url"
+            val request = Request.Builder().url(fullUrl).build()
+
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    runOnUiThread {
+                        profileAvatar.text = username.take(1).uppercase()
+                    }
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    response.body?.let { body ->
+                        try {
+                            val bytes = body.bytes()
+                            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                            runOnUiThread {
+                                // Создаём круглый аватар
+                                val roundedBitmap = getRoundedBitmap(bitmap)
+                                val drawable = BitmapDrawable(resources, roundedBitmap)
+                                profileAvatar.setBackgroundDrawable(drawable)
+                                profileAvatar.text = "" // Убираем инициалы
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            runOnUiThread {
+                                profileAvatar.text = username.take(1).uppercase()
+                            }
+                        }
+                    }
+                }
+            })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    // Создание круглого изображения
+    private fun getRoundedBitmap(bitmap: Bitmap): Bitmap {
+        val size = 100
+        val output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val canvas = android.graphics.Canvas(output)
+        val paint = android.graphics.Paint()
+        paint.isAntiAlias = true
+        val rect = android.graphics.Rect(0, 0, size, size)
+        val rectF = android.graphics.RectF(rect)
+        canvas.drawRoundRect(rectF, (size / 2).toFloat(), (size / 2).toFloat(), paint)
+        paint.xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.SRC_IN)
+        val srcRect = android.graphics.Rect(0, 0, bitmap.width, bitmap.height)
+        val dstRect = android.graphics.Rect(0, 0, size, size)
+        canvas.drawBitmap(bitmap, srcRect, dstRect, paint)
+        return output
     }
 
     private fun pickImage() {
@@ -224,7 +291,6 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
 
-            // Используем update_profile с полем avatar
             val requestBody = MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(
@@ -251,9 +317,11 @@ class ProfileActivity : AppCompatActivity() {
                         if (response.isSuccessful) {
                             try {
                                 val json = JSONObject(response.body?.string() ?: "{}")
-                                val avatarUrl = json.optString("avatar_url", "")
-                                if (avatarUrl.isNotEmpty()) {
-                                    profileAvatar.text = username.take(1).uppercase()
+                                val avatar = json.optString("avatar_url", "")
+                                if (avatar.isNotEmpty()) {
+                                    avatarUrl = avatar
+                                    // Загружаем фото в аватар
+                                    loadAvatarImage(avatar)
                                     Toast.makeText(this@ProfileActivity, "Аватар обновлён!", Toast.LENGTH_SHORT).show()
                                 } else {
                                     Toast.makeText(this@ProfileActivity, "Аватар сохранён", Toast.LENGTH_SHORT).show()
@@ -310,7 +378,7 @@ class ProfileActivity : AppCompatActivity() {
         val json = JSONObject().apply {
             put("bio", bio)
             put("status_text", status)
-            put("avatar_url", "")
+            put("avatar_url", avatarUrl ?: "")
         }
 
         val body = json.toString().toRequestBody("application/json".toMediaType())
