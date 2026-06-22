@@ -1,5 +1,6 @@
 package com.mychat.app.activities
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
 import android.widget.*
@@ -73,12 +74,30 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
-        // Кнопка выхода
+        // Кнопка выхода - с диалогом подтверждения
         findViewById<Button>(R.id.logoutBtn).setOnClickListener {
-            prefs.edit().clear().apply()
-            Toast.makeText(this, "Вы вышли", Toast.LENGTH_SHORT).show()
-            finish()
+            showLogoutDialog()
         }
+    }
+
+    // Диалог подтверждения выхода
+    private fun showLogoutDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Выход из аккаунта")
+            .setMessage("Вы уверены, что хотите выйти?")
+            .setPositiveButton("Выйти") { _, _ ->
+                performLogout()
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
+
+    // Выполнение выхода
+    private fun performLogout() {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        prefs.edit().clear().apply()
+        Toast.makeText(this, "Вы вышли из аккаунта", Toast.LENGTH_SHORT).show()
+        finish()
     }
 
     private fun saveStatus(newStatus: String) {
@@ -87,7 +106,7 @@ class ProfileActivity : AppCompatActivity() {
             return
         }
 
-        // 1. Сразу обновляем UI и SharedPreferences
+        // Сразу обновляем UI и SharedPreferences
         profileStatus.text = newStatus
         editStatusSection.visibility = View.GONE
         
@@ -96,7 +115,7 @@ class ProfileActivity : AppCompatActivity() {
         
         Toast.makeText(this, "Статус обновлён!", Toast.LENGTH_SHORT).show()
 
-        // 2. Отправляем на сервер
+        // Отправляем на сервер
         val json = JSONObject().apply {
             put("bio", newStatus)
             put("status_text", newStatus)
@@ -116,7 +135,6 @@ class ProfileActivity : AppCompatActivity() {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                // Статус сохранён на сервере
                 response.close()
             }
         })

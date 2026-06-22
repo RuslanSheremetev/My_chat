@@ -49,7 +49,7 @@
             android:layout_marginTop="12dp"
             android:layout_gravity="center_horizontal"/>
 
-        <!-- Статус -->
+        <!-- Статус (кликабельный) -->
         <TextView
             android:id="@+id/profileStatus"
             android:layout_width="wrap_content"
@@ -108,7 +108,7 @@
                 android:textStyle="bold"/>
         </LinearLayout>
 
-        <!-- Кнопка выхода -->
+        <!-- Кнопка выхода - как в дизайне -->
         <Button
             android:id="@+id/logoutBtn"
             android:layout_width="match_parent"
@@ -117,13 +117,15 @@
             android:paddingEnd="14dp"
             android:paddingTop="14dp"
             android:paddingBottom="14dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="30dp"
             android:text="Выйти из аккаунта"
-            android:textColor="#fff"
+            android:textColor="#ffffff"
             android:textSize="16sp"
             android:textStyle="bold"
             android:background="#1c1c1e"
-            android:radius="12dp"/>
+            android:radius="12dp"
+            android:borderColor="#2c2c2e"
+            android:borderWidth="1dp"/>
 
     </LinearLayout>
 </ScrollView>
