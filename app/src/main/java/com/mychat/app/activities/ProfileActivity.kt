@@ -1,7 +1,10 @@
 package com.mychat.app.activities
 
 import android.app.AlertDialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -19,10 +22,15 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var profileStatus: TextView
     private lateinit var statusInput: EditText
     private lateinit var editStatusSection: LinearLayout
+    private lateinit var profileAvatar: TextView
     private val client = OkHttpClient()
     private var token = ""
     private var username = ""
     private var serverUrl = ""
+
+    companion object {
+        private const val PICK_IMAGE_REQUEST = 1001
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +44,12 @@ class ProfileActivity : AppCompatActivity() {
         // Имя
         findViewById<TextView>(R.id.profileName).text = username
 
-        // Аватар
-        findViewById<TextView>(R.id.profileAvatar).text = username.take(1).uppercase()
+        // Аватар - кликабельный
+        profileAvatar = findViewById(R.id.profileAvatar)
+        profileAvatar.text = username.take(1).uppercase()
+        profileAvatar.setOnClickListener {
+            pickImage()
+        }
 
         // Статус
         profileStatus = findViewById(R.id.profileStatus)
@@ -74,13 +86,110 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
-        // Кнопка выхода - с диалогом подтверждения
+        // Кнопка выхода
         findViewById<Button>(R.id.logoutBtn).setOnClickListener {
             showLogoutDialog()
         }
     }
 
-    // Диалог подтверждения выхода
+    // Выбор изображения для аватара
+    private fun pickImage() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
+        startActivityForResult(intent, PICK_IMAGE_REQUEST)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
+            data?.data?.let { uri ->
+                uploadAvatar(uri)
+            }
+        }
+    }
+
+    // Загрузка аватара на сервер
+    private fun uploadAvatar(uri: Uri) {
+        if (token.isEmpty()) {
+            Toast.makeText(this, "Ошибка: не авторизован", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        Toast.makeText(this, "Загрузка...", Toast.LENGTH_SHORT).show()
+
+        try {
+            val inputStream = contentResolver.openInputStream(uri)
+            val bytes = inputStream?.readBytes()
+            inputStream?.close()
+
+            if (bytes == null || bytes.isEmpty()) {
+                Toast.makeText(this, "Ошибка чтения файла", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            // Получаем имя файла
+            var fileName = "avatar.jpg"
+            contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (nameIndex >= 0) {
+                        fileName = cursor.getString(nameIndex) ?: "avatar.jpg"
+                    }
+                }
+            }
+
+            // Создаем multipart запрос
+            val requestBody = MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart(
+                    "avatar",
+                    fileName,
+                    bytes.toRequestBody("image/jpeg".toMediaType())
+                )
+                .build()
+
+            val request = Request.Builder()
+                .url("$serverUrl/update_profile?token=$token")
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    runOnUiThread {
+                        Toast.makeText(this@ProfileActivity, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    runOnUiThread {
+                        if (response.isSuccessful) {
+                            try {
+                                val json = JSONObject(response.body?.string() ?: "{}")
+                                val avatarUrl = json.optString("avatar_url", "")
+                                
+                                // Обновляем аватар в UI
+                                profileAvatar.text = "✓"
+                                profileAvatar.setBackgroundResource(R.drawable.bg_avatar_circle)
+                                
+                                Toast.makeText(this@ProfileActivity, "Аватар обновлён!", Toast.LENGTH_SHORT).show()
+                            } catch (e: Exception) {
+                                Toast.makeText(this@ProfileActivity, "Ошибка обработки", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            Toast.makeText(this@ProfileActivity, "Ошибка сохранения", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            })
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun showLogoutDialog() {
         AlertDialog.Builder(this)
             .setTitle("Выход из аккаунта")
@@ -92,7 +201,6 @@ class ProfileActivity : AppCompatActivity() {
             .show()
     }
 
-    // Выполнение выхода
     private fun performLogout() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         prefs.edit().clear().apply()
@@ -106,7 +214,6 @@ class ProfileActivity : AppCompatActivity() {
             return
         }
 
-        // Сразу обновляем UI и SharedPreferences
         profileStatus.text = newStatus
         editStatusSection.visibility = View.GONE
         
@@ -115,7 +222,6 @@ class ProfileActivity : AppCompatActivity() {
         
         Toast.makeText(this, "Статус обновлён!", Toast.LENGTH_SHORT).show()
 
-        // Отправляем на сервер
         val json = JSONObject().apply {
             put("bio", newStatus)
             put("status_text", newStatus)
@@ -130,10 +236,7 @@ class ProfileActivity : AppCompatActivity() {
             .build()
 
         client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                // Ошибка - но статус уже сохранён локально
-            }
-
+            override fun onFailure(call: Call, e: IOException) {}
             override fun onResponse(call: Call, response: Response) {
                 response.close()
             }
