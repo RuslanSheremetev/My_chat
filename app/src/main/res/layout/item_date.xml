@@ -12,6 +12,9 @@
         android:textSize="12sp"
         android:textColor="#8e8e93"
         android:background="#2c2c2e"
-        android:padding="4dp 14dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
         android:radius="12dp"/>
 </LinearLayout>
