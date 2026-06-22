@@ -73,7 +73,6 @@ class FavoritesActivity : AppCompatActivity() {
             finish()
         }
 
-        findViewById<View>(R.id.fabAdd).setOnClickListener {
             Toast.makeText(this, "Выберите сообщение для сохранения", Toast.LENGTH_SHORT).show()
         }
 

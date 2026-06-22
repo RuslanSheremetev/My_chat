@@ -119,7 +119,7 @@
             android:orientation="horizontal"/>
     </HorizontalScrollView>
 
-    <!-- Список -->
+    <!-- Список (убираем лишние отступы) -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/favoritesRecycler"
         android:layout_width="match_parent"
@@ -181,20 +181,6 @@
             android:radius="25dp"
             android:textStyle="bold"/>
     </LinearLayout>
-
-    <!-- FAB -->
-    <ImageButton
-        android:id="@+id/fabAdd"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:src="@drawable/ic_add"
-        android:tint="#fff"
-        android:background="@drawable/bg_send_btn"
-        android:scaleType="center"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="20dp"
-        android:layout_marginBottom="80dp"
-        android:elevation="8dp"/>
 
     <!-- Нижняя навигация -->
     <LinearLayout
