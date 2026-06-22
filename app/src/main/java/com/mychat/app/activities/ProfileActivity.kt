@@ -2,6 +2,8 @@ package com.mychat.app.activities
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
@@ -23,6 +25,8 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var statusInput: EditText
     private lateinit var editStatusSection: LinearLayout
     private lateinit var profileAvatar: TextView
+    private lateinit var onlineIndicator: View
+    private lateinit var onlineText: TextView
     private val client = OkHttpClient()
     private var token = ""
     private var username = ""
@@ -43,21 +47,30 @@ class ProfileActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.profileName).text = username
 
+        // Аватар
         profileAvatar = findViewById(R.id.profileAvatar)
         profileAvatar.text = username.take(1).uppercase()
         profileAvatar.setOnClickListener {
             pickImage()
         }
 
-        // Загружаем аватар с сервера
-        loadAvatarFromServer()
+        // Онлайн индикатор
+        onlineIndicator = findViewById(R.id.onlineIndicator)
+        onlineText = findViewById(R.id.onlineText)
+        // Показываем онлайн всегда (потом можно будет получать с сервера)
+        onlineIndicator.setBackgroundResource(R.drawable.bg_online_dot)
+        onlineText.text = "Онлайн"
 
+        // Статус
         profileStatus = findViewById(R.id.profileStatus)
         statusInput = findViewById(R.id.statusInput)
         editStatusSection = findViewById(R.id.editStatusSection)
 
         val savedStatus = prefs.getString("user_status", "Живу в облаках ☁️") ?: "Живу в облаках ☁️"
         profileStatus.text = savedStatus
+
+        // Загружаем данные с сервера (аватар, статус, онлайн)
+        loadUserData()
 
         findViewById<ImageView>(R.id.backBtn).setOnClickListener {
             finish()
@@ -87,7 +100,7 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadAvatarFromServer() {
+    private fun loadUserData() {
         if (token.isEmpty()) return
 
         val request = Request.Builder()
@@ -96,7 +109,12 @@ class ProfileActivity : AppCompatActivity() {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                // Используем инициалы
+                runOnUiThread {
+                    // Используем локальные данные
+                    val prefs = PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
+                    val status = prefs.getString("user_status", "Живу в облаках ☁️") ?: "Живу в облаках ☁️"
+                    profileStatus.text = status
+                }
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -106,10 +124,25 @@ class ProfileActivity : AppCompatActivity() {
                         for (i in 0 until json.length()) {
                             val user = json.getJSONObject(i)
                             if (user.optString("username") == username) {
+                                val statusText = user.optString("status_text", "")
                                 val avatarUrl = user.optString("avatar_url", "")
-                                if (avatarUrl.isNotEmpty()) {
-                                    runOnUiThread {
+                                val isOnline = user.optBoolean("online", true)
+
+                                runOnUiThread {
+                                    if (statusText.isNotEmpty()) {
+                                        profileStatus.text = statusText
+                                    }
+                                    if (avatarUrl.isNotEmpty()) {
                                         profileAvatar.text = username.take(1).uppercase()
+                                        // Можно загрузить реальное фото
+                                    }
+                                    // Обновляем онлайн статус
+                                    if (isOnline) {
+                                        onlineIndicator.setBackgroundResource(R.drawable.bg_online_dot)
+                                        onlineText.text = "Онлайн"
+                                    } else {
+                                        onlineIndicator.setBackgroundResource(R.drawable.bg_offline_dot)
+                                        onlineText.text = "Офлайн"
                                     }
                                 }
                                 break
@@ -168,50 +201,7 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
 
-            // Пробуем через update_profile с multipart
-            val requestBody = MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart(
-                    "avatar",
-                    fileName,
-                    bytes.toRequestBody("image/jpeg".toMediaType())
-                )
-                .build()
-
-            val request = Request.Builder()
-                .url("$serverUrl/update_profile?token=$token")
-                .post(requestBody)
-                .build()
-
-            client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    runOnUiThread {
-                        Toast.makeText(this@ProfileActivity, "Ошибка сети", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    runOnUiThread {
-                        if (response.isSuccessful) {
-                            profileAvatar.text = username.take(1).uppercase()
-                            Toast.makeText(this@ProfileActivity, "Аватар обновлён!", Toast.LENGTH_SHORT).show()
-                        } else {
-                            // Пробуем другой эндпоинт
-                            uploadAvatarAlternative(uri, bytes, fileName)
-                        }
-                    }
-                }
-            })
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    // Альтернативный способ загрузки аватара
-    private fun uploadAvatarAlternative(uri: Uri, bytes: ByteArray, fileName: String) {
-        try {
+            // Загружаем через upload
             val requestBody = MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(
@@ -229,7 +219,7 @@ class ProfileActivity : AppCompatActivity() {
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     runOnUiThread {
-                        Toast.makeText(this@ProfileActivity, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@ProfileActivity, "Ошибка сети", Toast.LENGTH_SHORT).show()
                     }
                 }
 
@@ -240,7 +230,7 @@ class ProfileActivity : AppCompatActivity() {
                                 val json = JSONObject(response.body?.string() ?: "{}")
                                 val fileUrl = json.optString("url", "")
                                 if (fileUrl.isNotEmpty()) {
-                                    // Обновляем аватар
+                                    // Обновляем аватар (пока инициалы)
                                     profileAvatar.text = username.take(1).uppercase()
                                     Toast.makeText(this@ProfileActivity, "Аватар обновлён!", Toast.LENGTH_SHORT).show()
                                 }
@@ -253,8 +243,10 @@ class ProfileActivity : AppCompatActivity() {
                     }
                 }
             })
+
         } catch (e: Exception) {
             e.printStackTrace()
+            Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
