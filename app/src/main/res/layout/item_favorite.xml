@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_fav_item"
+    android:padding="14dp"
+    android:layout_margin="6dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/favAvatar"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="#fff"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/favName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="User"
+            android:textColor="#fff"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingStart="10dp"/>
+
+        <TextView
+            android:id="@+id/favBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Группа"
+            android:textSize="10sp"
+            android:textColor="#8e8e93"
+            android:background="#2c2c2e"
+            android:padding="2dp 8dp"
+            android:radius="10dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/favTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12:00"
+            android:textSize="11sp"
+            android:textColor="#636366"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="4dp"
+        android:paddingStart="46dp">
+
+        <ImageView
+            android:id="@+id/favTypeIcon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="8dp"
+            android:tint="#636366"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/favText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Message text"
+            android:textColor="#d1d1d6"
+            android:textSize="14sp"
+            android:maxLines="2"
+            android:ellipsize="end"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/favRemoveBtn"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_close"
+        android:tint="#ff3b30"
+        android:background="@drawable/bg_remove_btn"
+        android:padding="6dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="-28dp"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"/>
+
+</LinearLayout>
