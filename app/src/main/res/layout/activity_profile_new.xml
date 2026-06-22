@@ -3,446 +3,68 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#121212">
+    android:background="#121212"
+    android:gravity="center_horizontal"
+    android:padding="20dp">
 
-    <!-- Шапка -->
-    <LinearLayout
+    <!-- Кнопка назад -->
+    <ImageView
+        android:id="@+id/backBtn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_back"
+        android:tint="#f06292"
+        android:padding="8dp"
+        android:layout_gravity="start"
+        android:clickable="true"
+        android:focusable="true"/>
+
+    <!-- Аватар -->
+    <TextView
+        android:id="@+id/profileAvatar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:gravity="center"
+        android:text="U"
+        android:textSize="40sp"
+        android:textColor="#fff"
+        android:textStyle="bold"
+        android:background="@drawable/bg_avatar_circle"
+        android:layout_marginTop="20dp"/>
+
+    <!-- Имя -->
+    <TextView
+        android:id="@+id/profileName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="User"
+        android:textSize="22sp"
+        android:textColor="#fff"
+        android:textStyle="bold"
+        android:layout_marginTop="12dp"/>
+
+    <!-- Статус -->
+    <TextView
+        android:id="@+id/profileStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Статус"
+        android:textSize="14sp"
+        android:textColor="#8e8e93"
+        android:layout_marginTop="4dp"/>
+
+    <!-- Кнопка выхода -->
+    <Button
+        android:id="@+id/logoutBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
-        android:paddingTop="14dp"
-        android:paddingBottom="14dp"
-        android:background="#121212"
-        android:elevation="2dp">
-
-        <ImageView
-            android:id="@+id/backBtn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_back"
-            android:tint="#f06292"
-            android:padding="8dp"
-            android:clickable="true"
-            android:focusable="true"/>
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Профиль"
-            android:textSize="20sp"
-            android:textColor="#fff"
-            android:textStyle="bold"
-            android:paddingStart="4dp"/>
-    </LinearLayout>
-
-    <!-- Контент -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="80dp">
-
-            <!-- Аватар -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:layout_marginBottom="24dp">
-
-                <RelativeLayout
-                    android:layout_width="100dp"
-                    android:layout_height="100dp">
-
-                    <TextView
-                        android:id="@+id/profileAvatar"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:gravity="center"
-                        android:text="Р"
-                        android:textSize="40sp"
-                        android:textColor="#fff"
-                        android:textStyle="bold"
-                        android:background="@drawable/bg_avatar_circle"
-                        android:elevation="4dp"/>
-
-                    <ImageView
-                        android:id="@+id/cameraBadge"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_photo"
-                        android:tint="#fff"
-                        android:background="@drawable/bg_send_btn"
-                        android:padding="6dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentBottom="true"
-                        android:elevation="4dp"
-                        android:clickable="true"
-                        android:focusable="true"/>
-                </RelativeLayout>
-
-                <TextView
-                    android:id="@+id/profileName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ruslan"
-                    android:textSize="22sp"
-                    android:textColor="#fff"
-                    android:textStyle="bold"
-                    android:layout_marginTop="12dp"/>
-
-                <TextView
-                    android:id="@+id/profileStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Живу в облаках ☁️"
-                    android:textSize="14sp"
-                    android:textColor="#8e8e93"
-                    android:layout_marginTop="4dp"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="@drawable/bg_status_edit"/>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:layout_marginTop="6dp">
-
-                    <View
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
-                        android:background="@drawable/bg_online_dot"
-                        android:layout_marginEnd="6dp"/>
-
-                    <TextView
-                        android:text="Онлайн"
-                        android:textSize="12sp"
-                        android:textColor="#34c759"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- О себе -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="#1c1c1e"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="16dp"
-                android:layout_marginBottom="12dp"
-                android:radius="12dp"
-                android:elevation="2dp">
-
-                <TextView
-                    android:text="О себе"
-                    android:textSize="12sp"
-                    android:textColor="#636366"
-                    android:textStyle="bold"
-                    android:textAllCaps="true"
-                    android:layout_marginBottom="6dp"/>
-
-                <TextView
-                    android:id="@+id/profileBio"
-                    android:text="Разработчик мобильных приложений, увлекаюсь AI и музыкой 🎵"
-                    android:textSize="15sp"
-                    android:textColor="#fff"/>
-            </LinearLayout>
-
-            <!-- Редактирование статуса -->
-            <LinearLayout
-                android:id="@+id/editStatusSection"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="#1c1c1e"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="16dp"
-                android:layout_marginBottom="12dp"
-                android:radius="12dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:text="Редактировать статус"
-                    android:textSize="12sp"
-                    android:textColor="#636366"
-                    android:textStyle="bold"
-                    android:textAllCaps="true"
-                    android:layout_marginBottom="8dp"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <EditText
-                        android:id="@+id/statusInput"
-                        android:layout_width="0dp"
-                        android:layout_height="44dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_input"
-                        android:hint="Введите новый статус..."
-                        android:textColor="#fff"
-                        android:textColorHint="#636366"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:radius="22dp"/>
-
-                    <Button
-                        android:id="@+id/saveStatusBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="44dp"
-                        android:text="Сохранить"
-                        android:textColor="#fff"
-                        android:background="@drawable/bg_btn_primary"
-                        android:paddingStart="24dp"
-                        android:paddingEnd="24dp"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:radius="22dp"
-                        android:layout_marginStart="10dp"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Меню -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="8dp">
-
-                <!-- Тема с переключателем -->
-                <LinearLayout
-                    android:id="@+id/menuTheme"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:paddingTop="14dp"
-                    android:paddingBottom="14dp"
-                    android:background="#1c1c1e"
-                    android:layout_marginBottom="6dp"
-                    android:radius="12dp"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:text="Тема"
-                            android:textSize="15sp"
-                            android:textColor="#fff"/>
-
-                        <TextView
-                            android:id="@+id/themeDesc"
-                            android:text="Тёмная тема (активна)"
-                            android:textSize="12sp"
-                            android:textColor="#636366"/>
-                    </LinearLayout>
-
-                    <CheckBox
-                        android:id="@+id/themeSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true"/>
-                </LinearLayout>
-
-                <!-- Язык -->
-                <LinearLayout
-                    android:id="@+id/menuLanguage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:paddingTop="14dp"
-                    android:paddingBottom="14dp"
-                    android:background="#1c1c1e"
-                    android:layout_marginBottom="6dp"
-                    android:radius="12dp"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:text="Язык"
-                            android:textSize="15sp"
-                            android:textColor="#fff"/>
-
-                        <TextView
-                            android:text="Русский"
-                            android:textSize="12sp"
-                            android:textColor="#636366"/>
-                    </LinearLayout>
-
-                    <ImageView
-                        android:src="@drawable/ic_arrow"
-                        android:tint="#636366"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"/>
-                </LinearLayout>
-
-                <!-- Помощь -->
-                <LinearLayout
-                    android:id="@+id/menuHelp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:paddingTop="14dp"
-                    android:paddingBottom="14dp"
-                    android:background="#1c1c1e"
-                    android:layout_marginBottom="6dp"
-                    android:radius="12dp"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:text="Помощь"
-                            android:textSize="15sp"
-                            android:textColor="#fff"/>
-
-                        <TextView
-                            android:text="Поддержка и FAQ"
-                            android:textSize="12sp"
-                            android:textColor="#636366"/>
-                    </LinearLayout>
-
-                    <ImageView
-                        android:src="@drawable/ic_arrow"
-                        android:tint="#636366"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Кнопка выхода -->
-            <Button
-                android:id="@+id/logoutBtn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:paddingTop="14dp"
-                android:paddingBottom="14dp"
-                android:layout_marginTop="16dp"
-                android:text="Выйти из аккаунта"
-                android:textColor="#fff"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:background="#1c1c1e"
-                android:radius="12dp"
-                android:elevation="2dp"/>
-
-        </LinearLayout>
-    </ScrollView>
-
-    <!-- Нижняя навигация без иконок -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:padding="14dp"
+        android:layout_marginTop="30dp"
+        android:text="Выйти из аккаунта"
+        android:textColor="#fff"
+        android:textSize="16sp"
+        android:textStyle="bold"
         android:background="#1c1c1e"
-        android:orientation="horizontal"
-        android:paddingTop="4dp"
-        android:paddingBottom="8dp"
-        android:elevation="4dp">
-
-        <LinearLayout
-            android:id="@+id/navChats"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Чаты"
-                android:textSize="14sp"
-                android:textColor="#8e8e93"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navFavorites"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Избранное"
-                android:textSize="14sp"
-                android:textColor="#8e8e93"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navProfile"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Профиль"
-                android:textSize="14sp"
-                android:textColor="#f06292"/>
-        </LinearLayout>
-    </LinearLayout>
+        android:radius="12dp"/>
 
 </LinearLayout>
