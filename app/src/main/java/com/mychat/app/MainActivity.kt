@@ -116,16 +116,8 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
         findViewById<LinearLayout>(R.id.navChats).setOnClickListener { showTab(0) }
-        
-        // КНОПКА ИЗБРАННОЕ - открывает FavoritesActivity
-        findViewById<LinearLayout>(R.id.navFavorites).setOnClickListener {
-            openFavorites()
-        }
-        
-        // КНОПКА ПРОФИЛЬ - открывает ProfileActivity
-        findViewById<LinearLayout>(R.id.navProfile).setOnClickListener {
-            openProfile()
-        }
+        findViewById<LinearLayout>(R.id.navFavorites).setOnClickListener { openFavorites() }
+        findViewById<LinearLayout>(R.id.navProfile).setOnClickListener { openProfile() }
         
         searchInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -157,25 +149,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // ОТКРЫТИЕ ИЗБРАННОГО
     private fun openFavorites() {
         val intent = Intent(this, FavoritesActivity::class.java).apply {
             putExtra("token", token)
             putExtra("username", me)
         }
-        putExtra("token", token)
-            putExtra("username", me)
         startActivity(intent)
     }
 
-    // ОТКРЫТИЕ ПРОФИЛЯ (НОВОЕ!)
     private fun openProfile() {
         val intent = Intent(this, ProfileActivity::class.java).apply {
             putExtra("token", token)
             putExtra("username", me)
         }
-        putExtra("token", token)
-            putExtra("username", me)
         startActivity(intent)
     }
 

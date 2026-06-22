@@ -9,6 +9,7 @@ import com.mychat.app.R
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 
@@ -89,7 +90,6 @@ class ProfileActivity : AppCompatActivity() {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
-                    // Если не загрузился - показываем статус из SharedPreferences
                     val prefs = PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
                     val status = prefs.getString("user_status", "Живу в облаках ☁️") ?: "Живу в облаках ☁️"
                     profileStatus.text = status
@@ -111,7 +111,6 @@ class ProfileActivity : AppCompatActivity() {
                         val finalStatus = userStatus
                         runOnUiThread {
                             profileStatus.text = finalStatus
-                            // Сохраняем локально для кэша
                             val prefs = PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
                             prefs.edit().putString("user_status", finalStatus).apply()
                         }
@@ -129,7 +128,6 @@ class ProfileActivity : AppCompatActivity() {
             return
         }
 
-        // Показываем прогресс
         Toast.makeText(this, "Сохранение...", Toast.LENGTH_SHORT).show()
 
         val json = JSONObject().apply {
@@ -157,7 +155,6 @@ class ProfileActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         profileStatus.text = newStatus
                         editStatusSection.visibility = View.GONE
-                        // Сохраняем локально
                         val prefs = PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
                         prefs.edit().putString("user_status", newStatus).apply()
                         Toast.makeText(this@ProfileActivity, "Статус обновлён!", Toast.LENGTH_SHORT).show()
