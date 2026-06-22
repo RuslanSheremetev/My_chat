@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:background="#121212">
 
+    <!-- Шапка -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,7 +42,7 @@
             android:textSize="14sp"
             android:textColor="#8e8e93"
             android:background="#2c2c2e"
-            android:paddingStart="2dp" android:paddingEnd="12dp"
+            android:padding="2dp 12dp"
             android:radius="20dp"
             android:layout_marginEnd="8dp"/>
 
@@ -55,10 +56,11 @@
             android:focusable="true"/>
     </LinearLayout>
 
+    <!-- Поиск -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="8dp" android:paddingEnd="16dp" android:paddingBottom="12dp"
+        android:padding="8dp 16dp 12dp"
         android:background="#121212">
 
         <RelativeLayout
@@ -93,10 +95,11 @@
         </RelativeLayout>
     </LinearLayout>
 
+    <!-- Фильтры (ТОЛЬКО ТЕКСТ, БЕЗ ИКОНОК) -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="0dp" android:paddingEnd="16dp" android:paddingBottom="12dp"
+        android:padding="0dp 16dp 12dp"
         android:scrollbars="none">
 
         <LinearLayout
@@ -106,13 +109,16 @@
             android:orientation="horizontal"/>
     </HorizontalScrollView>
 
+    <!-- Список (без лишних фонов) -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/favoritesRecycler"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingStart="4dp" android:paddingEnd="12dp" android:paddingBottom="80dp"/>
+        android:padding="4dp 12dp 4dp"
+        android:clipToPadding="false"/>
 
+    <!-- Пустое состояние -->
     <LinearLayout
         android:id="@+id/emptyState"
         android:layout_width="match_parent"
@@ -154,12 +160,13 @@
             android:text="Найти сообщения"
             android:textColor="#fff"
             android:background="@drawable/bg_btn_primary"
-            android:paddingStart="12dp" android:paddingEnd="32dp"
+            android:padding="12dp 32dp"
             android:layout_marginTop="20dp"
             android:radius="25dp"
             android:textStyle="bold"/>
     </LinearLayout>
 
+    <!-- FAB кнопка -->
     <ImageButton
         android:id="@+id/fabAdd"
         android:layout_width="56dp"
@@ -173,6 +180,7 @@
         android:layout_marginBottom="80dp"
         android:elevation="8dp"/>
 
+    <!-- Нижняя навигация -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
