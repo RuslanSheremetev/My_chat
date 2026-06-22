@@ -43,7 +43,7 @@
             android:textSize="10sp"
             android:textColor="#8e8e93"
             android:background="#2c2c2e"
-            android:padding="2dp 8dp"
+            android:paddingStart="2dp" android:paddingEnd="8dp"
             android:radius="10dp"
             android:layout_marginEnd="8dp"
             android:visibility="gone"/>
