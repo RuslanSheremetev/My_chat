@@ -9,7 +9,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="#121212"
-        android:gravity="center_horizontal"
         android:padding="20dp"
         android:paddingBottom="40dp">
 
@@ -21,7 +20,6 @@
             android:src="@drawable/ic_back"
             android:tint="#f06292"
             android:padding="8dp"
-            android:layout_gravity="start"
             android:clickable="true"
             android:focusable="true"/>
 
@@ -36,7 +34,8 @@
             android:textColor="#fff"
             android:textStyle="bold"
             android:background="@drawable/bg_avatar_circle"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_horizontal"/>
 
         <!-- Имя -->
         <TextView
@@ -47,9 +46,10 @@
             android:textSize="22sp"
             android:textColor="#fff"
             android:textStyle="bold"
-            android:layout_marginTop="12dp"/>
+            android:layout_marginTop="12dp"
+            android:layout_gravity="center_horizontal"/>
 
-        <!-- Статус (кликабельный) -->
+        <!-- Статус -->
         <TextView
             android:id="@+id/profileStatus"
             android:layout_width="wrap_content"
@@ -64,7 +64,8 @@
             android:paddingBottom="4dp"
             android:clickable="true"
             android:focusable="true"
-            android:background="@drawable/bg_status_edit"/>
+            android:background="@drawable/bg_status_edit"
+            android:layout_gravity="center_horizontal"/>
 
         <!-- Редактирование статуса -->
         <LinearLayout
@@ -107,6 +108,45 @@
                 android:textStyle="bold"/>
         </LinearLayout>
 
+        <!-- Тема с переключателем -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:background="#1c1c1e"
+            android:layout_marginTop="20dp"
+            android:radius="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="Тема"
+                    android:textSize="15sp"
+                    android:textColor="#fff"/>
+
+                <TextView
+                    android:id="@+id/themeDesc"
+                    android:text="Тёмная тема (активна)"
+                    android:textSize="12sp"
+                    android:textColor="#636366"/>
+            </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/themeSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"/>
+        </LinearLayout>
+
         <!-- Кнопка выхода -->
         <Button
             android:id="@+id/logoutBtn"
@@ -116,7 +156,7 @@
             android:paddingEnd="14dp"
             android:paddingTop="14dp"
             android:paddingBottom="14dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:text="Выйти из аккаунта"
             android:textColor="#fff"
             android:textSize="16sp"

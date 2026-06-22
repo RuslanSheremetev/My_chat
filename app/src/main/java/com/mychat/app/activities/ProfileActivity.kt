@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import com.mychat.app.R
 import okhttp3.*
@@ -18,16 +19,26 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var profileStatus: TextView
     private lateinit var statusInput: EditText
     private lateinit var editStatusSection: LinearLayout
+    private lateinit var themeSwitch: CheckBox
+    private lateinit var themeDesc: TextView
     private val client = OkHttpClient()
     private var token = ""
     private var username = ""
     private var serverUrl = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Применяем тему
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val isDark = prefs.getBoolean("dark_theme", true)
+        if (isDark) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile_new)
 
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         token = intent.getStringExtra("token") ?: prefs.getString("token", "") ?: ""
         username = intent.getStringExtra("username") ?: prefs.getString("username", "User") ?: "User"
         serverUrl = prefs.getString("server_url", "http://2.26.71.102:8000") ?: "http://2.26.71.102:8000"
@@ -42,6 +53,12 @@ class ProfileActivity : AppCompatActivity() {
         profileStatus = findViewById(R.id.profileStatus)
         statusInput = findViewById(R.id.statusInput)
         editStatusSection = findViewById(R.id.editStatusSection)
+
+        // Тема
+        themeSwitch = findViewById(R.id.themeSwitch)
+        themeDesc = findViewById(R.id.themeDesc)
+        themeSwitch.isChecked = isDark
+        updateThemeDesc(isDark)
 
         // Загружаем статус с сервера
         loadStatusFromServer()
@@ -70,6 +87,14 @@ class ProfileActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Введите статус", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        // Переключатель темы
+        themeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean("dark_theme", isChecked).apply()
+            updateThemeDesc(isChecked)
+            // Перезапускаем Activity для применения темы
+            recreate()
         }
 
         // Кнопка выхода
@@ -164,5 +189,13 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun updateThemeDesc(isDark: Boolean) {
+        themeDesc.text = if (isDark) {
+            "Тёмная тема (активна)"
+        } else {
+            "Светлая тема (активна)"
+        }
     }
 }
