@@ -2,7 +2,6 @@ package com.mychat.app.activities
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
@@ -16,8 +15,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 
 class ProfileActivity : AppCompatActivity() {
@@ -44,10 +41,8 @@ class ProfileActivity : AppCompatActivity() {
         username = intent.getStringExtra("username") ?: prefs.getString("username", "User") ?: "User"
         serverUrl = prefs.getString("server_url", "http://2.26.71.102:8000") ?: "http://2.26.71.102:8000"
 
-        // Имя
         findViewById<TextView>(R.id.profileName).text = username
 
-        // Аватар - кликабельный
         profileAvatar = findViewById(R.id.profileAvatar)
         profileAvatar.text = username.take(1).uppercase()
         profileAvatar.setOnClickListener {
@@ -57,21 +52,17 @@ class ProfileActivity : AppCompatActivity() {
         // Загружаем аватар с сервера
         loadAvatarFromServer()
 
-        // Статус
         profileStatus = findViewById(R.id.profileStatus)
         statusInput = findViewById(R.id.statusInput)
         editStatusSection = findViewById(R.id.editStatusSection)
 
-        // Загружаем статус из SharedPreferences
         val savedStatus = prefs.getString("user_status", "Живу в облаках ☁️") ?: "Живу в облаках ☁️"
         profileStatus.text = savedStatus
 
-        // Кнопка назад
         findViewById<ImageView>(R.id.backBtn).setOnClickListener {
             finish()
         }
 
-        // Клик по статусу - открыть редактирование
         profileStatus.setOnClickListener {
             if (editStatusSection.visibility == View.VISIBLE) {
                 editStatusSection.visibility = View.GONE
@@ -82,7 +73,6 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
-        // Сохранить статус
         findViewById<Button>(R.id.saveStatusBtn).setOnClickListener {
             val newStatus = statusInput.text.toString().trim()
             if (newStatus.isNotEmpty()) {
@@ -92,13 +82,11 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
-        // Кнопка выхода
         findViewById<Button>(R.id.logoutBtn).setOnClickListener {
             showLogoutDialog()
         }
     }
 
-    // Загрузка аватара с сервера
     private fun loadAvatarFromServer() {
         if (token.isEmpty()) return
 
@@ -115,22 +103,16 @@ class ProfileActivity : AppCompatActivity() {
                 response.body?.let { body ->
                     try {
                         val json = JSONArray(body.string())
-                        var avatarUrl = ""
                         for (i in 0 until json.length()) {
                             val user = json.getJSONObject(i)
                             if (user.optString("username") == username) {
-                                avatarUrl = user.optString("avatar_url", "")
+                                val avatarUrl = user.optString("avatar_url", "")
+                                if (avatarUrl.isNotEmpty()) {
+                                    runOnUiThread {
+                                        profileAvatar.text = username.take(1).uppercase()
+                                    }
+                                }
                                 break
-                            }
-                        }
-                        val finalAvatarUrl = avatarUrl
-                        runOnUiThread {
-                            if (finalAvatarUrl.isNotEmpty()) {
-                                // Если есть аватар - загружаем его
-                                loadAvatarImage(finalAvatarUrl)
-                            } else {
-                                // Иначе показываем инициалы
-                                profileAvatar.text = username.take(1).uppercase()
                             }
                         }
                     } catch (e: Exception) {
@@ -141,44 +123,6 @@ class ProfileActivity : AppCompatActivity() {
         })
     }
 
-    // Загрузка изображения аватара
-    private fun loadAvatarImage(url: String) {
-        try {
-            val fullUrl = if (url.startsWith("http")) url else "$serverUrl$url"
-            val request = Request.Builder().url(fullUrl).build()
-            
-            client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    runOnUiThread {
-                        profileAvatar.text = username.take(1).uppercase()
-                    }
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    response.body?.let { body ->
-                        try {
-                            val bytes = body.bytes()
-                            runOnUiThread {
-                                // Сохраняем аватар локально
-                                val prefs = PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
-                                prefs.edit().putString("avatar_url", url).apply()
-                                
-                                // Показываем инициалы (для простоты)
-                                profileAvatar.text = username.take(1).uppercase()
-                                profileAvatar.setBackgroundResource(R.drawable.bg_avatar_circle)
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
-            })
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    // Выбор изображения для аватара
     private fun pickImage() {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             type = "image/*"
@@ -196,7 +140,6 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    // Загрузка аватара на сервер
     private fun uploadAvatar(uri: Uri) {
         if (token.isEmpty()) {
             Toast.makeText(this, "Ошибка: не авторизован", Toast.LENGTH_SHORT).show()
@@ -215,7 +158,6 @@ class ProfileActivity : AppCompatActivity() {
                 return
             }
 
-            // Получаем имя файла
             var fileName = "avatar.jpg"
             contentResolver.query(uri, null, null, null, null)?.use { cursor ->
                 if (cursor.moveToFirst()) {
@@ -226,7 +168,7 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
 
-            // Создаем multipart запрос
+            // Пробуем через update_profile с multipart
             val requestBody = MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(
@@ -244,6 +186,49 @@ class ProfileActivity : AppCompatActivity() {
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     runOnUiThread {
+                        Toast.makeText(this@ProfileActivity, "Ошибка сети", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    runOnUiThread {
+                        if (response.isSuccessful) {
+                            profileAvatar.text = username.take(1).uppercase()
+                            Toast.makeText(this@ProfileActivity, "Аватар обновлён!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // Пробуем другой эндпоинт
+                            uploadAvatarAlternative(uri, bytes, fileName)
+                        }
+                    }
+                }
+            })
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Альтернативный способ загрузки аватара
+    private fun uploadAvatarAlternative(uri: Uri, bytes: ByteArray, fileName: String) {
+        try {
+            val requestBody = MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart(
+                    "file",
+                    fileName,
+                    bytes.toRequestBody("image/jpeg".toMediaType())
+                )
+                .build()
+
+            val request = Request.Builder()
+                .url("$serverUrl/upload?token=$token")
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    runOnUiThread {
                         Toast.makeText(this@ProfileActivity, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -253,17 +238,12 @@ class ProfileActivity : AppCompatActivity() {
                         if (response.isSuccessful) {
                             try {
                                 val json = JSONObject(response.body?.string() ?: "{}")
-                                val avatarUrl = json.optString("avatar_url", "")
-                                
-                                // Обновляем аватар в UI
-                                profileAvatar.text = username.take(1).uppercase()
-                                profileAvatar.setBackgroundResource(R.drawable.bg_avatar_circle)
-                                
-                                // Сохраняем URL аватара
-                                val prefs = PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
-                                prefs.edit().putString("avatar_url", avatarUrl).apply()
-                                
-                                Toast.makeText(this@ProfileActivity, "Аватар обновлён!", Toast.LENGTH_SHORT).show()
+                                val fileUrl = json.optString("url", "")
+                                if (fileUrl.isNotEmpty()) {
+                                    // Обновляем аватар
+                                    profileAvatar.text = username.take(1).uppercase()
+                                    Toast.makeText(this@ProfileActivity, "Аватар обновлён!", Toast.LENGTH_SHORT).show()
+                                }
                             } catch (e: Exception) {
                                 Toast.makeText(this@ProfileActivity, "Ошибка обработки", Toast.LENGTH_SHORT).show()
                             }
@@ -273,10 +253,8 @@ class ProfileActivity : AppCompatActivity() {
                     }
                 }
             })
-
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
