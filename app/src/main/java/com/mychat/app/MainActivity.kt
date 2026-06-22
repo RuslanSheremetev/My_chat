@@ -163,6 +163,8 @@ class MainActivity : AppCompatActivity() {
             putExtra("token", token)
             putExtra("username", me)
         }
+        putExtra("token", token)
+            putExtra("username", me)
         startActivity(intent)
     }
 
@@ -172,6 +174,8 @@ class MainActivity : AppCompatActivity() {
             putExtra("token", token)
             putExtra("username", me)
         }
+        putExtra("token", token)
+            putExtra("username", me)
         startActivity(intent)
     }
 
