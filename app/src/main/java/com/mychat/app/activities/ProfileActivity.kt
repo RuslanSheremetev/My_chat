@@ -2,8 +2,6 @@ package com.mychat.app.activities
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
@@ -22,8 +20,11 @@ import java.io.IOException
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var profileStatus: TextView
+    private lateinit var profileBio: TextView
     private lateinit var statusInput: EditText
+    private lateinit var bioInput: EditText
     private lateinit var editStatusSection: LinearLayout
+    private lateinit var editBioSection: LinearLayout
     private lateinit var profileAvatar: TextView
     private lateinit var onlineIndicator: View
     private lateinit var onlineText: TextView
@@ -47,29 +48,31 @@ class ProfileActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.profileName).text = username
 
-        // Аватар
         profileAvatar = findViewById(R.id.profileAvatar)
         profileAvatar.text = username.take(1).uppercase()
         profileAvatar.setOnClickListener {
             pickImage()
         }
 
-        // Онлайн индикатор
         onlineIndicator = findViewById(R.id.onlineIndicator)
         onlineText = findViewById(R.id.onlineText)
-        // Показываем онлайн всегда (потом можно будет получать с сервера)
         onlineIndicator.setBackgroundResource(R.drawable.bg_online_dot)
         onlineText.text = "Онлайн"
 
-        // Статус
         profileStatus = findViewById(R.id.profileStatus)
         statusInput = findViewById(R.id.statusInput)
         editStatusSection = findViewById(R.id.editStatusSection)
 
+        profileBio = findViewById(R.id.profileBio)
+        bioInput = findViewById(R.id.bioInput)
+        editBioSection = findViewById(R.id.editBioSection)
+
         val savedStatus = prefs.getString("user_status", "Живу в облаках ☁️") ?: "Живу в облаках ☁️"
         profileStatus.text = savedStatus
 
-        // Загружаем данные с сервера (аватар, статус, онлайн)
+        val savedBio = prefs.getString("user_bio", "Разработчик мобильных приложений") ?: "Разработчик мобильных приложений"
+        profileBio.text = savedBio
+
         loadUserData()
 
         findViewById<ImageView>(R.id.backBtn).setOnClickListener {
@@ -77,13 +80,11 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         profileStatus.setOnClickListener {
-            if (editStatusSection.visibility == View.VISIBLE) {
-                editStatusSection.visibility = View.GONE
-            } else {
-                statusInput.setText(profileStatus.text)
-                editStatusSection.visibility = View.VISIBLE
-                statusInput.requestFocus()
-            }
+            toggleEditSection(editStatusSection, statusInput, profileStatus.text.toString())
+        }
+
+        profileBio.setOnClickListener {
+            toggleEditSection(editBioSection, bioInput, profileBio.text.toString())
         }
 
         findViewById<Button>(R.id.saveStatusBtn).setOnClickListener {
@@ -95,8 +96,27 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
+        findViewById<Button>(R.id.saveBioBtn).setOnClickListener {
+            val newBio = bioInput.text.toString().trim()
+            if (newBio.isNotEmpty()) {
+                saveBio(newBio)
+            } else {
+                Toast.makeText(this, "Введите биографию", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         findViewById<Button>(R.id.logoutBtn).setOnClickListener {
             showLogoutDialog()
+        }
+    }
+
+    private fun toggleEditSection(section: LinearLayout, input: EditText, currentText: String) {
+        if (section.visibility == View.VISIBLE) {
+            section.visibility = View.GONE
+        } else {
+            input.setText(currentText)
+            section.visibility = View.VISIBLE
+            input.requestFocus()
         }
     }
 
@@ -110,10 +130,11 @@ class ProfileActivity : AppCompatActivity() {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
-                    // Используем локальные данные
                     val prefs = PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
                     val status = prefs.getString("user_status", "Живу в облаках ☁️") ?: "Живу в облаках ☁️"
                     profileStatus.text = status
+                    val bio = prefs.getString("user_bio", "Разработчик мобильных приложений") ?: "Разработчик мобильных приложений"
+                    profileBio.text = bio
                 }
             }
 
@@ -125,6 +146,7 @@ class ProfileActivity : AppCompatActivity() {
                             val user = json.getJSONObject(i)
                             if (user.optString("username") == username) {
                                 val statusText = user.optString("status_text", "")
+                                val bioText = user.optString("bio", "")
                                 val avatarUrl = user.optString("avatar_url", "")
                                 val isOnline = user.optBoolean("online", true)
 
@@ -132,11 +154,12 @@ class ProfileActivity : AppCompatActivity() {
                                     if (statusText.isNotEmpty()) {
                                         profileStatus.text = statusText
                                     }
+                                    if (bioText.isNotEmpty()) {
+                                        profileBio.text = bioText
+                                    }
                                     if (avatarUrl.isNotEmpty()) {
                                         profileAvatar.text = username.take(1).uppercase()
-                                        // Можно загрузить реальное фото
                                     }
-                                    // Обновляем онлайн статус
                                     if (isOnline) {
                                         onlineIndicator.setBackgroundResource(R.drawable.bg_online_dot)
                                         onlineText.text = "Онлайн"
@@ -201,18 +224,18 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
 
-            // Загружаем через upload
+            // Используем update_profile с полем avatar
             val requestBody = MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(
-                    "file",
+                    "avatar",
                     fileName,
                     bytes.toRequestBody("image/jpeg".toMediaType())
                 )
                 .build()
 
             val request = Request.Builder()
-                .url("$serverUrl/upload?token=$token")
+                .url("$serverUrl/update_profile?token=$token")
                 .post(requestBody)
                 .build()
 
@@ -228,11 +251,12 @@ class ProfileActivity : AppCompatActivity() {
                         if (response.isSuccessful) {
                             try {
                                 val json = JSONObject(response.body?.string() ?: "{}")
-                                val fileUrl = json.optString("url", "")
-                                if (fileUrl.isNotEmpty()) {
-                                    // Обновляем аватар (пока инициалы)
+                                val avatarUrl = json.optString("avatar_url", "")
+                                if (avatarUrl.isNotEmpty()) {
                                     profileAvatar.text = username.take(1).uppercase()
                                     Toast.makeText(this@ProfileActivity, "Аватар обновлён!", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(this@ProfileActivity, "Аватар сохранён", Toast.LENGTH_SHORT).show()
                                 }
                             } catch (e: Exception) {
                                 Toast.makeText(this@ProfileActivity, "Ошибка обработки", Toast.LENGTH_SHORT).show()
@@ -248,6 +272,60 @@ class ProfileActivity : AppCompatActivity() {
             e.printStackTrace()
             Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun saveStatus(newStatus: String) {
+        if (token.isEmpty()) {
+            Toast.makeText(this, "Ошибка: не авторизован", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        profileStatus.text = newStatus
+        editStatusSection.visibility = View.GONE
+        
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        prefs.edit().putString("user_status", newStatus).apply()
+        
+        Toast.makeText(this, "Статус обновлён!", Toast.LENGTH_SHORT).show()
+        saveToServer(profileStatus.text.toString(), profileBio.text.toString())
+    }
+
+    private fun saveBio(newBio: String) {
+        if (token.isEmpty()) {
+            Toast.makeText(this, "Ошибка: не авторизован", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        profileBio.text = newBio
+        editBioSection.visibility = View.GONE
+        
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        prefs.edit().putString("user_bio", newBio).apply()
+        
+        Toast.makeText(this, "Биография обновлена!", Toast.LENGTH_SHORT).show()
+        saveToServer(profileStatus.text.toString(), newBio)
+    }
+
+    private fun saveToServer(status: String, bio: String) {
+        val json = JSONObject().apply {
+            put("bio", bio)
+            put("status_text", status)
+            put("avatar_url", "")
+        }
+
+        val body = json.toString().toRequestBody("application/json".toMediaType())
+
+        val request = Request.Builder()
+            .url("$serverUrl/update_profile?token=$token")
+            .post(body)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
+            override fun onResponse(call: Call, response: Response) {
+                response.close()
+            }
+        })
     }
 
     private fun showLogoutDialog() {
@@ -266,40 +344,5 @@ class ProfileActivity : AppCompatActivity() {
         prefs.edit().clear().apply()
         Toast.makeText(this, "Вы вышли из аккаунта", Toast.LENGTH_SHORT).show()
         finish()
-    }
-
-    private fun saveStatus(newStatus: String) {
-        if (token.isEmpty()) {
-            Toast.makeText(this, "Ошибка: не авторизован", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        profileStatus.text = newStatus
-        editStatusSection.visibility = View.GONE
-        
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        prefs.edit().putString("user_status", newStatus).apply()
-        
-        Toast.makeText(this, "Статус обновлён!", Toast.LENGTH_SHORT).show()
-
-        val json = JSONObject().apply {
-            put("bio", newStatus)
-            put("status_text", newStatus)
-            put("avatar_url", "")
-        }
-
-        val body = json.toString().toRequestBody("application/json".toMediaType())
-
-        val request = Request.Builder()
-            .url("$serverUrl/update_profile?token=$token")
-            .post(body)
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {}
-            override fun onResponse(call: Call, response: Response) {
-                response.close()
-            }
-        })
     }
 }
