@@ -174,7 +174,7 @@ class MainActivity : AppCompatActivity() {
     private fun loadProfile() {
         profileAvatar.text = me.take(1).uppercase()
         profileName.text = me
-        // Загружаем актуальный статус из SharedPreferences
+        // Загружаем статус из SharedPreferences
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         val status = prefs.getString("user_status", "No bio") ?: "No bio"
         profileBio.text = status
@@ -186,15 +186,19 @@ class MainActivity : AppCompatActivity() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         prefs.edit().putString("user_status", bio).apply()
         
+        // Обновляем UI
+        profileBio.text = bio
+        
+        // Отправляем на сервер через WebSocket
         ws?.send(JSONObject().apply {
             put("type", "profile_updated")
             put("bio", bio)
             put("status_text", bio)
             put("avatar_url", "")
         }.toString())
+        
         t("Profile updated!")
         loadUsers()
-        loadProfile()
     }
 
     private fun showCreateMenu() {
@@ -426,25 +430,16 @@ class MainActivity : AppCompatActivity() {
                 if (r.isSuccessful) {
                     val a = JSONArray(r.body!!.string())
                     users.clear()
-                    val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
-                    val savedStatus = prefs.getString("user_status", "No bio") ?: "No bio"
                     
                     for (i in 0 until a.length()) {
                         val o = a.getJSONObject(i)
-                        val username = o.optString("username")
-                        // Если это текущий пользователь - используем сохранённый статус
-                        val bio = if (username == me) {
-                            savedStatus
-                        } else {
-                            o.optString("bio", "")
-                        }
                         users.add(
                             User(
-                                username,
+                                o.optString("username"),
                                 o.optString("avatar_color", "#2AABEE"),
                                 o.optBoolean("online"),
                                 "",
-                                bio,
+                                o.optString("bio"),
                                 "",
                                 o.optBoolean("is_group"),
                                 o.optBoolean("is_feed"),

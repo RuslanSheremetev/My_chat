@@ -43,8 +43,9 @@ class ProfileActivity : AppCompatActivity() {
         statusInput = findViewById(R.id.statusInput)
         editStatusSection = findViewById(R.id.editStatusSection)
 
-        // Загружаем статус с сервера
-        loadStatusFromServer()
+        // Загружаем статус из SharedPreferences
+        val savedStatus = prefs.getString("user_status", "Живу в облаках ☁️") ?: "Живу в облаках ☁️"
+        profileStatus.text = savedStatus
 
         // Кнопка назад
         findViewById<ImageView>(R.id.backBtn).setOnClickListener {
@@ -66,7 +67,7 @@ class ProfileActivity : AppCompatActivity() {
         findViewById<Button>(R.id.saveStatusBtn).setOnClickListener {
             val newStatus = statusInput.text.toString().trim()
             if (newStatus.isNotEmpty()) {
-                saveStatusToServer(newStatus)
+                saveStatus(newStatus)
             } else {
                 Toast.makeText(this, "Введите статус", Toast.LENGTH_SHORT).show()
             }
@@ -80,56 +81,22 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadStatusFromServer() {
-        if (token.isEmpty()) return
-
-        val request = Request.Builder()
-            .url("$serverUrl/users/$username?token=$token")
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                runOnUiThread {
-                    val prefs = PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
-                    val status = prefs.getString("user_status", "Живу в облаках ☁️") ?: "Живу в облаках ☁️"
-                    profileStatus.text = status
-                }
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                response.body?.let { body ->
-                    try {
-                        val json = JSONArray(body.string())
-                        var userStatus = "Живу в облаках ☁️"
-                        for (i in 0 until json.length()) {
-                            val user = json.getJSONObject(i)
-                            if (user.optString("username") == username) {
-                                userStatus = user.optString("status_text", "Живу в облаках ☁️")
-                                break
-                            }
-                        }
-                        val finalStatus = userStatus
-                        runOnUiThread {
-                            profileStatus.text = finalStatus
-                            val prefs = PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
-                            prefs.edit().putString("user_status", finalStatus).apply()
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-            }
-        })
-    }
-
-    private fun saveStatusToServer(newStatus: String) {
+    private fun saveStatus(newStatus: String) {
         if (token.isEmpty()) {
             Toast.makeText(this, "Ошибка: не авторизован", Toast.LENGTH_SHORT).show()
             return
         }
 
-        Toast.makeText(this, "Сохранение...", Toast.LENGTH_SHORT).show()
+        // 1. Сразу обновляем UI и SharedPreferences
+        profileStatus.text = newStatus
+        editStatusSection.visibility = View.GONE
+        
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        prefs.edit().putString("user_status", newStatus).apply()
+        
+        Toast.makeText(this, "Статус обновлён!", Toast.LENGTH_SHORT).show()
 
+        // 2. Отправляем на сервер
         val json = JSONObject().apply {
             put("bio", newStatus)
             put("status_text", newStatus)
@@ -145,53 +112,13 @@ class ProfileActivity : AppCompatActivity() {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                runOnUiThread {
-                    Toast.makeText(this@ProfileActivity, "Ошибка сети", Toast.LENGTH_SHORT).show()
-                }
+                // Ошибка - но статус уже сохранён локально
             }
 
             override fun onResponse(call: Call, response: Response) {
-                runOnUiThread {
-                    if (response.isSuccessful) {
-                        profileStatus.text = newStatus
-                        editStatusSection.visibility = View.GONE
-                        val prefs = PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
-                        prefs.edit().putString("user_status", newStatus).apply()
-                        Toast.makeText(this@ProfileActivity, "Статус обновлён!", Toast.LENGTH_SHORT).show()
-                        
-                        // Отправляем обновление через WebSocket (чтобы обновилось в MainActivity)
-                        sendStatusUpdateViaWebSocket(newStatus)
-                    } else {
-                        Toast.makeText(this@ProfileActivity, "Ошибка сохранения", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                // Статус сохранён на сервере
+                response.close()
             }
         })
-    }
-
-    // Отправляем обновление статуса через WebSocket
-    private fun sendStatusUpdateViaWebSocket(newStatus: String) {
-        try {
-            val wsUrl = "ws://${serverUrl.replace("http://", "")}/ws/$username?token=$token"
-            val wsClient = OkHttpClient()
-            val ws = wsClient.newWebSocket(
-                Request.Builder().url(wsUrl).build(),
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        // Отправляем обновление статуса
-                        val json = JSONObject().apply {
-                            put("type", "profile_updated")
-                            put("bio", newStatus)
-                            put("status_text", newStatus)
-                            put("avatar_url", "")
-                        }
-                        webSocket.send(json.toString())
-                        webSocket.close(1000, "Done")
-                    }
-                }
-            )
-        } catch (e: Exception) {
-            // Игнорируем ошибки WebSocket
-        }
     }
 }
