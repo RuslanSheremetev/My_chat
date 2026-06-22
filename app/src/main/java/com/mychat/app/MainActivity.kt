@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.*
 import android.provider.OpenableColumns
@@ -16,79 +17,135 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.FileProvider
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.preference.PreferenceManager
 import com.mychat.app.activities.FavoritesActivity
-import com.mychat.app.adapters.*
-import com.mychat.app.models.*
+import com.mychat.app.adapters.ChatAdapter
+import com.mychat.app.adapters.MessageAdapter
+import com.mychat.app.adapters.circleBg
+import com.mychat.app.models.ChatMessage
+import com.mychat.app.models.FileInfo
+import com.mychat.app.models.User
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.*
+import java.io.File
 import java.util.concurrent.TimeUnit
 
-class MainActivity:AppCompatActivity(){
-    private lateinit var loginLayout:LinearLayout
-    private lateinit var mainContainer:LinearLayout
-    private lateinit var bottomNav:LinearLayout
-    private lateinit var chatsScreen:LinearLayout
-    private lateinit var profileScreen:ScrollView
-    private lateinit var chatLayout:LinearLayout
-    private lateinit var loginUser:EditText
-    private lateinit var loginPass:EditText
-    private lateinit var serverUrl:EditText
-    private lateinit var searchInput:EditText
-    private lateinit var chatList:RecyclerView
-    private lateinit var messagesList:RecyclerView
-    private lateinit var msgInput:EditText
-    private lateinit var chatTitle:TextView
-    private lateinit var btnSearchClear:ImageButton
-    private lateinit var profileAvatar:TextView
-    private lateinit var profileName:TextView
-    private lateinit var profileBio:TextView
-    private lateinit var editBio:EditText
-    private var server="http://2.26.71.102:8000"
-    private var token=""
-    private var me=""
-    private var selId=""
-    private var ws:WebSocket?=null
-    private val users=mutableListOf<User>()
-    private val handler=Handler(Looper.getMainLooper())
-    private var pollRunnable:Runnable?=null
-    private lateinit var chatAdapter:ChatAdapter
-    private lateinit var msgAdapter:MessageAdapter
-    private val client=OkHttpClient.Builder().connectTimeout(30,TimeUnit.SECONDS).readTimeout(30,TimeUnit.SECONDS).build()
+class MainActivity : AppCompatActivity() {
+    private lateinit var loginLayout: LinearLayout
+    private lateinit var mainContainer: LinearLayout
+    private lateinit var bottomNav: LinearLayout
+    private lateinit var chatsScreen: LinearLayout
+    private lateinit var profileScreen: ScrollView
+    private lateinit var chatLayout: LinearLayout
+    private lateinit var loginUser: EditText
+    private lateinit var loginPass: EditText
+    private lateinit var serverUrl: EditText
+    private lateinit var searchInput: EditText
+    private lateinit var chatList: RecyclerView
+    private lateinit var messagesList: RecyclerView
+    private lateinit var msgInput: EditText
+    private lateinit var chatTitle: TextView
+    private lateinit var chatAvatar: TextView
+    private lateinit var chatStatus: TextView
+    private lateinit var btnSearchClear: ImageButton
+    private lateinit var profileAvatar: TextView
+    private lateinit var profileName: TextView
+    private lateinit var profileBio: TextView
+    private lateinit var editBio: EditText
+    private var server = "http://2.26.71.102:8000"
+    private var token = ""
+    private var me = ""
+    private var selId = ""
+    private var ws: WebSocket? = null
+    private val users = mutableListOf<User>()
+    private val handler = Handler(Looper.getMainLooper())
+    private var pollRunnable: Runnable? = null
+    private lateinit var chatAdapter: ChatAdapter
+    private lateinit var msgAdapter: MessageAdapter
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .build()
 
-    override fun onCreate(savedInstanceState:Bundle?){
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        loginLayout=findViewById(R.id.loginLayout);mainContainer=findViewById(R.id.mainContainer);bottomNav=findViewById(R.id.bottomNav)
-        chatsScreen=findViewById(R.id.chatsScreen);profileScreen=findViewById(R.id.profileScreen);chatLayout=findViewById(R.id.chatLayout)
-        loginUser=findViewById(R.id.loginUser);loginPass=findViewById(R.id.loginPass);serverUrl=findViewById(R.id.serverUrl)
-        searchInput=findViewById(R.id.searchInput);chatList=findViewById(R.id.chatList)
-        messagesList=findViewById(R.id.messagesList);msgInput=findViewById(R.id.msgInput);chatTitle=findViewById(R.id.chatTitle)
-        btnSearchClear=findViewById(R.id.btnSearchClear)
-        profileAvatar=findViewById(R.id.profileAvatar);profileName=findViewById(R.id.profileName);profileBio=findViewById(R.id.profileBio);editBio=findViewById(R.id.editBio)
+        
+        loginLayout = findViewById(R.id.loginLayout)
+        mainContainer = findViewById(R.id.mainContainer)
+        bottomNav = findViewById(R.id.bottomNav)
+        chatsScreen = findViewById(R.id.chatsScreen)
+        profileScreen = findViewById(R.id.profileScreen)
+        chatLayout = findViewById(R.id.chatLayout)
+        loginUser = findViewById(R.id.loginUser)
+        loginPass = findViewById(R.id.loginPass)
+        serverUrl = findViewById(R.id.serverUrl)
+        searchInput = findViewById(R.id.searchInput)
+        chatList = findViewById(R.id.chatList)
+        messagesList = findViewById(R.id.messagesList)
+        msgInput = findViewById(R.id.msgInput)
+        chatTitle = findViewById(R.id.chatTitle)
+        chatAvatar = findViewById(R.id.chatAvatar)
+        chatStatus = findViewById(R.id.chatStatus)
+        btnSearchClear = findViewById(R.id.btnSearchClear)
+        profileAvatar = findViewById(R.id.profileAvatar)
+        profileName = findViewById(R.id.profileName)
+        profileBio = findViewById(R.id.profileBio)
+        editBio = findViewById(R.id.editBio)
+        
         serverUrl.setText(server)
-        chatAdapter=ChatAdapter{u->openChat(u.username)};chatList.layoutManager=LinearLayoutManager(this);chatList.adapter=chatAdapter
-        msgAdapter=MessageAdapter(me){url,name->downloadFile(url,name)};messagesList.layoutManager=LinearLayoutManager(this);messagesList.adapter=msgAdapter
-        findViewById<Button>(R.id.btnLogin).setOnClickListener{login()};findViewById<Button>(R.id.btnRegister).setOnClickListener{register()}
-        findViewById<ImageButton>(R.id.btnSend).setOnClickListener{sendMessage()};findViewById<ImageButton>(R.id.btnAttach).setOnClickListener{pickFile()}
-        findViewById<ImageButton>(R.id.btnBack).setOnClickListener{closeChat()};findViewById<ImageButton>(R.id.btnCreate).setOnClickListener{showCreateMenu()}
-        findViewById<Button>(R.id.btnSaveProfile).setOnClickListener{saveProfile()}
-        findViewById<LinearLayout>(R.id.navChats).setOnClickListener{showTab(0)}
-        findViewById<LinearLayout>(R.id.navFavorites).setOnClickListener{openFavorites()}
-        findViewById<LinearLayout>(R.id.navProfile).setOnClickListener{showTab(2)}
-        searchInput.addTextChangedListener(object:TextWatcher{override fun afterTextChanged(s:Editable?){val q=s.toString().trim();if(q.isNotEmpty()){searchUsers(q);btnSearchClear.visibility=View.VISIBLE}else{btnSearchClear.visibility=View.GONE;loadUsers()}};override fun beforeTextChanged(s:CharSequence?,st:Int,c:Int,a:Int){};override fun onTextChanged(s:CharSequence?,st:Int,b:Int,c:Int){}})
-        btnSearchClear.setOnClickListener{searchInput.text.clear();hideKeyboard()}
-        val prefs=PreferenceManager.getDefaultSharedPreferences(this)
-        token=prefs.getString("token","")?:""
-        me=prefs.getString("username","")?:""
-        server=prefs.getString("server_url",server)?:server
-        if(token.isNotEmpty()&&me.isNotEmpty())showMain()
+        chatAdapter = ChatAdapter { user -> openChat(user.username) }
+        chatList.layoutManager = LinearLayoutManager(this)
+        chatList.adapter = chatAdapter
+        
+        msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
+        messagesList.layoutManager = LinearLayoutManager(this)
+        messagesList.adapter = msgAdapter
+        
+        findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
+        findViewById<Button>(R.id.btnRegister).setOnClickListener { register() }
+        findViewById<ImageButton>(R.id.btnSend).setOnClickListener { sendMessage() }
+        findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { pickFile() }
+        findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
+        findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
+        findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
+        findViewById<LinearLayout>(R.id.navChats).setOnClickListener { showTab(0) }
+        findViewById<LinearLayout>(R.id.navFavorites).setOnClickListener { openFavorites() }
+        findViewById<LinearLayout>(R.id.navProfile).setOnClickListener { showTab(2) }
+        
+        searchInput.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val q = s.toString().trim()
+                if (q.isNotEmpty()) {
+                    searchUsers(q)
+                    btnSearchClear.visibility = View.VISIBLE
+                } else {
+                    btnSearchClear.visibility = View.GONE
+                    loadUsers()
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+        
+        btnSearchClear.setOnClickListener {
+            searchInput.text.clear()
+            hideKeyboard()
+        }
+        
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        token = prefs.getString("token", "") ?: ""
+        me = prefs.getString("username", "") ?: ""
+        server = prefs.getString("server_url", server) ?: server
+        
+        if (token.isNotEmpty() && me.isNotEmpty()) {
+            showMain()
+        }
     }
 
     private fun openFavorites() {
@@ -99,30 +156,512 @@ class MainActivity:AppCompatActivity(){
         startActivity(intent)
     }
 
-    private fun showTab(tab:Int){chatsScreen.visibility=if(tab==0)View.VISIBLE else View.GONE;profileScreen.visibility=if(tab==2)View.VISIBLE else View.GONE;if(tab==2)loadProfile()}
-    private fun loadProfile(){profileAvatar.text=me.take(1).uppercase();profileName.text=me;val u=users.find{it.username==me};profileBio.text=u?.bio?:"No bio";editBio.setText(u?.bio?:"")}
-    private fun saveProfile(){val bio=editBio.text.toString().trim();ws?.send(JSONObject().apply{put("type","profile_updated");put("bio",bio);put("status_text","");put("avatar_url","")}.toString());t("Profile updated!");loadUsers()}
-    private fun showCreateMenu(){val popup=PopupMenu(this,findViewById(R.id.btnCreate));popup.menu.add(0,1,0,"Create Group");popup.menu.add(0,2,0,"Create Feed");popup.setOnMenuItemClickListener{item:MenuItem->when(item.itemId){1->showCreateGroupDialog();2->showCreateFeedDialog()};true};popup.show()}
-    private fun showCreateGroupDialog(){val v=LinearLayout(this).apply{orientation=LinearLayout.VERTICAL;setPadding(40,20,40,20)};val nameIn=EditText(this).apply{hint="Group name";setTextColor(0xffffffff.toInt());setHintTextColor(0xff636366.toInt());setBackgroundResource(R.drawable.bg_input);setPadding(30,20,30,20);layoutParams=LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT).apply{bottomMargin=16}};val membIn=EditText(this).apply{hint="Members (comma)";setTextColor(0xffffffff.toInt());setHintTextColor(0xff636366.toInt());setBackgroundResource(R.drawable.bg_input);setPadding(30,20,30,20)};v.addView(nameIn);v.addView(membIn);AlertDialog.Builder(this).setTitle("Create Group").setView(v).setPositiveButton("Create"){_,_->val n=nameIn.text.toString().trim();val m=membIn.text.toString().split(",").map{it.trim()}.filter{it.isNotEmpty()}.toMutableList();if(n.isNotEmpty()&&m.isNotEmpty()){m.add(me);ws?.send(JSONObject().apply{put("type","create_group");put("name",n);put("members",JSONArray(m));put("private",false)}.toString());t("Group created!");handler.postDelayed({loadUsers()},1000)}}.setNegativeButton("Cancel",null).show()}
-    private fun showCreateFeedDialog(){val v=LinearLayout(this).apply{orientation=LinearLayout.VERTICAL;setPadding(40,20,40,20)};val nameIn=EditText(this).apply{hint="Feed name";setTextColor(0xffffffff.toInt());setHintTextColor(0xff636366.toInt());setBackgroundResource(R.drawable.bg_input);setPadding(30,20,30,20);layoutParams=LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT).apply{bottomMargin=16}};val descIn=EditText(this).apply{hint="Description";setTextColor(0xffffffff.toInt());setHintTextColor(0xff636366.toInt());setBackgroundResource(R.drawable.bg_input);setPadding(30,20,30,20)};v.addView(nameIn);v.addView(descIn);AlertDialog.Builder(this).setTitle("Create Feed").setView(v).setPositiveButton("Create"){_,_->val n=nameIn.text.toString().trim();if(n.isNotEmpty()){ws?.send(JSONObject().apply{put("type","create_feed");put("name",n);put("description",descIn.text.toString().trim());put("private",false)}.toString());t("Feed created!");handler.postDelayed({loadUsers()},1000)}}.setNegativeButton("Cancel",null).show()}
+    private fun showTab(tab: Int) {
+        chatsScreen.visibility = if (tab == 0) View.VISIBLE else View.GONE
+        profileScreen.visibility = if (tab == 2) View.VISIBLE else View.GONE
+        if (tab == 2) loadProfile()
+    }
 
-    private fun login(){val u=loginUser.text.toString().trim();val p=loginPass.text.toString().trim();server=serverUrl.text.toString().trim();if(u.isEmpty()||p.isEmpty())return t("Fill all fields");thread{try{val j=JSONObject().apply{put("username",u);put("password",p)};val b=j.toString().toRequestBody("application/json".toMediaType());val r=client.newCall(Request.Builder().url("$server/login").post(b).build()).execute();if(r.isSuccessful){val d=JSONObject(r.body!!.string());token=d.optString("access_token","");me=u;PreferenceManager.getDefaultSharedPreferences(this@MainActivity).edit().putString("token",token).putString("username",me).putString("server_url",server).apply();handler.post{showMain()}}else{handler.post{t(JSONObject(r.body!!.string()).optString("detail","Error"))}}}catch(e:Exception){handler.post{t("Server unavailable")}}}}
-    private fun register(){val u=loginUser.text.toString().trim();val p=loginPass.text.toString().trim();server=serverUrl.text.toString().trim();if(u.isEmpty()||p.isEmpty())return t("Fill all fields");thread{try{val j=JSONObject().apply{put("username",u);put("password",p)};val b=j.toString().toRequestBody("application/json".toMediaType());val r=client.newCall(Request.Builder().url("$server/register").post(b).build()).execute();if(r.isSuccessful){handler.post{t("Account created!");login()}}else{handler.post{t(JSONObject(r.body!!.string()).optString("detail","Error"))}}}catch(e:Exception){handler.post{t("Server unavailable")}}}}
-    private fun showMain(){loginLayout.visibility=View.GONE;mainContainer.visibility=View.VISIBLE;bottomNav.visibility=View.VISIBLE;connectWS();loadUsers();showTab(0)}
-    private fun openChat(id:String){selId=id;val u=users.find{it.username==id};val tvTitle=findViewById<TextView>(R.id.chatTitle);val tvAvatar=findViewById<TextView>(R.id.chatAvatar);val tvStatus=findViewById<TextView>(R.id.chatStatus);val name=u?.name?:id;tvTitle.text=name;tvAvatar.text=name.take(1).uppercase();tvAvatar.background=circleBg(u?.avatarColor?:"#2AABEE");tvStatus.text=if(u?.online==true)"online" else "offline";tvStatus.setTextColor(if(u?.online==true)0xff34c759.toInt() else 0xff8e8e93.toInt());mainContainer.visibility=View.GONE;bottomNav.visibility=View.GONE;chatLayout.visibility=View.VISIBLE;refreshMessages();startPolling()}
-    private fun closeChat(){selId="";stopPolling();chatLayout.visibility=View.GONE;mainContainer.visibility=View.VISIBLE;bottomNav.visibility=View.VISIBLE;loadUsers()}
-    private fun connectWS(){try{val wsUrl="ws://"+server.replace("http://","")+"/ws/$me?token=$token";ws=client.newWebSocket(Request.Builder().url(wsUrl).build(),object:WebSocketListener(){override fun onMessage(webSocket:WebSocket,text:String){try{val j=JSONObject(text);if(j.optString("type")=="ping")return;if(selId.isNotEmpty())handler.post{refreshMessages()}}catch(_:Exception){}}})}catch(e:Exception){handler.post{t("Connection error: "+e.message)}}}
-    private fun loadUsers(){thread{try{val r=client.newCall(Request.Builder().url("$server/users/$me?token=$token").build()).execute();if(r.isSuccessful){val a=JSONArray(r.body!!.string());users.clear();for(i in 0 until a.length()){val o=a.getJSONObject(i);users.add(User(o.optString("username"),o.optString("avatar_color","#2AABEE"),o.optBoolean("online"),"",o.optString("bio"),"",o.optBoolean("is_group"),o.optBoolean("is_feed"),o.optString("name")))};handler.post{chatAdapter.update(users.filter{it.username!="MyChat"})}}}catch(_:Exception){}}}
-    private fun searchUsers(q:String){thread{try{val r=client.newCall(Request.Builder().url("$server/users/$me?token=$token").build()).execute();if(r.isSuccessful){val a=JSONArray(r.body!!.string());val res=mutableListOf<User>();for(i in 0 until a.length()){val o=a.getJSONObject(i);val un=o.optString("username");val nm=o.optString("name","");if(un.contains(q,true)||nm.contains(q,true))res.add(User(un,o.optString("avatar_color","#2AABEE"),o.optBoolean("online"),"",o.optString("bio"),"",o.optBoolean("is_group"),o.optBoolean("is_feed"),nm))};handler.post{chatAdapter.update(res)}}}catch(_:Exception){}}}
-    private fun refreshMessages(){if(selId.isEmpty())return;thread{try{val r=client.newCall(Request.Builder().url("$server/messages/$selId?me=$me&token=$token").build()).execute();if(r.isSuccessful){val a=JSONArray(r.body!!.string());val nm=mutableListOf<ChatMessage>();for(i in 0 until a.length()){val o=a.getJSONObject(i);var fi:FileInfo?=null;if(o.has("file")){val f=o.getJSONObject("file");fi=FileInfo(f.optString("name"),f.optString("url"),f.optLong("size"))};nm.add(ChatMessage(o.optString("id"),o.optString("from"),o.optString("to"),o.optString("text"),o.optString("time"),fi,o.optBoolean("is_group")))};handler.post{msgAdapter.update(nm);if(nm.isNotEmpty())messagesList.scrollToPosition(nm.size-1)}}}catch(_:Exception){}}}
-    private fun sendMessage(){val t=msgInput.text.toString().trim();if(t.isEmpty()||selId.isEmpty())return;ws?.send(JSONObject().apply{put("type",if(selId.startsWith("group_"))"group_msg" else if(selId.startsWith("feed_"))"feed_post" else "private");put("to",selId);put("text",t);if(selId.startsWith("group_"))put("group_id",selId);if(selId.startsWith("feed_"))put("feed_id",selId)}.toString());msgInput.text.clear();handler.postDelayed({refreshMessages()},500)}
-    private fun pickFile(){startActivityForResult(Intent(Intent.ACTION_GET_CONTENT).apply{type="*/*";addCategory(Intent.CATEGORY_OPENABLE)},100)}
-    override fun onActivityResult(rc:Int,rc2:Int,data:Intent?){super.onActivityResult(rc,rc2,data);if(rc==100&&rc2==RESULT_OK)data?.data?.let{uploadFile(it)}}
-    private fun uploadFile(uri:Uri){val pd=AlertDialog.Builder(this).setTitle("Uploading...").setView(ProgressBar(this).apply{setPadding(40,30,40,30)}).create();pd.show();thread{try{val ins=contentResolver.openInputStream(uri);val bytes=ins?.readBytes();ins?.close();var fn="file";contentResolver.query(uri,null,null,null,null)?.use{c->if(c.moveToFirst())fn=c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME))?:"file"};val rb=MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart("file",fn,bytes!!.toRequestBody("application/octet-stream".toMediaType())).build();val r=client.newCall(Request.Builder().url("$server/upload?token=$token").post(rb).build()).execute();if(r.isSuccessful){val u=JSONObject(r.body!!.string()).optString("url","");ws?.send(JSONObject().apply{put("type","private");put("to",selId);put("text","File: $fn");put("file",JSONObject().apply{put("name",fn);put("url",u);put("size",bytes.size)})}.toString())};handler.post{pd.dismiss();refreshMessages()}}catch(e:Exception){handler.post{pd.dismiss();t("Upload error")}}}}
-    private fun downloadFile(url:String,name:String){thread{try{val bytes=client.newCall(Request.Builder().url("$server$url").build()).execute().body?.bytes()?:return@thread;val f=File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),name);f.writeBytes(bytes);handler.post{t("Saved: "+f.absolutePath);val uri=FileProvider.getUriForFile(this,"$packageName.fileprovider",f);startActivity(Intent.createChooser(Intent(Intent.ACTION_VIEW).apply{setDataAndType(uri,when(name.substringAfterLast('.').lowercase()){"jpg","jpeg","png"->"image/*";"pdf"->"application/pdf";else->"*/*"});addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)},"Open"))}}catch(_:Exception){}}}
-    private fun startPolling(){stopPolling();pollRunnable=object:Runnable{override fun run(){if(selId.isNotEmpty()){refreshMessages();handler.postDelayed(this,2000)}}};handler.post(pollRunnable!!)}
-    private fun stopPolling(){pollRunnable?.let{handler.removeCallbacks(it)};pollRunnable=null}
-    private fun t(msg:String){handler.post{Toast.makeText(this,msg,Toast.LENGTH_SHORT).show()}}
-    private fun thread(r:()->Unit)=Thread(r).start()
-    private fun hideKeyboard(){try{val imm=getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager;imm.hideSoftInputFromWindow(currentFocus?.windowToken,0)}catch(_:Exception){}}
+    private fun loadProfile() {
+        profileAvatar.text = me.take(1).uppercase()
+        profileName.text = me
+        val u = users.find { it.username == me }
+        profileBio.text = u?.bio ?: "No bio"
+        editBio.setText(u?.bio ?: "")
+    }
+
+    private fun saveProfile() {
+        val bio = editBio.text.toString().trim()
+        ws?.send(JSONObject().apply {
+            put("type", "profile_updated")
+            put("bio", bio)
+            put("status_text", "")
+            put("avatar_url", "")
+        }.toString())
+        t("Profile updated!")
+        loadUsers()
+    }
+
+    private fun showCreateMenu() {
+        val popup = PopupMenu(this, findViewById(R.id.btnCreate))
+        popup.menu.add(0, 1, 0, "Create Group")
+        popup.menu.add(0, 2, 0, "Create Feed")
+        popup.setOnMenuItemClickListener { item: MenuItem ->
+            when (item.itemId) {
+                1 -> showCreateGroupDialog()
+                2 -> showCreateFeedDialog()
+            }
+            true
+        }
+        popup.show()
+    }
+
+    private fun showCreateGroupDialog() {
+        val v = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(40, 20, 40, 20)
+        }
+        val nameIn = EditText(this).apply {
+            hint = "Group name"
+            setTextColor(0xffffffff.toInt())
+            setHintTextColor(0xff636366.toInt())
+            setBackgroundResource(R.drawable.bg_input)
+            setPadding(30, 20, 30, 20)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = 16 }
+        }
+        val membIn = EditText(this).apply {
+            hint = "Members (comma)"
+            setTextColor(0xffffffff.toInt())
+            setHintTextColor(0xff636366.toInt())
+            setBackgroundResource(R.drawable.bg_input)
+            setPadding(30, 20, 30, 20)
+        }
+        v.addView(nameIn)
+        v.addView(membIn)
+        AlertDialog.Builder(this)
+            .setTitle("Create Group")
+            .setView(v)
+            .setPositiveButton("Create") { _, _ ->
+                val n = nameIn.text.toString().trim()
+                val m = membIn.text.toString().split(",").map { it.trim() }.filter { it.isNotEmpty() }.toMutableList()
+                if (n.isNotEmpty() && m.isNotEmpty()) {
+                    m.add(me)
+                    ws?.send(JSONObject().apply {
+                        put("type", "create_group")
+                        put("name", n)
+                        put("members", JSONArray(m))
+                        put("private", false)
+                    }.toString())
+                    t("Group created!")
+                    handler.postDelayed({ loadUsers() }, 1000)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showCreateFeedDialog() {
+        val v = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(40, 20, 40, 20)
+        }
+        val nameIn = EditText(this).apply {
+            hint = "Feed name"
+            setTextColor(0xffffffff.toInt())
+            setHintTextColor(0xff636366.toInt())
+            setBackgroundResource(R.drawable.bg_input)
+            setPadding(30, 20, 30, 20)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = 16 }
+        }
+        val descIn = EditText(this).apply {
+            hint = "Description"
+            setTextColor(0xffffffff.toInt())
+            setHintTextColor(0xff636366.toInt())
+            setBackgroundResource(R.drawable.bg_input)
+            setPadding(30, 20, 30, 20)
+        }
+        v.addView(nameIn)
+        v.addView(descIn)
+        AlertDialog.Builder(this)
+            .setTitle("Create Feed")
+            .setView(v)
+            .setPositiveButton("Create") { _, _ ->
+                val n = nameIn.text.toString().trim()
+                if (n.isNotEmpty()) {
+                    ws?.send(JSONObject().apply {
+                        put("type", "create_feed")
+                        put("name", n)
+                        put("description", descIn.text.toString().trim())
+                        put("private", false)
+                    }.toString())
+                    t("Feed created!")
+                    handler.postDelayed({ loadUsers() }, 1000)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun login() {
+        val u = loginUser.text.toString().trim()
+        val p = loginPass.text.toString().trim()
+        server = serverUrl.text.toString().trim()
+        if (u.isEmpty() || p.isEmpty()) return t("Fill all fields")
+        thread {
+            try {
+                val j = JSONObject().apply {
+                    put("username", u)
+                    put("password", p)
+                }
+                val b = j.toString().toRequestBody("application/json".toMediaType())
+                val r = client.newCall(Request.Builder().url("$server/login").post(b).build()).execute()
+                if (r.isSuccessful) {
+                    val d = JSONObject(r.body!!.string())
+                    token = d.optString("access_token", "")
+                    me = u
+                    PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
+                        .edit()
+                        .putString("token", token)
+                        .putString("username", me)
+                        .putString("server_url", server)
+                        .apply()
+                    handler.post { showMain() }
+                } else {
+                    handler.post { t(JSONObject(r.body!!.string()).optString("detail", "Error")) }
+                }
+            } catch (e: Exception) {
+                handler.post { t("Server unavailable") }
+            }
+        }
+    }
+
+    private fun register() {
+        val u = loginUser.text.toString().trim()
+        val p = loginPass.text.toString().trim()
+        server = serverUrl.text.toString().trim()
+        if (u.isEmpty() || p.isEmpty()) return t("Fill all fields")
+        thread {
+            try {
+                val j = JSONObject().apply {
+                    put("username", u)
+                    put("password", p)
+                }
+                val b = j.toString().toRequestBody("application/json".toMediaType())
+                val r = client.newCall(Request.Builder().url("$server/register").post(b).build()).execute()
+                if (r.isSuccessful) {
+                    handler.post {
+                        t("Account created!")
+                        login()
+                    }
+                } else {
+                    handler.post { t(JSONObject(r.body!!.string()).optString("detail", "Error")) }
+                }
+            } catch (e: Exception) {
+                handler.post { t("Server unavailable") }
+            }
+        }
+    }
+
+    private fun showMain() {
+        loginLayout.visibility = View.GONE
+        mainContainer.visibility = View.VISIBLE
+        bottomNav.visibility = View.VISIBLE
+        connectWS()
+        loadUsers()
+        showTab(0)
+    }
+
+    private fun openChat(id: String) {
+        selId = id
+        val u = users.find { it.username == id }
+        val name = u?.name ?: id
+        chatTitle.text = name
+        chatAvatar.text = name.take(1).uppercase()
+        chatAvatar.background = circleBg(u?.avatarColor ?: "#2AABEE")
+        chatStatus.text = if (u?.online == true) "online" else "offline"
+        chatStatus.setTextColor(if (u?.online == true) 0xff34c759.toInt() else 0xff8e8e93.toInt())
+        mainContainer.visibility = View.GONE
+        bottomNav.visibility = View.GONE
+        chatLayout.visibility = View.VISIBLE
+        refreshMessages()
+        startPolling()
+    }
+
+    private fun closeChat() {
+        selId = ""
+        stopPolling()
+        chatLayout.visibility = View.GONE
+        mainContainer.visibility = View.VISIBLE
+        bottomNav.visibility = View.VISIBLE
+        loadUsers()
+    }
+
+    private fun connectWS() {
+        try {
+            val wsUrl = "ws://${server.replace("http://", "")}/ws/$me?token=$token"
+            ws = client.newWebSocket(
+                Request.Builder().url(wsUrl).build(),
+                object : WebSocketListener() {
+                    override fun onMessage(webSocket: WebSocket, text: String) {
+                        try {
+                            val j = JSONObject(text)
+                            if (j.optString("type") == "ping") return
+                            if (selId.isNotEmpty()) handler.post { refreshMessages() }
+                        } catch (_: Exception) {}
+                    }
+                }
+            )
+        } catch (e: Exception) {
+            handler.post { t("Connection error: ${e.message}") }
+        }
+    }
+
+    private fun loadUsers() {
+        thread {
+            try {
+                val r = client.newCall(
+                    Request.Builder().url("$server/users/$me?token=$token").build()
+                ).execute()
+                if (r.isSuccessful) {
+                    val a = JSONArray(r.body!!.string())
+                    users.clear()
+                    for (i in 0 until a.length()) {
+                        val o = a.getJSONObject(i)
+                        users.add(
+                            User(
+                                o.optString("username"),
+                                o.optString("avatar_color", "#2AABEE"),
+                                o.optBoolean("online"),
+                                "",
+                                o.optString("bio"),
+                                "",
+                                o.optBoolean("is_group"),
+                                o.optBoolean("is_feed"),
+                                o.optString("name")
+                            )
+                        )
+                    }
+                    handler.post {
+                        chatAdapter.update(users.filter { it.username != "MyChat" })
+                    }
+                }
+            } catch (_: Exception) {}
+        }
+    }
+
+    private fun searchUsers(q: String) {
+        thread {
+            try {
+                val r = client.newCall(
+                    Request.Builder().url("$server/users/$me?token=$token").build()
+                ).execute()
+                if (r.isSuccessful) {
+                    val a = JSONArray(r.body!!.string())
+                    val res = mutableListOf<User>()
+                    for (i in 0 until a.length()) {
+                        val o = a.getJSONObject(i)
+                        val un = o.optString("username")
+                        val nm = o.optString("name", "")
+                        if (un.contains(q, true) || nm.contains(q, true)) {
+                            res.add(
+                                User(
+                                    un,
+                                    o.optString("avatar_color", "#2AABEE"),
+                                    o.optBoolean("online"),
+                                    "",
+                                    o.optString("bio"),
+                                    "",
+                                    o.optBoolean("is_group"),
+                                    o.optBoolean("is_feed"),
+                                    nm
+                                )
+                            )
+                        }
+                    }
+                    handler.post { chatAdapter.update(res) }
+                }
+            } catch (_: Exception) {}
+        }
+    }
+
+    private fun refreshMessages() {
+        if (selId.isEmpty()) return
+        thread {
+            try {
+                val r = client.newCall(
+                    Request.Builder().url("$server/messages/$selId?me=$me&token=$token").build()
+                ).execute()
+                if (r.isSuccessful) {
+                    val a = JSONArray(r.body!!.string())
+                    val nm = mutableListOf<ChatMessage>()
+                    for (i in 0 until a.length()) {
+                        val o = a.getJSONObject(i)
+                        var fi: FileInfo? = null
+                        if (o.has("file")) {
+                            val f = o.getJSONObject("file")
+                            fi = FileInfo(f.optString("name"), f.optString("url"), f.optLong("size"))
+                        }
+                        nm.add(
+                            ChatMessage(
+                                o.optString("id"),
+                                o.optString("from"),
+                                o.optString("to"),
+                                o.optString("text"),
+                                o.optString("time"),
+                                fi,
+                                o.optBoolean("is_group")
+                            )
+                        )
+                    }
+                    handler.post {
+                        msgAdapter.update(nm)
+                        if (nm.isNotEmpty()) messagesList.scrollToPosition(nm.size - 1)
+                    }
+                }
+            } catch (_: Exception) {}
+        }
+    }
+
+    private fun sendMessage() {
+        val t = msgInput.text.toString().trim()
+        if (t.isEmpty() || selId.isEmpty()) return
+        ws?.send(
+            JSONObject().apply {
+                put(
+                    "type",
+                    when {
+                        selId.startsWith("group_") -> "group_msg"
+                        selId.startsWith("feed_") -> "feed_post"
+                        else -> "private"
+                    }
+                )
+                put("to", selId)
+                put("text", t)
+                if (selId.startsWith("group_")) put("group_id", selId)
+                if (selId.startsWith("feed_")) put("feed_id", selId)
+            }.toString()
+        )
+        msgInput.text.clear()
+        handler.postDelayed({ refreshMessages() }, 500)
+    }
+
+    private fun pickFile() {
+        startActivityForResult(
+            Intent(Intent.ACTION_GET_CONTENT).apply {
+                type = "*/*"
+                addCategory(Intent.CATEGORY_OPENABLE)
+            },
+            100
+        )
+    }
+
+    override fun onActivityResult(rc: Int, rc2: Int, data: Intent?) {
+        super.onActivityResult(rc, rc2, data)
+        if (rc == 100 && rc2 == RESULT_OK) data?.data?.let { uploadFile(it) }
+    }
+
+    private fun uploadFile(uri: Uri) {
+        val pd = AlertDialog.Builder(this)
+            .setTitle("Uploading...")
+            .setView(ProgressBar(this).apply { setPadding(40, 30, 40, 30) })
+            .create()
+        pd.show()
+        thread {
+            try {
+                val ins = contentResolver.openInputStream(uri)
+                val bytes = ins?.readBytes()
+                ins?.close()
+                var fn = "file"
+                contentResolver.query(uri, null, null, null, null)?.use { c ->
+                    if (c.moveToFirst()) fn = c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME)) ?: "file"
+                }
+                val rb = MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("file", fn, bytes!!.toRequestBody("application/octet-stream".toMediaType()))
+                    .build()
+                val r = client.newCall(
+                    Request.Builder().url("$server/upload?token=$token").post(rb).build()
+                ).execute()
+                if (r.isSuccessful) {
+                    val u = JSONObject(r.body!!.string()).optString("url", "")
+                    ws?.send(
+                        JSONObject().apply {
+                            put("type", "private")
+                            put("to", selId)
+                            put("text", "File: $fn")
+                            put("file", JSONObject().apply {
+                                put("name", fn)
+                                put("url", u)
+                                put("size", bytes.size)
+                            })
+                        }.toString()
+                    )
+                }
+                handler.post {
+                    pd.dismiss()
+                    refreshMessages()
+                }
+            } catch (e: Exception) {
+                handler.post {
+                    pd.dismiss()
+                    t("Upload error")
+                }
+            }
+        }
+    }
+
+    private fun downloadFile(url: String, name: String) {
+        thread {
+            try {
+                val bytes = client.newCall(Request.Builder().url("$server$url").build()).execute()
+                    .body?.bytes() ?: return@thread
+                val f = File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                    name
+                )
+                f.writeBytes(bytes)
+                handler.post {
+                    t("Saved: ${f.absolutePath}")
+                    val uri = FileProvider.getUriForFile(
+                        this,
+                        "$packageName.fileprovider",
+                        f
+                    )
+                    startActivity(
+                        Intent.createChooser(
+                            Intent(Intent.ACTION_VIEW).apply {
+                                setDataAndType(
+                                    uri,
+                                    when (name.substringAfterLast('.').lowercase()) {
+                                        "jpg", "jpeg", "png" -> "image/*"
+                                        "pdf" -> "application/pdf"
+                                        else -> "*/*"
+                                    }
+                                )
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            },
+                            "Open"
+                        )
+                    )
+                }
+            } catch (_: Exception) {}
+        }
+    }
+
+    private fun startPolling() {
+        stopPolling()
+        pollRunnable = object : Runnable {
+            override fun run() {
+                if (selId.isNotEmpty()) {
+                    refreshMessages()
+                    handler.postDelayed(this, 2000)
+                }
+            }
+        }
+        handler.post(pollRunnable!!)
+    }
+
+    private fun stopPolling() {
+        pollRunnable?.let { handler.removeCallbacks(it) }
+        pollRunnable = null
+    }
+
+    private fun t(msg: String) {
+        handler.post { Toast.makeText(this, msg, Toast.LENGTH_SHORT).show() }
+    }
+
+    private fun thread(r: () -> Unit) = Thread(r).start()
+
+    private fun hideKeyboard() {
+        try {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        } catch (_: Exception) {}
+    }
 }
