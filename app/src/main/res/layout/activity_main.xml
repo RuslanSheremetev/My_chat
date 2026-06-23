@@ -339,8 +339,8 @@
 
             <TextView
                 android:id="@+id/chatAvatar"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:gravity="center"
                 android:text="A"
                 android:textSize="20sp"
@@ -412,8 +412,8 @@
 
             <ImageButton
                 android:id="@+id/btnSend"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:src="@drawable/ic_send"
                 android:background="@drawable/bg_send_btn"
                 android:tint="#fff"/>
