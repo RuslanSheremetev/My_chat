@@ -10,6 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mychat.app.R
 import com.mychat.app.models.User
 
+// Определяем circleBg здесь
+fun circleBg(color: String): GradientDrawable {
+    val d = GradientDrawable()
+    d.shape = GradientDrawable.OVAL
+    d.setColor(Color.parseColor(color))
+    return d
+}
+
 class ChatAdapter(
     private val onClick: (User) -> Unit
 ) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
@@ -48,10 +56,7 @@ class ChatAdapter(
             val colors = arrayOf("#2AABEE", "#34C759", "#FF9500", "#FF3B30", "#9C6BFF", "#FF6B9D", "#00BCD4", "#FF5722")
             val colorIndex = user.username.hashCode().mod(colors.size)
             val color = colors[if (colorIndex < 0) colorIndex * -1 else colorIndex]
-            val bg = GradientDrawable()
-            bg.shape = GradientDrawable.OVAL
-            bg.setColor(Color.parseColor(color))
-            avatar.background = bg
+            avatar.background = circleBg(color)
             
             name.text = displayName
             
