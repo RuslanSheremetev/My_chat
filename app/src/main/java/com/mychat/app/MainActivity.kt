@@ -115,10 +115,8 @@ class MainActivity : AppCompatActivity() {
         chatList.layoutManager = LinearLayoutManager(this)
         chatList.adapter = chatAdapter
         
-        // Временно создаём адаптер, обновим позже
-        msgAdapter = MessageAdapter("") { url, name -> downloadFile(url, name) }
-        messagesList.layoutManager = LinearLayoutManager(this)
-        messagesList.adapter = msgAdapter
+        // НЕ СОЗДАЁМ АДАПТЕР ЗДЕСЬ! Создадим позже
+        // msgAdapter будет создан в showMain()
         
         findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
         findViewById<Button>(R.id.btnRegister).setOnClickListener { register() }
@@ -157,7 +155,7 @@ class MainActivity : AppCompatActivity() {
         me = prefs.getString("username", "") ?: ""
         server = prefs.getString("server_url", server) ?: server
         
-        Log.d("MainActivity", "me = '$me'")
+        Log.d("MainActivity", "onCreate - me = '$me'")
         
         if (token.isNotEmpty() && me.isNotEmpty()) {
             showMain()
@@ -168,7 +166,9 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         chatsScreen.visibility = View.VISIBLE
         profileScreen.visibility = View.GONE
-        loadUsers()
+        if (me.isNotEmpty()) {
+            loadUsers()
+        }
     }
 
     private fun openFavorites() {
@@ -398,6 +398,14 @@ class MainActivity : AppCompatActivity() {
         loginLayout.visibility = View.GONE
         mainContainer.visibility = View.VISIBLE
         bottomNav.visibility = View.VISIBLE
+        
+        Log.d("MainActivity", "showMain - me = '$me'")
+        
+        // СОЗДАЁМ АДАПТЕР ТОЛЬКО ЗДЕСЬ, КОГДА me УЖЕ УСТАНОВЛЕН
+        msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
+        messagesList.layoutManager = LinearLayoutManager(this)
+        messagesList.adapter = msgAdapter
+        
         connectWS()
         loadUsers()
         showTab(0)
@@ -416,7 +424,7 @@ class MainActivity : AppCompatActivity() {
         bottomNav.visibility = View.GONE
         chatLayout.visibility = View.VISIBLE
         
-        // СОЗДАЁМ НОВЫЙ АДАПТЕР С ПРАВИЛЬНЫМ me
+        // Обновляем адаптер с правильным me (на всякий случай)
         msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
         messagesList.adapter = msgAdapter
         
