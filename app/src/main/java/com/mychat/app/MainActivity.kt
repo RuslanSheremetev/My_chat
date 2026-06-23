@@ -60,6 +60,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var profileName: TextView
     private lateinit var profileBio: TextView
     private lateinit var editBio: EditText
+    private lateinit var navChats: LinearLayout
+    private lateinit var navFavorites: LinearLayout
+    private lateinit var navProfile: LinearLayout
     private var server = "http://2.26.71.102:8000"
     private var token = ""
     private var me = ""
@@ -102,6 +105,9 @@ class MainActivity : AppCompatActivity() {
         profileName = findViewById(R.id.profileName)
         profileBio = findViewById(R.id.profileBio)
         editBio = findViewById(R.id.editBio)
+        navChats = findViewById(R.id.navChats)
+        navFavorites = findViewById(R.id.navFavorites)
+        navProfile = findViewById(R.id.navProfile)
         
         serverUrl.setText(server)
         chatAdapter = ChatAdapter { user -> openChat(user.username) }
@@ -119,9 +125,17 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
         findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
-        findViewById<LinearLayout>(R.id.navChats).setOnClickListener { showTab(0) }
-        findViewById<LinearLayout>(R.id.navFavorites).setOnClickListener { openFavorites() }
-        findViewById<LinearLayout>(R.id.navProfile).setOnClickListener { openProfile() }
+        
+        // Навигация
+        navChats.setOnClickListener {
+            switchTab(0)
+        }
+        navFavorites.setOnClickListener {
+            switchTab(1)
+        }
+        navProfile.setOnClickListener {
+            switchTab(2)
+        }
         
         searchInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -151,6 +165,51 @@ class MainActivity : AppCompatActivity() {
         if (token.isNotEmpty() && me.isNotEmpty()) {
             showMain()
         }
+    }
+
+    private fun switchTab(tab: Int) {
+        // Сброс всех цветов
+        resetNavColors()
+        
+        when (tab) {
+            0 -> {
+                chatsScreen.visibility = View.VISIBLE
+                profileScreen.visibility = View.GONE
+                // Подсветка Чатов
+                navChats.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
+                navChats.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
+            }
+            1 -> {
+                openFavorites()
+                // Подсветка Избранного (после возврата сработает onResume)
+                navFavorites.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
+                navFavorites.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
+            }
+            2 -> {
+                openProfile()
+                navProfile.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
+                navProfile.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
+            }
+        }
+    }
+
+    private fun resetNavColors() {
+        navChats.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#8e8e93"))
+        navFavorites.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#8e8e93"))
+        navProfile.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#8e8e93"))
+        navChats.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#8e8e93"))
+        navFavorites.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#8e8e93"))
+        navProfile.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#8e8e93"))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Возвращаем подсветку Чатов
+        resetNavColors()
+        navChats.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
+        navChats.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
+        chatsScreen.visibility = View.VISIBLE
+        profileScreen.visibility = View.GONE
     }
 
     private fun openFavorites() {
@@ -382,6 +441,10 @@ class MainActivity : AppCompatActivity() {
         connectWS()
         loadUsers()
         showTab(0)
+        // Подсвечиваем Чаты
+        resetNavColors()
+        navChats.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
+        navChats.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
     }
 
     private fun openChat(id: String) {
@@ -407,6 +470,10 @@ class MainActivity : AppCompatActivity() {
         mainContainer.visibility = View.VISIBLE
         bottomNav.visibility = View.VISIBLE
         loadUsers()
+        // Возвращаем подсветку Чатов
+        resetNavColors()
+        navChats.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
+        navChats.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
     }
 
     private fun connectWS() {
