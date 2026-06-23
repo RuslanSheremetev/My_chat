@@ -11,5 +11,6 @@ data class User(
     val isFeed: Boolean = false,
     val name: String = "",
     var lastMsg: String = "",
-    var lastTime: String = ""
+    var lastTime: String = "",
+    var lastMsgType: String = ""
 )

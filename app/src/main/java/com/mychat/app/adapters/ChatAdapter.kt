@@ -10,13 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mychat.app.R
 import com.mychat.app.models.User
 
-fun circleBg(color: String): GradientDrawable {
-    val d = GradientDrawable()
-    d.shape = GradientDrawable.OVAL
-    d.setColor(Color.parseColor(color))
-    return d
-}
-
 class ChatAdapter(
     private val onClick: (User) -> Unit
 ) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
@@ -45,13 +38,38 @@ class ChatAdapter(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val avatar: TextView = itemView.findViewById(R.id.avatar)
         private val name: TextView = itemView.findViewById(R.id.name)
-        private val preview: TextView = itemView.findViewById(R.id.preview)
+        private val lastMessage: TextView = itemView.findViewById(R.id.lastMessage)
+        private val lastTime: TextView = itemView.findViewById(R.id.lastTime)
 
         fun bind(user: User) {
-            avatar.text = user.username.take(1).uppercase()
-            avatar.background = circleBg(user.avatarColor)
-            name.text = user.name.ifEmpty { user.username }
-            preview.text = user.bio
+            val displayName = if (user.name.isNotEmpty()) user.name else user.username
+            avatar.text = displayName.take(1).uppercase()
+            
+            val colors = arrayOf("#2AABEE", "#34C759", "#FF9500", "#FF3B30", "#9C6BFF", "#FF6B9D", "#00BCD4", "#FF5722")
+            val colorIndex = user.username.hashCode().mod(colors.size)
+            val color = colors[if (colorIndex < 0) colorIndex * -1 else colorIndex]
+            val bg = GradientDrawable()
+            bg.shape = GradientDrawable.OVAL
+            bg.setColor(Color.parseColor(color))
+            avatar.background = bg
+            
+            name.text = displayName
+            
+            val lastMsg = user.lastMsg
+            if (lastMsg.isNotEmpty()) {
+                val icon = when {
+                    user.lastMsgType == "file" -> "📎 "
+                    user.lastMsgType == "photo" -> "🖼️ "
+                    user.lastMsgType == "voice" -> "🎤 "
+                    else -> ""
+                }
+                lastMessage.text = icon + lastMsg
+            } else {
+                lastMessage.text = user.bio
+            }
+            
+            lastTime.text = user.lastTime
+            
             itemView.setOnClickListener { onClick(user) }
         }
     }

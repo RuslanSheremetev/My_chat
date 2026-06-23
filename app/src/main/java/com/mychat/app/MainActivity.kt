@@ -10,12 +10,12 @@ import android.os.*
 import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.FileProvider
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,6 +34,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
@@ -72,6 +74,8 @@ class MainActivity : AppCompatActivity() {
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .build()
+    
+    private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -201,17 +205,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showCreateMenu() {
-        val popup = PopupMenu(this, findViewById(R.id.btnCreate))
-        popup.menu.add(0, 1, 0, "Create Group")
-        popup.menu.add(0, 2, 0, "Create Feed")
-        popup.setOnMenuItemClickListener { item: MenuItem ->
-            when (item.itemId) {
-                1 -> showCreateGroupDialog()
-                2 -> showCreateFeedDialog()
-            }
-            true
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.menu_create, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        
+        dialogView.findViewById<LinearLayout>(R.id.menuGroup).setOnClickListener {
+            dialog.dismiss()
+            showCreateGroupDialog()
         }
-        popup.show()
+        
+        dialogView.findViewById<LinearLayout>(R.id.menuFeed).setOnClickListener {
+            dialog.dismiss()
+            showCreateFeedDialog()
+        }
+        dialog.show()
     }
 
     private fun showCreateGroupDialog() {
@@ -220,7 +229,7 @@ class MainActivity : AppCompatActivity() {
             setPadding(40, 20, 40, 20)
         }
         val nameIn = EditText(this).apply {
-            hint = "Group name"
+            hint = "Название группы"
             setTextColor(0xffffffff.toInt())
             setHintTextColor(0xff636366.toInt())
             setBackgroundResource(R.drawable.bg_input)
@@ -231,7 +240,7 @@ class MainActivity : AppCompatActivity() {
             ).apply { bottomMargin = 16 }
         }
         val membIn = EditText(this).apply {
-            hint = "Members (comma)"
+            hint = "Участники (через запятую)"
             setTextColor(0xffffffff.toInt())
             setHintTextColor(0xff636366.toInt())
             setBackgroundResource(R.drawable.bg_input)
@@ -240,9 +249,9 @@ class MainActivity : AppCompatActivity() {
         v.addView(nameIn)
         v.addView(membIn)
         AlertDialog.Builder(this)
-            .setTitle("Create Group")
+            .setTitle("Создать группу")
             .setView(v)
-            .setPositiveButton("Create") { _, _ ->
+            .setPositiveButton("Создать") { _, _ ->
                 val n = nameIn.text.toString().trim()
                 val m = membIn.text.toString().split(",").map { it.trim() }.filter { it.isNotEmpty() }.toMutableList()
                 if (n.isNotEmpty() && m.isNotEmpty()) {
@@ -253,11 +262,11 @@ class MainActivity : AppCompatActivity() {
                         put("members", JSONArray(m))
                         put("private", false)
                     }.toString())
-                    t("Group created!")
+                    t("Группа создана!")
                     handler.postDelayed({ loadUsers() }, 1000)
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton("Отмена", null)
             .show()
     }
 
@@ -267,7 +276,7 @@ class MainActivity : AppCompatActivity() {
             setPadding(40, 20, 40, 20)
         }
         val nameIn = EditText(this).apply {
-            hint = "Feed name"
+            hint = "Название ленты"
             setTextColor(0xffffffff.toInt())
             setHintTextColor(0xff636366.toInt())
             setBackgroundResource(R.drawable.bg_input)
@@ -278,7 +287,7 @@ class MainActivity : AppCompatActivity() {
             ).apply { bottomMargin = 16 }
         }
         val descIn = EditText(this).apply {
-            hint = "Description"
+            hint = "Описание"
             setTextColor(0xffffffff.toInt())
             setHintTextColor(0xff636366.toInt())
             setBackgroundResource(R.drawable.bg_input)
@@ -287,9 +296,9 @@ class MainActivity : AppCompatActivity() {
         v.addView(nameIn)
         v.addView(descIn)
         AlertDialog.Builder(this)
-            .setTitle("Create Feed")
+            .setTitle("Создать ленту")
             .setView(v)
-            .setPositiveButton("Create") { _, _ ->
+            .setPositiveButton("Создать") { _, _ ->
                 val n = nameIn.text.toString().trim()
                 if (n.isNotEmpty()) {
                     ws?.send(JSONObject().apply {
@@ -298,11 +307,11 @@ class MainActivity : AppCompatActivity() {
                         put("description", descIn.text.toString().trim())
                         put("private", false)
                     }.toString())
-                    t("Feed created!")
+                    t("Лента создана!")
                     handler.postDelayed({ loadUsers() }, 1000)
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton("Отмена", null)
             .show()
     }
 
@@ -432,31 +441,20 @@ class MainActivity : AppCompatActivity() {
                     val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
                     val savedStatus = prefs.getString("user_status", "No bio") ?: "No bio"
                     
+                    val userList = mutableListOf<User>()
                     for (i in 0 until a.length()) {
                         val o = a.getJSONObject(i)
                         val username = o.optString("username")
-                        
-                        // Пропускаем системного пользователя
                         if (username == "MyChat") continue
                         
-                        // Определяем имя для отображения
                         val displayName = o.optString("name", "")
                         val finalName = if (displayName.isNotEmpty()) displayName else username
-                        
-                        // Получаем статус
-                        val bio = if (username == me) {
-                            savedStatus
-                        } else {
-                            o.optString("bio", "")
-                        }
-                        
-                        // Проверяем, что это не группа и не лента
+                        val bio = if (username == me) savedStatus else o.optString("bio", "")
                         val isGroup = o.optBoolean("is_group", false)
                         val isFeed = o.optBoolean("is_feed", false)
                         
-                        // Добавляем только реальных пользователей
                         if (!isGroup && !isFeed) {
-                            users.add(
+                            userList.add(
                                 User(
                                     username = username,
                                     avatarColor = o.optString("avatar_color", "#2AABEE"),
@@ -472,9 +470,39 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                     
-                    // Добавляем группы и ленты отдельно, если нужно
-                    // Для простоты пока пропускаем
+                    for (user in userList) {
+                        try {
+                            val msgR = client.newCall(
+                                Request.Builder().url("$server/messages/${user.username}?me=$me&token=$token").build()
+                            ).execute()
+                            if (msgR.isSuccessful) {
+                                val msgs = JSONArray(msgR.body!!.string())
+                                if (msgs.length() > 0) {
+                                    val last = msgs.getJSONObject(msgs.length() - 1)
+                                    user.lastMsg = last.optString("text", "")
+                                    user.lastTime = formatTime(last.optString("time", ""))
+                                    
+                                    if (last.has("file")) {
+                                        val file = last.getJSONObject("file")
+                                        val fileName = file.optString("name", "")
+                                        if (fileName.contains(".jpg") || fileName.contains(".png") || fileName.contains(".jpeg")) {
+                                            user.lastMsgType = "photo"
+                                            user.lastMsg = "Фото"
+                                        } else {
+                                            user.lastMsgType = "file"
+                                            user.lastMsg = "Файл: $fileName"
+                                        }
+                                    } else {
+                                        user.lastMsgType = "text"
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            // Игнорируем ошибки
+                        }
+                    }
                     
+                    users.addAll(userList)
                     handler.post {
                         chatAdapter.update(users)
                     }
@@ -482,6 +510,15 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
+    }
+
+    private fun formatTime(timeStr: String): String {
+        return try {
+            val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(timeStr)
+            sdf.format(date ?: Date())
+        } catch (e: Exception) {
+            ""
         }
     }
 
@@ -568,18 +605,9 @@ class MainActivity : AppCompatActivity() {
         if (t.isEmpty() || selId.isEmpty()) return
         ws?.send(
             JSONObject().apply {
-                put(
-                    "type",
-                    when {
-                        selId.startsWith("group_") -> "group_msg"
-                        selId.startsWith("feed_") -> "feed_post"
-                        else -> "private"
-                    }
-                )
+                put("type", "private")
                 put("to", selId)
                 put("text", t)
-                if (selId.startsWith("group_")) put("group_id", selId)
-                if (selId.startsWith("feed_")) put("feed_id", selId)
             }.toString()
         )
         msgInput.text.clear()
