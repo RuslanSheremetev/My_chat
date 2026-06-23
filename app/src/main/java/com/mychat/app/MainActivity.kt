@@ -79,7 +79,6 @@ class MainActivity : AppCompatActivity() {
         .build()
     
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-    private var currentTab = 0 // 0=Чаты, 1=Избранное, 2=Профиль
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -169,7 +168,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun switchTab(tab: Int) {
-        currentTab = tab
+        // Сбрасываем все цвета
         resetNavColors()
         
         when (tab) {
@@ -186,7 +185,6 @@ class MainActivity : AppCompatActivity() {
                     putExtra("username", me)
                 }
                 startActivity(intent)
-                // Подсветка Избранного
                 navFavorites.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
                 navFavorites.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
             }
@@ -213,13 +211,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // При возврате в MainActivity подсвечиваем Чаты
-        currentTab = 0
+        // При возврате в MainActivity всегда показываем Чаты
+        chatsScreen.visibility = View.VISIBLE
+        profileScreen.visibility = View.GONE
+        // Подсвечиваем Чаты
         resetNavColors()
         navChats.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
         navChats.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
-        chatsScreen.visibility = View.VISIBLE
-        profileScreen.visibility = View.GONE
     }
 
     private fun openFavorites() {
@@ -452,7 +450,6 @@ class MainActivity : AppCompatActivity() {
         loadUsers()
         showTab(0)
         // Подсвечиваем Чаты
-        currentTab = 0
         resetNavColors()
         navChats.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
         navChats.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
@@ -482,7 +479,6 @@ class MainActivity : AppCompatActivity() {
         bottomNav.visibility = View.VISIBLE
         loadUsers()
         // Возвращаем подсветку Чатов
-        currentTab = 0
         resetNavColors()
         navChats.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
         navChats.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
