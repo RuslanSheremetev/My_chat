@@ -115,8 +115,8 @@ class MainActivity : AppCompatActivity() {
         chatList.layoutManager = LinearLayoutManager(this)
         chatList.adapter = chatAdapter
         
-        // Сначала создаём адаптер с пустым me, потом обновим
-        msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
+        // Временно создаём адаптер с пустым me
+        msgAdapter = MessageAdapter("") { url, name -> downloadFile(url, name) }
         messagesList.layoutManager = LinearLayoutManager(this)
         messagesList.adapter = msgAdapter
         
@@ -159,7 +159,7 @@ class MainActivity : AppCompatActivity() {
         
         Log.d("MainActivity", "me = '$me'")
         
-        // Обновляем адаптер с правильным me
+        // Пересоздаём адаптер с правильным me после загрузки
         msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
         messagesList.adapter = msgAdapter
         
@@ -419,9 +419,11 @@ class MainActivity : AppCompatActivity() {
         mainContainer.visibility = View.GONE
         bottomNav.visibility = View.GONE
         chatLayout.visibility = View.VISIBLE
-        // Обновляем me в адаптере при открытии чата
+        
+        // Пересоздаём адаптер с правильным me при открытии чата
         msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
         messagesList.adapter = msgAdapter
+        
         refreshMessages()
         startPolling()
     }
