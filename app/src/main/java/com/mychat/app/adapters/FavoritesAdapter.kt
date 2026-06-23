@@ -62,6 +62,11 @@ class FavoritesAdapter(
         notifyDataSetChanged()
     }
 
+    // Метод для получения элемента по позиции (для swipe)
+    fun getItemAt(position: Int): FavoriteItem? {
+        return if (position < filteredItems.size) filteredItems[position] else null
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_favorite, parent, false)
@@ -86,9 +91,12 @@ class FavoritesAdapter(
 
         fun bind(item: FavoriteItem) {
             avatar.text = item.from.take(1).uppercase()
+            val colors = arrayOf("#2AABEE", "#34C759", "#FF9500", "#FF3B30", "#9C6BFF", "#FF6B9D")
+            val colorIndex = item.from.hashCode().mod(colors.size)
+            val color = colors[if (colorIndex < 0) colorIndex * -1 else colorIndex]
             val bg = GradientDrawable()
             bg.shape = GradientDrawable.OVAL
-            bg.setColor(Color.parseColor(item.avatarColor))
+            bg.setColor(Color.parseColor(color))
             avatar.background = bg
 
             name.text = item.from
