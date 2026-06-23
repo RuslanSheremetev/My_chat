@@ -115,6 +115,7 @@ class MainActivity : AppCompatActivity() {
         chatList.layoutManager = LinearLayoutManager(this)
         chatList.adapter = chatAdapter
         
+        // Сначала создаём адаптер с пустым me, потом обновим
         msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
         messagesList.layoutManager = LinearLayoutManager(this)
         messagesList.adapter = msgAdapter
@@ -155,6 +156,12 @@ class MainActivity : AppCompatActivity() {
         token = prefs.getString("token", "") ?: ""
         me = prefs.getString("username", "") ?: ""
         server = prefs.getString("server_url", server) ?: server
+        
+        Log.d("MainActivity", "me = '$me'")
+        
+        // Обновляем адаптер с правильным me
+        msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
+        messagesList.adapter = msgAdapter
         
         if (token.isNotEmpty() && me.isNotEmpty()) {
             showMain()
@@ -347,6 +354,7 @@ class MainActivity : AppCompatActivity() {
                     val d = JSONObject(r.body!!.string())
                     token = d.optString("access_token", "")
                     me = u
+                    Log.d("MainActivity", "Login - me = '$me'")
                     PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
                         .edit()
                         .putString("token", token)
@@ -411,6 +419,9 @@ class MainActivity : AppCompatActivity() {
         mainContainer.visibility = View.GONE
         bottomNav.visibility = View.GONE
         chatLayout.visibility = View.VISIBLE
+        // Обновляем me в адаптере при открытии чата
+        msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
+        messagesList.adapter = msgAdapter
         refreshMessages()
         startPolling()
     }
@@ -597,17 +608,17 @@ class MainActivity : AppCompatActivity() {
                             val f = o.getJSONObject("file")
                             fi = FileInfo(f.optString("name"), f.optString("url"), f.optLong("size"))
                         }
-                        nm.add(
-                            ChatMessage(
-                                o.optString("id"),
-                                o.optString("from"),
-                                o.optString("to"),
-                                o.optString("text"),
-                                o.optString("time"),
-                                fi,
-                                o.optBoolean("is_group")
-                            )
+                        val msg = ChatMessage(
+                            o.optString("id"),
+                            o.optString("from"),
+                            o.optString("to"),
+                            o.optString("text"),
+                            o.optString("time"),
+                            fi,
+                            o.optBoolean("is_group")
                         )
+                        Log.d("MainActivity", "Message from: '${msg.from}', me: '$me', equals: ${msg.from == me}")
+                        nm.add(msg)
                     }
                     handler.post {
                         msgAdapter.update(nm)
