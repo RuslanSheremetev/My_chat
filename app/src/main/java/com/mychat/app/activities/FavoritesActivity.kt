@@ -1,5 +1,6 @@
 package com.mychat.app.activities
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,6 +8,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mychat.app.R
@@ -45,6 +47,7 @@ class FavoritesActivity : AppCompatActivity() {
         initViews()
         setupFilters()
         setupSearch()
+        setupSwipeToDelete()
         loadFavorites()
     }
 
@@ -77,6 +80,42 @@ class FavoritesActivity : AppCompatActivity() {
             clearBtn.visibility = View.GONE
             adapter.search("")
         }
+    }
+
+    // SWIPE TO DELETE
+    private fun setupSwipeToDelete() {
+        val swipeCallback = object : ItemTouchHelper.SimpleCallback(
+            0,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val item = adapter.getItemAt(position)
+                if (item != null) {
+                    AlertDialog.Builder(this@FavoritesActivity)
+                        .setTitle("Удалить из избранного")
+                        .setMessage("Удалить сообщение от ${item.from}?")
+                        .setPositiveButton("Удалить") { _, _ ->
+                            removeFavorite(item)
+                        }
+                        .setNegativeButton("Отмена") { _, _ ->
+                            adapter.notifyItemChanged(position)
+                        }
+                        .show()
+                }
+            }
+        }
+
+        val itemTouchHelper = ItemTouchHelper(swipeCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     private fun setupFilters() {
@@ -201,6 +240,7 @@ class FavoritesActivity : AppCompatActivity() {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
                     Toast.makeText(this@FavoritesActivity, "Ошибка удаления", Toast.LENGTH_SHORT).show()
+                    adapter.notifyDataSetChanged()
                 }
             }
 
@@ -212,6 +252,9 @@ class FavoritesActivity : AppCompatActivity() {
                         favCount.text = favorites.size.toString()
                         updateEmptyState()
                         Toast.makeText(this@FavoritesActivity, "Удалено из избранного", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@FavoritesActivity, "Ошибка удаления", Toast.LENGTH_SHORT).show()
+                        adapter.notifyDataSetChanged()
                     }
                 }
             }
