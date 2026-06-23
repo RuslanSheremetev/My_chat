@@ -158,11 +158,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openProfile() {
-        val intent = Intent(this, ProfileActivity::class.java).apply {
-            putExtra("token", token)
-            putExtra("username", me)
+        try {
+            val intent = Intent(this, ProfileActivity::class.java).apply {
+                putExtra("token", token)
+                putExtra("username", me)
+            }
+            startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
         }
-        startActivity(intent)
     }
 
     private fun showTab(tab: Int) {
@@ -174,7 +179,6 @@ class MainActivity : AppCompatActivity() {
     private fun loadProfile() {
         profileAvatar.text = me.take(1).uppercase()
         profileName.text = me
-        // Загружаем статус из SharedPreferences
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         val status = prefs.getString("user_status", "No bio") ?: "No bio"
         profileBio.text = status
@@ -185,18 +189,13 @@ class MainActivity : AppCompatActivity() {
         val bio = editBio.text.toString().trim()
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         prefs.edit().putString("user_status", bio).apply()
-        
-        // Обновляем UI
         profileBio.text = bio
-        
-        // Отправляем на сервер через WebSocket
         ws?.send(JSONObject().apply {
             put("type", "profile_updated")
             put("bio", bio)
             put("status_text", bio)
             put("avatar_url", "")
         }.toString())
-        
         t("Profile updated!")
         loadUsers()
     }
@@ -430,29 +429,59 @@ class MainActivity : AppCompatActivity() {
                 if (r.isSuccessful) {
                     val a = JSONArray(r.body!!.string())
                     users.clear()
+                    val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
+                    val savedStatus = prefs.getString("user_status", "No bio") ?: "No bio"
                     
                     for (i in 0 until a.length()) {
                         val o = a.getJSONObject(i)
-                        users.add(
-                            User(
-                                o.optString("username"),
-                                o.optString("avatar_color", "#2AABEE"),
-                                o.optBoolean("online"),
-                                "",
-                                o.optString("bio"),
-                                "",
-                                o.optBoolean("is_group"),
-                                o.optBoolean("is_feed"),
-                                o.optString("name")
+                        val username = o.optString("username")
+                        
+                        // Пропускаем системного пользователя
+                        if (username == "MyChat") continue
+                        
+                        // Определяем имя для отображения
+                        val displayName = o.optString("name", "")
+                        val finalName = if (displayName.isNotEmpty()) displayName else username
+                        
+                        // Получаем статус
+                        val bio = if (username == me) {
+                            savedStatus
+                        } else {
+                            o.optString("bio", "")
+                        }
+                        
+                        // Проверяем, что это не группа и не лента
+                        val isGroup = o.optBoolean("is_group", false)
+                        val isFeed = o.optBoolean("is_feed", false)
+                        
+                        // Добавляем только реальных пользователей
+                        if (!isGroup && !isFeed) {
+                            users.add(
+                                User(
+                                    username = username,
+                                    avatarColor = o.optString("avatar_color", "#2AABEE"),
+                                    online = o.optBoolean("online", false),
+                                    lastSeen = o.optString("last_seen", ""),
+                                    bio = bio,
+                                    avatarUrl = o.optString("avatar_url", ""),
+                                    isGroup = false,
+                                    isFeed = false,
+                                    name = finalName
+                                )
                             )
-                        )
+                        }
                     }
+                    
+                    // Добавляем группы и ленты отдельно, если нужно
+                    // Для простоты пока пропускаем
+                    
                     handler.post {
-                        chatAdapter.update(users.filter { it.username != "MyChat" })
-                        loadProfile() // Обновляем профиль
+                        chatAdapter.update(users)
                     }
                 }
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -469,25 +498,28 @@ class MainActivity : AppCompatActivity() {
                         val o = a.getJSONObject(i)
                         val un = o.optString("username")
                         val nm = o.optString("name", "")
-                        if (un.contains(q, true) || nm.contains(q, true)) {
+                        if ((un.contains(q, true) || nm.contains(q, true)) && un != "MyChat") {
+                            val displayName = if (nm.isNotEmpty()) nm else un
                             res.add(
                                 User(
-                                    un,
-                                    o.optString("avatar_color", "#2AABEE"),
-                                    o.optBoolean("online"),
-                                    "",
-                                    o.optString("bio"),
-                                    "",
-                                    o.optBoolean("is_group"),
-                                    o.optBoolean("is_feed"),
-                                    nm
+                                    username = un,
+                                    avatarColor = o.optString("avatar_color", "#2AABEE"),
+                                    online = o.optBoolean("online", false),
+                                    lastSeen = o.optString("last_seen", ""),
+                                    bio = o.optString("bio", ""),
+                                    avatarUrl = o.optString("avatar_url", ""),
+                                    isGroup = o.optBoolean("is_group", false),
+                                    isFeed = o.optBoolean("is_feed", false),
+                                    name = displayName
                                 )
                             )
                         }
                     }
                     handler.post { chatAdapter.update(res) }
                 }
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -525,7 +557,9 @@ class MainActivity : AppCompatActivity() {
                         if (nm.isNotEmpty()) messagesList.scrollToPosition(nm.size - 1)
                     }
                 }
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -651,7 +685,9 @@ class MainActivity : AppCompatActivity() {
                         )
                     )
                 }
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -683,6 +719,8 @@ class MainActivity : AppCompatActivity() {
         try {
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
-        } catch (_: Exception) {}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }
