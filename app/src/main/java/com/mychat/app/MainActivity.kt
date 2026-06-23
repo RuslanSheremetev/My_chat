@@ -116,9 +116,8 @@ class MainActivity : AppCompatActivity() {
         chatList.layoutManager = LinearLayoutManager(this)
         chatList.adapter = chatAdapter
         
-        msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
+        // Создаём адаптер позже
         messagesList.layoutManager = LinearLayoutManager(this)
-        messagesList.adapter = msgAdapter
         
         findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
         findViewById<Button>(R.id.btnRegister).setOnClickListener { register() }
@@ -156,6 +155,8 @@ class MainActivity : AppCompatActivity() {
         token = prefs.getString("token", "") ?: ""
         me = prefs.getString("username", "") ?: ""
         server = prefs.getString("server_url", server) ?: server
+        
+        Log.d("MainActivity", "me = '$me'")
         
         if (token.isNotEmpty() && me.isNotEmpty()) {
             showMain()
@@ -348,6 +349,7 @@ class MainActivity : AppCompatActivity() {
                     val d = JSONObject(r.body!!.string())
                     token = d.optString("access_token", "")
                     me = u
+                    Log.d("MainActivity", "Login - me = '$me'")
                     PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
                         .edit()
                         .putString("token", token)
@@ -395,6 +397,11 @@ class MainActivity : AppCompatActivity() {
         loginLayout.visibility = View.GONE
         mainContainer.visibility = View.VISIBLE
         bottomNav.visibility = View.VISIBLE
+        
+        // СОЗДАЁМ АДАПТЕР ЗДЕСЬ, КОГДА me УЖЕ ЕСТЬ
+        msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
+        messagesList.adapter = msgAdapter
+        
         connectWS()
         loadUsers()
         showTab(0)
@@ -439,7 +446,6 @@ class MainActivity : AppCompatActivity() {
                             if (j.optString("type") == "ping") return
                             if (selId.isNotEmpty()) {
                                 handler.post {
-                                    // Обновляем без потери скролла
                                     updateMessagesSilent()
                                 }
                             }
@@ -628,7 +634,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Тихая проверка новых сообщений
     private fun updateMessagesSilent() {
         if (selId.isEmpty()) return
         thread {
@@ -659,14 +664,11 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                     
-                    // Если появились новые сообщения
                     if (nm.size > lastMessageCount) {
-                        // Проверяем, был ли пользователь внизу
                         val wasAtBottom = !messagesList.canScrollVertically(1)
                         handler.post {
                             msgAdapter.update(nm)
                             lastMessageCount = nm.size
-                            // Скроллим вниз только если пользователь был внизу
                             if (wasAtBottom && nm.isNotEmpty()) {
                                 messagesList.scrollToPosition(nm.size - 1)
                             }
