@@ -1,6 +1,5 @@
 package com.mychat.app.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,40 +7,77 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.mychat.app.R
 import com.mychat.app.models.ChatMessage
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MessageAdapter(
     private val me: String,
     private val onDownload: (String, String) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val items = mutableListOf<ChatMessage>()
-    private var debugMe = me
+    private val items = mutableListOf<Any>()
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    private val today = dateFormat.format(Date())
 
     companion object {
-        private const val TYPE_IN = 0
-        private const val TYPE_OUT = 1
+        private const val TYPE_DATE = 0
+        private const val TYPE_IN = 1
+        private const val TYPE_OUT = 2
     }
 
     fun update(list: List<ChatMessage>) {
         items.clear()
-        items.addAll(list)
-        debugMe = me
-        Log.d("MessageAdapter", "=== UPDATE: me = '$debugMe' ===")
+        var lastDate = ""
         for (msg in list) {
-            Log.d("MessageAdapter", "msg.from = '${msg.from}', equals = ${msg.from == debugMe}")
+            val msgDate = msg.time.take(10)
+            if (msgDate != lastDate) {
+                lastDate = msgDate
+                items.add(formatDate(msgDate))
+            }
+            items.add(msg)
         }
         notifyDataSetChanged()
     }
 
+    private fun formatDate(dateStr: String): String {
+        return when (dateStr) {
+            today -> "Сегодня"
+            getYesterday() -> "Вчера"
+            else -> {
+                try {
+                    val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(dateStr)
+                    SimpleDateFormat("d MMMM", Locale("ru")).format(date ?: Date())
+                } catch (e: Exception) {
+                    dateStr
+                }
+            }
+        }
+    }
+
+    private fun getYesterday(): String {
+        val cal = Calendar.getInstance()
+        cal.add(Calendar.DAY_OF_YEAR, -1)
+        return dateFormat.format(cal.time)
+    }
+
     override fun getItemViewType(position: Int): Int {
-        val msg = items[position]
-        val isMe = msg.from == debugMe
-        Log.d("MessageAdapter", "getItemViewType: from='${msg.from}', me='$debugMe', isMe=$isMe")
-        return if (isMe) TYPE_OUT else TYPE_IN
+        return when (val item = items[position]) {
+            is String -> TYPE_DATE
+            is ChatMessage -> {
+                if (item.from == me) TYPE_OUT else TYPE_IN
+            }
+            else -> TYPE_IN
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
+            TYPE_DATE -> {
+                val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_date, parent, false)
+                DateViewHolder(view)
+            }
             TYPE_IN -> {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_msg_in, parent, false)
@@ -61,23 +97,34 @@ class MessageAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val msg = items[position]
-        val isMe = msg.from == debugMe
-        
-        when (holder) {
-            is InViewHolder -> {
-                holder.from.text = "📩 from: '${msg.from}' | me: '$debugMe' | isMe: $isMe"
-                holder.text.text = msg.text
-                holder.time.text = msg.time.takeLast(5)
+        val item = items[position]
+        when {
+            item is String && holder is DateViewHolder -> {
+                holder.dateText.text = item
             }
-            is OutViewHolder -> {
-                holder.text.text = "📤 from: '${msg.from}' | me: '$debugMe' | isMe: $isMe\n${msg.text}"
-                holder.time.text = msg.time.takeLast(5)
+            item is ChatMessage && holder is InViewHolder -> {
+                holder.from.text = item.from
+                holder.text.text = item.text
+                holder.time.text = timeFormat.format(
+                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+                        .parse(item.time) ?: Date()
+                )
+            }
+            item is ChatMessage && holder is OutViewHolder -> {
+                holder.text.text = item.text
+                holder.time.text = timeFormat.format(
+                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+                        .parse(item.time) ?: Date()
+                )
             }
         }
     }
 
     override fun getItemCount(): Int = items.size
+
+    class DateViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val dateText: TextView = view.findViewById(R.id.dateText)
+    }
 
     class InViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val from: TextView = view.findViewById(R.id.from)

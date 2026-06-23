@@ -2,13 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="horizontal"
     android:gravity="center"
-    android:padding="8dp">
-    
+    android:paddingTop="12dp"
+    android:paddingBottom="8dp">
+
     <TextView
         android:id="@+id/dateText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Сегодня"
         android:textSize="12sp"
         android:textColor="#8e8e93"
         android:background="#2c2c2e"
