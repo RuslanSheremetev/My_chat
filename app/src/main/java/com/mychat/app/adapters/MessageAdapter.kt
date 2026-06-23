@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.mychat.app.R
 import com.mychat.app.models.ChatMessage
-import com.mychat.app.models.FileInfo
 
 class MessageAdapter(
     private val me: String,
@@ -16,7 +15,6 @@ class MessageAdapter(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val items = mutableListOf<ChatMessage>()
-    private val myName = me.lowercase() // Приводим к нижнему регистру для сравнения
 
     companion object {
         private const val TYPE_IN = 0
@@ -28,20 +26,18 @@ class MessageAdapter(
         items.addAll(list)
         notifyDataSetChanged()
         
-        Log.d("MessageAdapter", "=== me: $me, myName: $myName ===")
+        // Логируем в Logcat
+        Log.d("MessageAdapter", "=== me: '$me' ===")
         for (msg in list) {
-            val fromLower = msg.from.lowercase()
-            val isMe = fromLower == myName
-            Log.d("MessageAdapter", "msg.from: ${msg.from}, fromLower: $fromLower, isMe: $isMe")
+            Log.d("MessageAdapter", "msg.from: '${msg.from}', equals: ${msg.from == me}")
         }
     }
 
     override fun getItemViewType(position: Int): Int {
         val msg = items[position]
-        val fromLower = msg.from.lowercase()
-        val isMe = fromLower == myName
-        Log.d("MessageAdapter", "getItemViewType: from=${msg.from}, myName=$myName, isMe=$isMe")
-        return if (isMe) TYPE_OUT else TYPE_IN
+        // Показываем в логах
+        Log.d("MessageAdapter", "Сравниваем: '${msg.from}' == '$me' ? ${msg.from == me}")
+        return if (msg.from == me) TYPE_OUT else TYPE_IN
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -66,17 +62,16 @@ class MessageAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val msg = items[position]
-        val fromLower = msg.from.lowercase()
-        val isMe = fromLower == myName
+        val isMe = msg.from == me
         
         when (holder) {
             is InViewHolder -> {
-                holder.from.text = "${msg.from} (${if (isMe) "я" else "он"})"
+                holder.from.text = "from: '${msg.from}', me: '$me', isMe: $isMe"
                 holder.text.text = msg.text
                 holder.time.text = msg.time.takeLast(5)
             }
             is OutViewHolder -> {
-                holder.text.text = msg.text
+                holder.text.text = "[me='$me'] ${msg.text}"
                 holder.time.text = msg.time.takeLast(5)
             }
         }
