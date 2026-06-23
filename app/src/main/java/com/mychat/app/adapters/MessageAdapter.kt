@@ -15,6 +15,7 @@ class MessageAdapter(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val items = mutableListOf<ChatMessage>()
+    private var debugMe = me
 
     companion object {
         private const val TYPE_IN = 0
@@ -24,20 +25,19 @@ class MessageAdapter(
     fun update(list: List<ChatMessage>) {
         items.clear()
         items.addAll(list)
-        notifyDataSetChanged()
-        
-        // Логируем в Logcat
-        Log.d("MessageAdapter", "=== me: '$me' ===")
+        debugMe = me
+        Log.d("MessageAdapter", "=== UPDATE: me = '$debugMe' ===")
         for (msg in list) {
-            Log.d("MessageAdapter", "msg.from: '${msg.from}', equals: ${msg.from == me}")
+            Log.d("MessageAdapter", "msg.from = '${msg.from}', equals = ${msg.from == debugMe}")
         }
+        notifyDataSetChanged()
     }
 
     override fun getItemViewType(position: Int): Int {
         val msg = items[position]
-        // Показываем в логах
-        Log.d("MessageAdapter", "Сравниваем: '${msg.from}' == '$me' ? ${msg.from == me}")
-        return if (msg.from == me) TYPE_OUT else TYPE_IN
+        val isMe = msg.from == debugMe
+        Log.d("MessageAdapter", "getItemViewType: from='${msg.from}', me='$debugMe', isMe=$isMe")
+        return if (isMe) TYPE_OUT else TYPE_IN
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -62,16 +62,16 @@ class MessageAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val msg = items[position]
-        val isMe = msg.from == me
+        val isMe = msg.from == debugMe
         
         when (holder) {
             is InViewHolder -> {
-                holder.from.text = "from: '${msg.from}', me: '$me', isMe: $isMe"
+                holder.from.text = "📩 from: '${msg.from}' | me: '$debugMe' | isMe: $isMe"
                 holder.text.text = msg.text
                 holder.time.text = msg.time.takeLast(5)
             }
             is OutViewHolder -> {
-                holder.text.text = "[me='$me'] ${msg.text}"
+                holder.text.text = "📤 from: '${msg.from}' | me: '$debugMe' | isMe: $isMe\n${msg.text}"
                 holder.time.text = msg.time.takeLast(5)
             }
         }
