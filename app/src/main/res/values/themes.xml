@@ -2,5 +2,10 @@
 <resources>
     <style name="T" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">#f06292</item>
+        <item name="colorPrimaryVariant">#e0557e</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="android:windowBackground">#121212</item>
+        <item name="android:statusBarColor">#121212</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>
