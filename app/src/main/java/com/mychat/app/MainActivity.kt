@@ -10,6 +10,7 @@ import android.os.*
 import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -126,16 +127,9 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
         
-        // Навигация
-        navChats.setOnClickListener {
-            switchTab(0)
-        }
-        navFavorites.setOnClickListener {
-            switchTab(1)
-        }
-        navProfile.setOnClickListener {
-            switchTab(2)
-        }
+        navChats.setOnClickListener { showTab(0) }
+        navFavorites.setOnClickListener { openFavorites() }
+        navProfile.setOnClickListener { openProfile() }
         
         searchInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -167,57 +161,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun switchTab(tab: Int) {
-        // Сбрасываем все цвета
-        resetNavColors()
-        
-        when (tab) {
-            0 -> {
-                chatsScreen.visibility = View.VISIBLE
-                profileScreen.visibility = View.GONE
-                navChats.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
-                navChats.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
-            }
-            1 -> {
-                // Открываем избранное
-                val intent = Intent(this, FavoritesActivity::class.java).apply {
-                    putExtra("token", token)
-                    putExtra("username", me)
-                }
-                startActivity(intent)
-                navFavorites.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
-                navFavorites.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
-            }
-            2 -> {
-                val intent = Intent(this, ProfileActivity::class.java).apply {
-                    putExtra("token", token)
-                    putExtra("username", me)
-                }
-                startActivity(intent)
-                navProfile.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
-                navProfile.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
-            }
-        }
-    }
-
-    private fun resetNavColors() {
-        navChats.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#8e8e93"))
-        navFavorites.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#8e8e93"))
-        navProfile.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#8e8e93"))
-        navChats.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#8e8e93"))
-        navFavorites.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#8e8e93"))
-        navProfile.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#8e8e93"))
-    }
-
     override fun onResume() {
         super.onResume()
-        // При возврате в MainActivity всегда показываем Чаты
         chatsScreen.visibility = View.VISIBLE
         profileScreen.visibility = View.GONE
-        // Подсвечиваем Чаты
-        resetNavColors()
-        navChats.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
-        navChats.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
+        loadUsers()
     }
 
     private fun openFavorites() {
@@ -449,10 +397,6 @@ class MainActivity : AppCompatActivity() {
         connectWS()
         loadUsers()
         showTab(0)
-        // Подсвечиваем Чаты
-        resetNavColors()
-        navChats.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
-        navChats.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
     }
 
     private fun openChat(id: String) {
@@ -478,10 +422,6 @@ class MainActivity : AppCompatActivity() {
         mainContainer.visibility = View.VISIBLE
         bottomNav.visibility = View.VISIBLE
         loadUsers()
-        // Возвращаем подсветку Чатов
-        resetNavColors()
-        navChats.findViewById<ImageView>(0)?.setColorFilter(Color.parseColor("#f06292"))
-        navChats.findViewById<TextView>(0)?.setTextColor(Color.parseColor("#f06292"))
     }
 
     private fun connectWS() {
@@ -495,6 +435,7 @@ class MainActivity : AppCompatActivity() {
                             val j = JSONObject(text)
                             if (j.optString("type") == "ping") return
                             if (selId.isNotEmpty()) handler.post { refreshMessages() }
+                            handler.post { loadUsers() }
                         } catch (_: Exception) {}
                     }
                 }
@@ -512,6 +453,7 @@ class MainActivity : AppCompatActivity() {
                 ).execute()
                 if (r.isSuccessful) {
                     val a = JSONArray(r.body!!.string())
+                    Log.d("MainActivity", "Users response: $a")
                     users.clear()
                     val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
                     val savedStatus = prefs.getString("user_status", "No bio") ?: "No bio"
@@ -527,13 +469,16 @@ class MainActivity : AppCompatActivity() {
                         val bio = if (username == me) savedStatus else o.optString("bio", "")
                         val isGroup = o.optBoolean("is_group", false)
                         val isFeed = o.optBoolean("is_feed", false)
+                        val online = o.optBoolean("online", false)
+                        
+                        Log.d("MainActivity", "User: $username, online: $online")
                         
                         if (!isGroup && !isFeed) {
                             userList.add(
                                 User(
                                     username = username,
                                     avatarColor = o.optString("avatar_color", "#2AABEE"),
-                                    online = o.optBoolean("online", false),
+                                    online = online,
                                     lastSeen = o.optString("last_seen", ""),
                                     bio = bio,
                                     avatarUrl = o.optString("avatar_url", ""),
@@ -687,6 +632,7 @@ class MainActivity : AppCompatActivity() {
         )
         msgInput.text.clear()
         handler.postDelayed({ refreshMessages() }, 500)
+        handler.postDelayed({ loadUsers() }, 1000)
     }
 
     private fun pickFile() {
@@ -744,6 +690,7 @@ class MainActivity : AppCompatActivity() {
                 handler.post {
                     pd.dismiss()
                     refreshMessages()
+                    loadUsers()
                 }
             } catch (e: Exception) {
                 handler.post {
@@ -802,6 +749,7 @@ class MainActivity : AppCompatActivity() {
                     refreshMessages()
                     handler.postDelayed(this, 2000)
                 }
+                handler.postDelayed({ loadUsers() }, 5000)
             }
         }
         handler.post(pollRunnable!!)
