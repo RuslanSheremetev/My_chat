@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mychat.app.R
 import com.mychat.app.models.User
 
-// Определяем circleBg здесь
 fun circleBg(color: String): GradientDrawable {
     val d = GradientDrawable()
     d.shape = GradientDrawable.OVAL
@@ -48,6 +47,7 @@ class ChatAdapter(
         private val name: TextView = itemView.findViewById(R.id.name)
         private val lastMessage: TextView = itemView.findViewById(R.id.lastMessage)
         private val lastTime: TextView = itemView.findViewById(R.id.lastTime)
+        private val onlineDot: View = itemView.findViewById(R.id.onlineDot)
 
         fun bind(user: User) {
             val displayName = if (user.name.isNotEmpty()) user.name else user.username
@@ -74,6 +74,9 @@ class ChatAdapter(
             }
             
             lastTime.text = user.lastTime
+            
+            // Показываем зеленую точку, если пользователь онлайн
+            onlineDot.visibility = if (user.online) View.VISIBLE else View.GONE
             
             itemView.setOnClickListener { onClick(user) }
         }

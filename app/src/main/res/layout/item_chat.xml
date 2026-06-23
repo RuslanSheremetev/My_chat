@@ -15,14 +15,31 @@
         android:gravity="center_vertical"
         android:background="?attr/selectableItemBackground">
 
-        <TextView
-            android:id="@+id/avatar"
+        <!-- Аватар с индикатором онлайн -->
+        <FrameLayout
             android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:textColor="#fff"
-            android:textStyle="bold"/>
+            android:layout_height="48dp">
+
+            <TextView
+                android:id="@+id/avatar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:textColor="#fff"
+                android:textStyle="bold"/>
+
+            <!-- Зеленая точка онлайн -->
+            <View
+                android:id="@+id/onlineDot"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:background="@drawable/bg_online_dot"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="2dp"
+                android:visibility="gone"/>
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
