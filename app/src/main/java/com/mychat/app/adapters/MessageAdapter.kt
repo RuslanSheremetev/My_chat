@@ -16,6 +16,7 @@ class MessageAdapter(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val items = mutableListOf<ChatMessage>()
+    private val myName = me.lowercase() // Приводим к нижнему регистру для сравнения
 
     companion object {
         private const val TYPE_IN = 0
@@ -27,16 +28,20 @@ class MessageAdapter(
         items.addAll(list)
         notifyDataSetChanged()
         
-        Log.d("MessageAdapter", "=== me: $me ===")
+        Log.d("MessageAdapter", "=== me: $me, myName: $myName ===")
         for (msg in list) {
-            Log.d("MessageAdapter", "msg.from: ${msg.from}, me: $me, isMe: ${msg.from == me}")
+            val fromLower = msg.from.lowercase()
+            val isMe = fromLower == myName
+            Log.d("MessageAdapter", "msg.from: ${msg.from}, fromLower: $fromLower, isMe: $isMe")
         }
     }
 
     override fun getItemViewType(position: Int): Int {
         val msg = items[position]
-        Log.d("MessageAdapter", "getItemViewType: from=${msg.from}, me=$me, isMe=${msg.from == me}")
-        return if (msg.from == me) TYPE_OUT else TYPE_IN
+        val fromLower = msg.from.lowercase()
+        val isMe = fromLower == myName
+        Log.d("MessageAdapter", "getItemViewType: from=${msg.from}, myName=$myName, isMe=$isMe")
+        return if (isMe) TYPE_OUT else TYPE_IN
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -61,14 +66,17 @@ class MessageAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val msg = items[position]
+        val fromLower = msg.from.lowercase()
+        val isMe = fromLower == myName
+        
         when (holder) {
             is InViewHolder -> {
-                holder.from.text = "${msg.from} (${if (msg.from == me) "я" else "он"})"
+                holder.from.text = "${msg.from} (${if (isMe) "я" else "он"})"
                 holder.text.text = msg.text
                 holder.time.text = msg.time.takeLast(5)
             }
             is OutViewHolder -> {
-                holder.text.text = "[я] ${msg.text}"
+                holder.text.text = msg.text
                 holder.time.text = msg.time.takeLast(5)
             }
         }
