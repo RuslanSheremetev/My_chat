@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity() {
     private val users = mutableListOf<User>()
     private val handler = Handler(Looper.getMainLooper())
     private var pollRunnable: Runnable? = null
+    private var lastMessageCount = 0
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var msgAdapter: MessageAdapter
     private val client = OkHttpClient.Builder()
@@ -115,8 +116,9 @@ class MainActivity : AppCompatActivity() {
         chatList.layoutManager = LinearLayoutManager(this)
         chatList.adapter = chatAdapter
         
-        // НЕ СОЗДАЁМ АДАПТЕР ЗДЕСЬ! Создадим позже
-        // msgAdapter будет создан в showMain()
+        msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
+        messagesList.layoutManager = LinearLayoutManager(this)
+        messagesList.adapter = msgAdapter
         
         findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
         findViewById<Button>(R.id.btnRegister).setOnClickListener { register() }
@@ -155,8 +157,6 @@ class MainActivity : AppCompatActivity() {
         me = prefs.getString("username", "") ?: ""
         server = prefs.getString("server_url", server) ?: server
         
-        Log.d("MainActivity", "onCreate - me = '$me'")
-        
         if (token.isNotEmpty() && me.isNotEmpty()) {
             showMain()
         }
@@ -166,9 +166,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         chatsScreen.visibility = View.VISIBLE
         profileScreen.visibility = View.GONE
-        if (me.isNotEmpty()) {
-            loadUsers()
-        }
+        loadUsers()
     }
 
     private fun openFavorites() {
@@ -350,7 +348,6 @@ class MainActivity : AppCompatActivity() {
                     val d = JSONObject(r.body!!.string())
                     token = d.optString("access_token", "")
                     me = u
-                    Log.d("MainActivity", "Login - me = '$me'")
                     PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
                         .edit()
                         .putString("token", token)
@@ -398,14 +395,6 @@ class MainActivity : AppCompatActivity() {
         loginLayout.visibility = View.GONE
         mainContainer.visibility = View.VISIBLE
         bottomNav.visibility = View.VISIBLE
-        
-        Log.d("MainActivity", "showMain - me = '$me'")
-        
-        // СОЗДАЁМ АДАПТЕР ТОЛЬКО ЗДЕСЬ, КОГДА me УЖЕ УСТАНОВЛЕН
-        msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
-        messagesList.layoutManager = LinearLayoutManager(this)
-        messagesList.adapter = msgAdapter
-        
         connectWS()
         loadUsers()
         showTab(0)
@@ -424,10 +413,7 @@ class MainActivity : AppCompatActivity() {
         bottomNav.visibility = View.GONE
         chatLayout.visibility = View.VISIBLE
         
-        // Обновляем адаптер с правильным me (на всякий случай)
-        msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
-        messagesList.adapter = msgAdapter
-        
+        lastMessageCount = 0
         refreshMessages()
         startPolling()
     }
@@ -451,7 +437,12 @@ class MainActivity : AppCompatActivity() {
                         try {
                             val j = JSONObject(text)
                             if (j.optString("type") == "ping") return
-                            if (selId.isNotEmpty()) handler.post { refreshMessages() }
+                            if (selId.isNotEmpty()) {
+                                handler.post {
+                                    // Обновляем без потери скролла
+                                    updateMessagesSilent()
+                                }
+                            }
                             handler.post { loadUsers() }
                         } catch (_: Exception) {}
                     }
@@ -470,7 +461,6 @@ class MainActivity : AppCompatActivity() {
                 ).execute()
                 if (r.isSuccessful) {
                     val a = JSONArray(r.body!!.string())
-                    Log.d("MainActivity", "Users response: $a")
                     users.clear()
                     val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
                     val savedStatus = prefs.getString("user_status", "No bio") ?: "No bio"
@@ -487,8 +477,6 @@ class MainActivity : AppCompatActivity() {
                         val isGroup = o.optBoolean("is_group", false)
                         val isFeed = o.optBoolean("is_feed", false)
                         val online = o.optBoolean("online", false)
-                        
-                        Log.d("MainActivity", "User: $username, online: $online")
                         
                         if (!isGroup && !isFeed) {
                             userList.add(
@@ -614,21 +602,75 @@ class MainActivity : AppCompatActivity() {
                             val f = o.getJSONObject("file")
                             fi = FileInfo(f.optString("name"), f.optString("url"), f.optLong("size"))
                         }
-                        val msg = ChatMessage(
-                            o.optString("id"),
-                            o.optString("from"),
-                            o.optString("to"),
-                            o.optString("text"),
-                            o.optString("time"),
-                            fi,
-                            o.optBoolean("is_group")
+                        nm.add(
+                            ChatMessage(
+                                o.optString("id"),
+                                o.optString("from"),
+                                o.optString("to"),
+                                o.optString("text"),
+                                o.optString("time"),
+                                fi,
+                                o.optBoolean("is_group")
+                            )
                         )
-                        Log.d("MainActivity", "Message from: '${msg.from}', me: '$me', equals: ${msg.from == me}")
-                        nm.add(msg)
                     }
+                    lastMessageCount = nm.size
                     handler.post {
                         msgAdapter.update(nm)
-                        if (nm.isNotEmpty()) messagesList.scrollToPosition(nm.size - 1)
+                        if (nm.isNotEmpty()) {
+                            messagesList.scrollToPosition(nm.size - 1)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    // Тихая проверка новых сообщений
+    private fun updateMessagesSilent() {
+        if (selId.isEmpty()) return
+        thread {
+            try {
+                val r = client.newCall(
+                    Request.Builder().url("$server/messages/$selId?me=$me&token=$token").build()
+                ).execute()
+                if (r.isSuccessful) {
+                    val a = JSONArray(r.body!!.string())
+                    val nm = mutableListOf<ChatMessage>()
+                    for (i in 0 until a.length()) {
+                        val o = a.getJSONObject(i)
+                        var fi: FileInfo? = null
+                        if (o.has("file")) {
+                            val f = o.getJSONObject("file")
+                            fi = FileInfo(f.optString("name"), f.optString("url"), f.optLong("size"))
+                        }
+                        nm.add(
+                            ChatMessage(
+                                o.optString("id"),
+                                o.optString("from"),
+                                o.optString("to"),
+                                o.optString("text"),
+                                o.optString("time"),
+                                fi,
+                                o.optBoolean("is_group")
+                            )
+                        )
+                    }
+                    
+                    // Если появились новые сообщения
+                    if (nm.size > lastMessageCount) {
+                        // Проверяем, был ли пользователь внизу
+                        val wasAtBottom = !messagesList.canScrollVertically(1)
+                        handler.post {
+                            msgAdapter.update(nm)
+                            lastMessageCount = nm.size
+                            // Скроллим вниз только если пользователь был внизу
+                            if (wasAtBottom && nm.isNotEmpty()) {
+                                messagesList.scrollToPosition(nm.size - 1)
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -763,10 +805,9 @@ class MainActivity : AppCompatActivity() {
         pollRunnable = object : Runnable {
             override fun run() {
                 if (selId.isNotEmpty()) {
-                    refreshMessages()
-                    handler.postDelayed(this, 2000)
+                    updateMessagesSilent()
+                    handler.postDelayed(this, 3000)
                 }
-                handler.postDelayed({ loadUsers() }, 5000)
             }
         }
         handler.post(pollRunnable!!)
