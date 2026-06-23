@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         chatList.layoutManager = LinearLayoutManager(this)
         chatList.adapter = chatAdapter
         
-        // Временно создаём адаптер с пустым me
+        // Временно создаём адаптер, обновим позже
         msgAdapter = MessageAdapter("") { url, name -> downloadFile(url, name) }
         messagesList.layoutManager = LinearLayoutManager(this)
         messagesList.adapter = msgAdapter
@@ -158,10 +158,6 @@ class MainActivity : AppCompatActivity() {
         server = prefs.getString("server_url", server) ?: server
         
         Log.d("MainActivity", "me = '$me'")
-        
-        // Пересоздаём адаптер с правильным me после загрузки
-        msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
-        messagesList.adapter = msgAdapter
         
         if (token.isNotEmpty() && me.isNotEmpty()) {
             showMain()
@@ -420,7 +416,7 @@ class MainActivity : AppCompatActivity() {
         bottomNav.visibility = View.GONE
         chatLayout.visibility = View.VISIBLE
         
-        // Пересоздаём адаптер с правильным me при открытии чата
+        // СОЗДАЁМ НОВЫЙ АДАПТЕР С ПРАВИЛЬНЫМ me
         msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
         messagesList.adapter = msgAdapter
         
