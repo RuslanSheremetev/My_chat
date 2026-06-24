@@ -31,7 +31,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="⭐ Избранное"
+            android:text="❤️ Избранное"
             android:textSize="20sp"
             android:textColor="#fff"
             android:textStyle="bold"
@@ -51,14 +51,7 @@
             android:paddingBottom="2dp"
             android:radius="20dp"/>
 
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_sort"
-            android:tint="#8e8e93"
-            android:padding="8dp"
-            android:clickable="true"
-            android:focusable="true"/>
+
     </LinearLayout>
 
     <!-- Поиск -->
