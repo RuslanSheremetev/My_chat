@@ -18,7 +18,8 @@ fun circleBg(color: String): GradientDrawable {
 }
 
 class ChatAdapter(
-    private val onClick: (User) -> Unit
+    private val onClick: (User) -> Unit,
+    private val onDelete: ((User) -> Unit)? = null
 ) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
     private val users = mutableListOf<User>()
@@ -28,6 +29,14 @@ class ChatAdapter(
         users.addAll(list)
         notifyDataSetChanged()
     }
+    
+    fun removeItem(position: Int): User {
+        val user = users.removeAt(position)
+        notifyItemRemoved(position)
+        return user
+    }
+    
+    fun getItem(position: Int): User = users[position]
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)

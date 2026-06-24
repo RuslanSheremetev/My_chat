@@ -22,6 +22,7 @@ import androidx.core.content.FileProvider
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ItemTouchHelper
 import com.mychat.app.activities.FavoritesActivity
 import com.mychat.app.activities.ProfileActivity
 import com.mychat.app.adapters.ChatAdapter
@@ -113,7 +114,10 @@ class MainActivity : AppCompatActivity() {
         navProfile = findViewById(R.id.navProfile)
         
         serverUrl.setText(server)
-        chatAdapter = ChatAdapter { user -> openChat(user.username) }
+        chatAdapter = ChatAdapter(
+            onClick = { user -> openChat(user.username) },
+            onDelete = { user -> deleteChat(user) }
+        )
         chatList.layoutManager = LinearLayoutManager(this)
         chatList.adapter = chatAdapter
         
@@ -939,6 +943,28 @@ class MainActivity : AppCompatActivity() {
         pollRunnable = null
     }
 
+    private fun deleteChat(user: User) {
+        val request = Request.Builder()
+            .url("$server/chat/delete/${user.username}?token=$token")
+            .delete()
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                runOnUiThread { t("Ошибка удаления") }
+            }
+            override fun onResponse(call: Call, response: Response) {
+                runOnUiThread {
+                    if (response.isSuccessful) {
+                        t("Чат удалён")
+                    } else {
+                        t("Ошибка удаления")
+                        loadUsers() // перезагружаем список
+                    }
+                }
+            }
+        })
+    }
+    
     private fun t(msg: String) {
         handler.post { Toast.makeText(this, msg, Toast.LENGTH_SHORT).show() }
     }
