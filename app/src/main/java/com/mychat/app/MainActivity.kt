@@ -165,9 +165,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        chatsScreen.visibility = View.VISIBLE
-        profileScreen.visibility = View.GONE
-        loadUsers()
+        if (::mainContainer.isInitialized && mainContainer.visibility == View.VISIBLE) {
+            showTab(0)
+        }
     }
 
     private fun openFavorites() {
