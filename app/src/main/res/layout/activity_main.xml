@@ -113,7 +113,7 @@
                     <ImageView
                         android:layout_width="28dp"
                         android:layout_height="28dp"
-                        android:src="@drawable/ic_chats"
+                        android:src="@drawable/ic_chat_bubble"
                         android:tint="#8e8e93"
                         android:layout_marginEnd="10dp"/>
                     <TextView
@@ -273,7 +273,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_chats"
+                android:src="@drawable/ic_chat_bubble"
                 android:tint="#8e8e93"/>
             <TextView
                 android:layout_width="wrap_content"

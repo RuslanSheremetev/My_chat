@@ -27,11 +27,18 @@
             android:clickable="true"
             android:focusable="true"/>
 
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_heart"
+            android:tint="#f06292"
+            android:layout_marginStart="4dp"/>
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="❤️ Избранное"
+            android:text="Избранное"
             android:textSize="20sp"
             android:textColor="#fff"
             android:textStyle="bold"
