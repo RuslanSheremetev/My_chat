@@ -16,7 +16,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.preference.PreferenceManager
@@ -123,7 +122,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
         findViewById<Button>(R.id.btnRegister).setOnClickListener { register() }
         findViewById<ImageButton>(R.id.btnSend).setOnClickListener { sendMessage() }
-        findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { showAttachmentMenu() }
+        findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { pickFile() }
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
         findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
@@ -257,18 +256,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showCreateMenu() {
-        val options = arrayOf("Создать группу", "Создать ленту")
-        AlertDialog.Builder(this)
-            .setTitle("Выберите действие")
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> showCreateGroupDialog()
-                    1 -> showCreateFeedDialog()
-                }
-            }
-            .setNegativeButton("Отмена", null)
-            .show()
-    }
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.menu_create, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        
+        dialogView.findViewById<LinearLayout>(R.id.menuGroup).setOnClickListener {
+            dialog.dismiss()
+            showCreateGroupDialog()
+        }
         
         dialogView.findViewById<LinearLayout>(R.id.menuFeed).setOnClickListener {
             dialog.dismiss()
@@ -733,32 +730,6 @@ class MainActivity : AppCompatActivity() {
         handler.postDelayed({ loadUsers() }, 1000)
     }
 
-    private fun showAttachmentMenu() {
-        val bottomSheet = BottomSheetDialog(this)
-        val view = layoutInflater.inflate(R.layout.bottom_attachment, null)
-        bottomSheet.setContentView(view)
-        
-        view.findViewById<LinearLayout>(R.id.attachPhoto).setOnClickListener {
-            bottomSheet.dismiss()
-            pickPhoto()
-        }
-        view.findViewById<LinearLayout>(R.id.attachFile).setOnClickListener {
-            bottomSheet.dismiss()
-            pickFile()
-        }
-        
-        bottomSheet.show()
-    }
-    
-    private fun pickPhoto() {
-        startActivityForResult(
-            Intent(Intent.ACTION_PICK).apply {
-                type = "image/*"
-            },
-            101
-        )
-    }
-    
     private fun pickFile() {
         startActivityForResult(
             Intent(Intent.ACTION_GET_CONTENT).apply {
