@@ -2,3 +2,4 @@
 <resources>
     <color name="primary">#f06292</color>
 </resources>
+    <color name="nav_inactive">#8e8e93</color>
