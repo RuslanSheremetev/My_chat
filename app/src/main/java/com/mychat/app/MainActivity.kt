@@ -165,7 +165,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        showTab(0)
+        // Принудительно восстанавливаем экран чатов
+        chatsScreen.visibility = View.VISIBLE
+        profileScreen.visibility = View.GONE
+        chatLayout.visibility = View.GONE
+        mainContainer.visibility = View.VISIBLE
+        bottomNav.visibility = View.VISIBLE
+        highlightTab(0)
     }
 
     private fun openFavorites() {
