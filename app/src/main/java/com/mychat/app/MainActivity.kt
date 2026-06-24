@@ -470,6 +470,53 @@ class MainActivity : AppCompatActivity() {
         bottomNav.visibility = View.VISIBLE
         loadUsers()
     }
+    
+    private var selectedMessage: ChatMessage? = null
+    
+    private fun showMessageActions(msg: ChatMessage) {
+        selectedMessage = msg
+        val bottomSheet = BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.bottom_message_actions, null)
+        bottomSheet.setContentView(view)
+        
+        val reactions = mapOf(
+            R.id.reactionLove to "❤️",
+            R.id.reactionLike to "👍",
+            R.id.reactionLaugh to "😂",
+            R.id.reactionWow to "😮",
+            R.id.reactionSad to "😢",
+            R.id.reactionAngry to "😡"
+        )
+        reactions.forEach { (id, emoji) ->
+            view.findViewById<TextView>(id)?.setOnClickListener {
+                sendMessage(selId, emoji)
+                bottomSheet.dismiss()
+            }
+        }
+        
+        view.findViewById<LinearLayout>(R.id.actionReply)?.setOnClickListener {
+            bottomSheet.dismiss()
+            t("Ответ на сообщение")
+        }
+        view.findViewById<LinearLayout>(R.id.actionEdit)?.setOnClickListener {
+            bottomSheet.dismiss()
+            t("Изменить сообщение")
+        }
+        view.findViewById<LinearLayout>(R.id.actionForward)?.setOnClickListener {
+            bottomSheet.dismiss()
+            t("Переслать сообщение")
+        }
+        view.findViewById<LinearLayout>(R.id.actionFavorite)?.setOnClickListener {
+            bottomSheet.dismiss()
+            t("В избранное")
+        }
+        view.findViewById<LinearLayout>(R.id.actionDelete)?.setOnClickListener {
+            bottomSheet.dismiss()
+            t("Удалить сообщение")
+        }
+        
+        bottomSheet.show()
+    }
 
     private fun connectWS() {
         try {
