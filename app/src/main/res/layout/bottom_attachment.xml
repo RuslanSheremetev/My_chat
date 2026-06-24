@@ -7,13 +7,15 @@
     android:paddingTop="20dp"
     android:paddingBottom="30dp">
 
+    <!-- Ручка -->
     <View
         android:layout_width="40dp"
         android:layout_height="4dp"
-        android:background="#444"
+        android:background="#444444"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="12dp"/>
+        android:layout_marginBottom="16dp"/>
 
+    <!-- Ряд кнопок -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,6 +24,7 @@
         android:paddingStart="8dp"
         android:paddingEnd="8dp">
 
+        <!-- Камера -->
         <LinearLayout
             android:id="@+id/attachCamera"
             android:layout_width="0dp"
@@ -32,16 +35,18 @@
             android:padding="10dp"
             android:clickable="true"
             android:focusable="true"
-            android:background="?attr/selectableItemBackground">
+            android:background="?attr/selectableItemBackground"
+            android:maxWidth="100dp">
 
             <TextView
+                android:id="@+id/attachCameraIcon"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:gravity="center"
                 android:text="📷"
                 android:textSize="26sp"
-                android:background="#2a2a2a"
-                android:radius="30dp"/>
+                android:background="@drawable/bg_attach_icon"
+                android:textColor="#ffffff"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -49,9 +54,11 @@
                 android:text="Камера"
                 android:textSize="12sp"
                 android:textColor="#a0a0a0"
+                android:fontFamily="sans-serif-medium"
                 android:layout_marginTop="8dp"/>
         </LinearLayout>
 
+        <!-- Галерея -->
         <LinearLayout
             android:id="@+id/attachGallery"
             android:layout_width="0dp"
@@ -62,16 +69,18 @@
             android:padding="10dp"
             android:clickable="true"
             android:focusable="true"
-            android:background="?attr/selectableItemBackground">
+            android:background="?attr/selectableItemBackground"
+            android:maxWidth="100dp">
 
             <TextView
+                android:id="@+id/attachGalleryIcon"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:gravity="center"
                 android:text="🖼️"
                 android:textSize="26sp"
-                android:background="#2a2a2a"
-                android:radius="30dp"/>
+                android:background="@drawable/bg_attach_icon"
+                android:textColor="#ffffff"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -79,9 +88,11 @@
                 android:text="Галерея"
                 android:textSize="12sp"
                 android:textColor="#a0a0a0"
+                android:fontFamily="sans-serif-medium"
                 android:layout_marginTop="8dp"/>
         </LinearLayout>
 
+        <!-- Файл -->
         <LinearLayout
             android:id="@+id/attachFile"
             android:layout_width="0dp"
@@ -92,16 +103,18 @@
             android:padding="10dp"
             android:clickable="true"
             android:focusable="true"
-            android:background="?attr/selectableItemBackground">
+            android:background="?attr/selectableItemBackground"
+            android:maxWidth="100dp">
 
             <TextView
+                android:id="@+id/attachFileIcon"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:gravity="center"
                 android:text="📎"
                 android:textSize="26sp"
-                android:background="#2a2a2a"
-                android:radius="30dp"/>
+                android:background="@drawable/bg_attach_icon"
+                android:textColor="#ffffff"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -109,6 +122,7 @@
                 android:text="Файл"
                 android:textSize="12sp"
                 android:textColor="#a0a0a0"
+                android:fontFamily="sans-serif-medium"
                 android:layout_marginTop="8dp"/>
         </LinearLayout>
     </LinearLayout>
