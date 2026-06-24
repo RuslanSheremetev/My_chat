@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:background="#1c1c1e"
     android:padding="0dp"
-    android:radius="12dp">
+    >
 
     <!-- Создать группу -->
     <LinearLayout
@@ -29,7 +29,7 @@
             android:text="👥"
             android:textSize="20sp"
             android:background="#2c2c2e"
-            android:radius="10dp"/>
+            />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -85,7 +85,7 @@
             android:text="📢"
             android:textSize="20sp"
             android:background="#2c2c2e"
-            android:radius="10dp"/>
+            />
 
         <LinearLayout
             android:layout_width="0dp"
