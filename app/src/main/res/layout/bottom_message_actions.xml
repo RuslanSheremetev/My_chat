@@ -7,7 +7,6 @@
     android:paddingTop="20dp"
     android:paddingBottom="30dp">
 
-    <!-- Ручка -->
     <View
         android:layout_width="40dp"
         android:layout_height="4dp"
@@ -32,7 +31,7 @@
             android:gravity="center"
             android:text="❤️"
             android:textSize="28sp"
-            android:background="#2a2a2a"
+            android:background="@drawable/bg_reaction"
             android:clickable="true"
             android:focusable="true"
             android:layout_marginEnd="8dp"/>
@@ -44,7 +43,7 @@
             android:gravity="center"
             android:text="👍"
             android:textSize="28sp"
-            android:background="#2a2a2a"
+            android:background="@drawable/bg_reaction"
             android:clickable="true"
             android:focusable="true"
             android:layout_marginEnd="8dp"/>
@@ -56,7 +55,7 @@
             android:gravity="center"
             android:text="😂"
             android:textSize="28sp"
-            android:background="#2a2a2a"
+            android:background="@drawable/bg_reaction"
             android:clickable="true"
             android:focusable="true"
             android:layout_marginEnd="8dp"/>
@@ -68,7 +67,7 @@
             android:gravity="center"
             android:text="😮"
             android:textSize="28sp"
-            android:background="#2a2a2a"
+            android:background="@drawable/bg_reaction"
             android:clickable="true"
             android:focusable="true"
             android:layout_marginEnd="8dp"/>
@@ -80,7 +79,7 @@
             android:gravity="center"
             android:text="😢"
             android:textSize="28sp"
-            android:background="#2a2a2a"
+            android:background="@drawable/bg_reaction"
             android:clickable="true"
             android:focusable="true"
             android:layout_marginEnd="8dp"/>
@@ -92,7 +91,7 @@
             android:gravity="center"
             android:text="😡"
             android:textSize="28sp"
-            android:background="#2a2a2a"
+            android:background="@drawable/bg_reaction"
             android:clickable="true"
             android:focusable="true"/>
     </LinearLayout>
@@ -103,8 +102,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp">
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
 
         <LinearLayout
             android:id="@+id/actionReply"
@@ -113,18 +112,18 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="8dp"
+            android:padding="6dp"
             android:clickable="true"
             android:focusable="true"
             android:background="?attr/selectableItemBackground">
 
-            <TextView
+            <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:gravity="center"
-                android:text="↩️"
-                android:textSize="20sp"
-                android:background="@drawable/bg_attach_icon"/>
+                android:src="@drawable/ic_reply"
+                android:background="@drawable/bg_attach_icon"
+                android:padding="14dp"
+                android:tint="#a0a0a0"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -142,18 +141,18 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="8dp"
+            android:padding="6dp"
             android:clickable="true"
             android:focusable="true"
             android:background="?attr/selectableItemBackground">
 
-            <TextView
+            <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:gravity="center"
-                android:text="✏️"
-                android:textSize="20sp"
-                android:background="@drawable/bg_attach_icon"/>
+                android:src="@drawable/ic_edit"
+                android:background="@drawable/bg_attach_icon"
+                android:padding="14dp"
+                android:tint="#a0a0a0"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -171,18 +170,18 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="8dp"
+            android:padding="6dp"
             android:clickable="true"
             android:focusable="true"
             android:background="?attr/selectableItemBackground">
 
-            <TextView
+            <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:gravity="center"
-                android:text="📤"
-                android:textSize="20sp"
-                android:background="@drawable/bg_attach_icon"/>
+                android:src="@drawable/ic_forward"
+                android:background="@drawable/bg_attach_icon"
+                android:padding="14dp"
+                android:tint="#a0a0a0"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -200,18 +199,18 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="8dp"
+            android:padding="6dp"
             android:clickable="true"
             android:focusable="true"
             android:background="?attr/selectableItemBackground">
 
-            <TextView
+            <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:gravity="center"
-                android:text="🔖"
-                android:textSize="20sp"
-                android:background="@drawable/bg_attach_icon"/>
+                android:src="@drawable/ic_bookmark"
+                android:background="@drawable/bg_attach_icon"
+                android:padding="14dp"
+                android:tint="#a0a0a0"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -229,18 +228,18 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="8dp"
+            android:padding="6dp"
             android:clickable="true"
             android:focusable="true"
             android:background="?attr/selectableItemBackground">
 
-            <TextView
+            <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:gravity="center"
-                android:text="🗑️"
-                android:textSize="20sp"
-                android:background="@drawable/bg_attach_icon"/>
+                android:src="@drawable/ic_trash"
+                android:background="@drawable/bg_attach_icon"
+                android:padding="14dp"
+                android:tint="#ff3b30"/>
 
             <TextView
                 android:layout_width="wrap_content"
