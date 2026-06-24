@@ -256,16 +256,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showCreateMenu() {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.menu_create, null)
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .create()
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-        
-        dialogView.findViewById<LinearLayout>(R.id.menuGroup).setOnClickListener {
-            dialog.dismiss()
-            showCreateGroupDialog()
-        }
+        val options = arrayOf("Создать группу", "Создать ленту")
+        AlertDialog.Builder(this)
+            .setTitle("Выберите действие")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> showCreateGroupDialog()
+                    1 -> showCreateFeedDialog()
+                }
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
         
         dialogView.findViewById<LinearLayout>(R.id.menuFeed).setOnClickListener {
             dialog.dismiss()
