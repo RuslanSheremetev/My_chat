@@ -16,6 +16,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.preference.PreferenceManager
@@ -122,7 +123,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
         findViewById<Button>(R.id.btnRegister).setOnClickListener { register() }
         findViewById<ImageButton>(R.id.btnSend).setOnClickListener { sendMessage() }
-        findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { pickFile() }
+        findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { showAttachmentMenu() }
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
         findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
@@ -730,6 +731,36 @@ class MainActivity : AppCompatActivity() {
         handler.postDelayed({ loadUsers() }, 1000)
     }
 
+    private fun showAttachmentMenu() {
+        val bottomSheet = BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.bottom_attachment, null)
+        bottomSheet.setContentView(view)
+        
+        view.findViewById<LinearLayout>(R.id.attachCamera).setOnClickListener {
+            bottomSheet.dismiss()
+            pickPhoto()
+        }
+        view.findViewById<LinearLayout>(R.id.attachGallery).setOnClickListener {
+            bottomSheet.dismiss()
+            pickPhoto()
+        }
+        view.findViewById<LinearLayout>(R.id.attachFile).setOnClickListener {
+            bottomSheet.dismiss()
+            pickFile()
+        }
+        
+        bottomSheet.show()
+    }
+    
+    private fun pickPhoto() {
+        startActivityForResult(
+            Intent(Intent.ACTION_PICK).apply {
+                type = "image/*"
+            },
+            100
+        )
+    }
+    
     private fun pickFile() {
         startActivityForResult(
             Intent(Intent.ACTION_GET_CONTENT).apply {
