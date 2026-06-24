@@ -194,7 +194,17 @@ class MainActivity : AppCompatActivity() {
     private fun showTab(tab: Int) {
         chatsScreen.visibility = if (tab == 0) View.VISIBLE else View.GONE
         profileScreen.visibility = if (tab == 2) View.VISIBLE else View.GONE
+        chatLayout.visibility = View.GONE
+        mainContainer.visibility = View.VISIBLE
+        bottomNav.visibility = View.VISIBLE
         if (tab == 2) loadProfile()
+        highlightTab(tab)
+    }
+    
+    private fun highlightTab(tab: Int) {
+        navChats.alpha = if (tab == 0) 1.0f else 0.5f
+        navFavorites.alpha = if (tab == 1) 1.0f else 0.5f
+        navProfile.alpha = if (tab == 2) 1.0f else 0.5f
     }
 
     private fun loadProfile() {
