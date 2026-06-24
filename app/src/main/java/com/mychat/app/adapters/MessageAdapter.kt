@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.mychat.app.R
 import com.mychat.app.models.ChatMessage
 import java.text.SimpleDateFormat
@@ -12,7 +13,8 @@ import java.util.*
 
 class MessageAdapter(
     private val me: String,
-    private val onDownload: (String, String) -> Unit
+    private val onDownload: (String, String) -> Unit,
+    private val onMessageLongClick: (ChatMessage) -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val items = mutableListOf<Any>()
@@ -109,6 +111,10 @@ class MessageAdapter(
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                         .parse(item.time) ?: Date()
                 )
+                holder.itemView.setOnLongClickListener {
+                    onMessageLongClick(item)
+                    true
+                }
             }
             item is ChatMessage && holder is OutViewHolder -> {
                 holder.text.text = item.text
@@ -116,6 +122,10 @@ class MessageAdapter(
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                         .parse(item.time) ?: Date()
                 )
+                holder.itemView.setOnLongClickListener {
+                    onMessageLongClick(item)
+                    true
+                }
             }
         }
     }

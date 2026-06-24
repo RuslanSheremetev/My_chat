@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#1a1a1a"
+    android:paddingTop="20dp"
+    android:paddingBottom="30dp">
+
+    <!-- Ручка -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:background="#444444"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Реакции -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/reactionLove"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:text="❤️"
+            android:textSize="28sp"
+            android:background="#2a2a2a"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/reactionLike"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:text="👍"
+            android:textSize="28sp"
+            android:background="#2a2a2a"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/reactionLaugh"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:text="😂"
+            android:textSize="28sp"
+            android:background="#2a2a2a"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/reactionWow"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:text="😮"
+            android:textSize="28sp"
+            android:background="#2a2a2a"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/reactionSad"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:text="😢"
+            android:textSize="28sp"
+            android:background="#2a2a2a"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/reactionAngry"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:text="😡"
+            android:textSize="28sp"
+            android:background="#2a2a2a"
+            android:clickable="true"
+            android:focusable="true"/>
+    </LinearLayout>
+
+    <!-- Действия -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <LinearLayout
+            android:id="@+id/actionReply"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:gravity="center"
+                android:text="↩️"
+                android:textSize="20sp"
+                android:background="@drawable/bg_attach_icon"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ответить"
+                android:textSize="11sp"
+                android:textColor="#a0a0a0"
+                android:layout_marginTop="6dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/actionEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:gravity="center"
+                android:text="✏️"
+                android:textSize="20sp"
+                android:background="@drawable/bg_attach_icon"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Изменить"
+                android:textSize="11sp"
+                android:textColor="#a0a0a0"
+                android:layout_marginTop="6dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/actionForward"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:gravity="center"
+                android:text="📤"
+                android:textSize="20sp"
+                android:background="@drawable/bg_attach_icon"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Переслать"
+                android:textSize="11sp"
+                android:textColor="#a0a0a0"
+                android:layout_marginTop="6dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/actionFavorite"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:gravity="center"
+                android:text="🔖"
+                android:textSize="20sp"
+                android:background="@drawable/bg_attach_icon"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="В избранное"
+                android:textSize="11sp"
+                android:textColor="#a0a0a0"
+                android:layout_marginTop="6dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/actionDelete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:gravity="center"
+                android:text="🗑️"
+                android:textSize="20sp"
+                android:background="@drawable/bg_attach_icon"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Удалить"
+                android:textSize="11sp"
+                android:textColor="#ff3b30"
+                android:layout_marginTop="6dp"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
