@@ -165,9 +165,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (::mainContainer.isInitialized && mainContainer.visibility == View.VISIBLE) {
-            showTab(0)
-        }
+        showTab(0)
     }
 
     private fun openFavorites() {
@@ -176,6 +174,7 @@ class MainActivity : AppCompatActivity() {
             putExtra("username", me)
         }
         startActivity(intent)
+        // Не вызываем finish(), чтобы onResume сработал при возврате
     }
 
     private fun openProfile() {
@@ -194,9 +193,11 @@ class MainActivity : AppCompatActivity() {
     private fun showTab(tab: Int) {
         chatsScreen.visibility = if (tab == 0) View.VISIBLE else View.GONE
         profileScreen.visibility = if (tab == 2) View.VISIBLE else View.GONE
-        chatLayout.visibility = View.GONE
-        mainContainer.visibility = View.VISIBLE
-        bottomNav.visibility = View.VISIBLE
+        if (tab == 0) {
+            chatLayout.visibility = View.GONE
+            mainContainer.visibility = View.VISIBLE
+            bottomNav.visibility = View.VISIBLE
+        }
         if (tab == 2) loadProfile()
         highlightTab(tab)
     }
