@@ -434,7 +434,9 @@ class MainActivity : AppCompatActivity() {
         bottomNav.visibility = View.VISIBLE
         
         // СОЗДАЁМ АДАПТЕР ЗДЕСЬ, КОГДА me УЖЕ ЕСТЬ
-        msgAdapter = MessageAdapter(me) { url, name -> downloadFile(url, name) }
+        msgAdapter = MessageAdapter(me, { url, name -> downloadFile(url, name) },
+                    onMessageLongClick = { msg -> showMessageActions(msg) }
+                )
         messagesList.adapter = msgAdapter
         
         connectWS()
