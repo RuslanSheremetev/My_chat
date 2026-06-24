@@ -205,26 +205,23 @@ class MainActivity : AppCompatActivity() {
         val activeColor = resources.getColor(R.color.primary, theme)
         val inactiveColor = resources.getColor(R.color.nav_inactive, theme)
         
-        navChats.findViewById<ImageView>(R.id.navIconChats)?.setColorFilter(
-            if (tab == 0) activeColor else inactiveColor
-        )
-        navChats.findViewById<TextView>(R.id.navLabelChats)?.setTextColor(
-            if (tab == 0) activeColor else inactiveColor
-        )
+        // Подсветка Чатов
+        val chatIcon = navChats.getChildAt(0) as? ImageView
+        val chatLabel = navChats.getChildAt(1) as? TextView
+        chatIcon?.setColorFilter(if (tab == 0) activeColor else inactiveColor)
+        chatLabel?.setTextColor(if (tab == 0) activeColor else inactiveColor)
         
-        navFavorites.findViewById<ImageView>(R.id.navIconFavorites)?.setColorFilter(
-            if (tab == 1) activeColor else inactiveColor
-        )
-        navFavorites.findViewById<TextView>(R.id.navLabelFavorites)?.setTextColor(
-            if (tab == 1) activeColor else inactiveColor
-        )
+        // Подсветка Избранного
+        val favIcon = navFavorites.getChildAt(0) as? ImageView
+        val favLabel = navFavorites.getChildAt(1) as? TextView
+        favIcon?.setColorFilter(if (tab == 1) activeColor else inactiveColor)
+        favLabel?.setTextColor(if (tab == 1) activeColor else inactiveColor)
         
-        navProfile.findViewById<ImageView>(R.id.navIconProfile)?.setColorFilter(
-            if (tab == 2) activeColor else inactiveColor
-        )
-        navProfile.findViewById<TextView>(R.id.navLabelProfile)?.setTextColor(
-            if (tab == 2) activeColor else inactiveColor
-        )
+        // Подсветка Профиля
+        val profIcon = navProfile.getChildAt(0) as? ImageView
+        val profLabel = navProfile.getChildAt(1) as? TextView
+        profIcon?.setColorFilter(if (tab == 2) activeColor else inactiveColor)
+        profLabel?.setTextColor(if (tab == 2) activeColor else inactiveColor)
     }
 
     private fun loadProfile() {
