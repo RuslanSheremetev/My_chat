@@ -489,7 +489,12 @@ class MainActivity : AppCompatActivity() {
         )
         reactions.forEach { (id, emoji) ->
             view.findViewById<TextView>(id)?.setOnClickListener {
-                sendMessage(selId, emoji)
+                val json = JSONObject().apply {
+                    put("type", "private")
+                    put("to", selId)
+                    put("text", emoji)
+                }
+                ws?.send(json.toString())
                 bottomSheet.dismiss()
             }
         }
