@@ -967,8 +967,8 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun replyToMessage(msg: ChatMessage) {
-        msgInput.setText("↪ ${msg.from}: ${msg.text.take(50)}...
-")
+        val replyText = "↪ ${msg.from}: ${msg.text.take(50)}...\n"
+        msgInput.setText(replyText)
         msgInput.setSelection(msgInput.text.length)
     }
     
