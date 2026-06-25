@@ -36,6 +36,8 @@ import com.mychat.app.models.ChatMessage
 import com.mychat.app.models.FileInfo
 import com.mychat.app.models.User
 import com.mychat.app.utils.FileCache
+import com.mychat.app.data.AppDatabase
+import com.mychat.app.data.MessageEntity
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -93,8 +95,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FileCache.init(this)
+        db = AppDatabase.getInstance(this)
         setContentView(R.layout.activity_main)
         FileCache.init(this)
+        db = AppDatabase.getInstance(this)
         
         loginLayout = findViewById(R.id.loginLayout)
         mainContainer = findViewById(R.id.mainContainer)
@@ -749,7 +753,25 @@ class MainActivity : AppCompatActivity() {
                     }
                     lastMessageCount = nm.size
                     handler.post {
-                        msgAdapter.update(nm)
+                        // Сохраняем в Room
+                    thread {
+                        try {
+                            val entities = nm.map { msg ->
+                                MessageEntity(
+                                    id = msg.id,
+                                    chatKey = selId,
+                                    fromUser = msg.from,
+                                    toUser = msg.to,
+                                    text = msg.text,
+                                    time = msg.time,
+                                    fileUrl = msg.file?.url ?: "",
+                                    fileName = msg.file?.name ?: ""
+                                )
+                            }
+                            db.messageDao().insertMessages(entities)
+                        } catch (e: Exception) {}
+                    }
+                    msgAdapter.update(nm)
                         if (nm.isNotEmpty()) {
                             handler.postDelayed({ messagesList.scrollToPosition(msgAdapter.itemCount - 1) }, 300)
                         }
@@ -794,7 +816,25 @@ class MainActivity : AppCompatActivity() {
                     if (nm.size > lastMessageCount) {
                         val wasAtBottom = !messagesList.canScrollVertically(1)
                         handler.post {
-                            msgAdapter.update(nm)
+                            // Сохраняем в Room
+                    thread {
+                        try {
+                            val entities = nm.map { msg ->
+                                MessageEntity(
+                                    id = msg.id,
+                                    chatKey = selId,
+                                    fromUser = msg.from,
+                                    toUser = msg.to,
+                                    text = msg.text,
+                                    time = msg.time,
+                                    fileUrl = msg.file?.url ?: "",
+                                    fileName = msg.file?.name ?: ""
+                                )
+                            }
+                            db.messageDao().insertMessages(entities)
+                        } catch (e: Exception) {}
+                    }
+                    msgAdapter.update(nm)
                             lastMessageCount = nm.size
                             if (wasAtBottom && nm.isNotEmpty()) {
                                 handler.postDelayed({ messagesList.scrollToPosition(msgAdapter.itemCount - 1) }, 300)
