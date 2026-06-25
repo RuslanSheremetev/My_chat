@@ -808,6 +808,20 @@ class MainActivity : AppCompatActivity() {
             pickFile()
         }
         
+        // Закрытие по свайпу вниз
+        view.setOnTouchListener { _, event ->
+            if (event.action == android.view.MotionEvent.ACTION_DOWN) {
+                view.tag = event.y
+            }
+            if (event.action == android.view.MotionEvent.ACTION_MOVE) {
+                val startY = view.tag as? Float ?: 0f
+                if (event.y - startY > 100) {
+                    bottomSheet.dismiss()
+                }
+            }
+            false
+        }
+        
         bottomSheet.show()
     }
     
