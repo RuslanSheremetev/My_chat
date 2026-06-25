@@ -737,7 +737,7 @@ class MainActivity : AppCompatActivity() {
                     handler.post {
                         msgAdapter.update(nm)
                         if (nm.isNotEmpty()) {
-                            messagesList.scrollToPosition(nm.size - 1)
+                            messagesList.post { messagesList.scrollToPosition(nm.size - 1) }
                         }
                     }
                 }
@@ -783,7 +783,7 @@ class MainActivity : AppCompatActivity() {
                             msgAdapter.update(nm)
                             lastMessageCount = nm.size
                             if (wasAtBottom && nm.isNotEmpty()) {
-                                messagesList.scrollToPosition(nm.size - 1)
+                                messagesList.post { messagesList.scrollToPosition(nm.size - 1) }
                             }
                         }
                     }
@@ -1062,7 +1062,7 @@ class MainActivity : AppCompatActivity() {
                                 onMessageLongClick = { msg -> showMessageActions(msg) }
                             )
                             messagesList.adapter = msgAdapter
-                            messagesList.scrollToPosition(messages.size - 1)
+                            messagesList.post { messagesList.scrollToPosition(messages.size - 1) }
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
