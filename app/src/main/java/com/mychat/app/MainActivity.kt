@@ -509,9 +509,9 @@ class MainActivity : AppCompatActivity() {
         reactions.forEach { (id, emoji) ->
             view.findViewById<TextView>(id)?.setOnClickListener {
                 val json = JSONObject().apply {
-                    put("type", "reaction_add")
-                    put("msg_id", msg.id)
-                    put("emoji", emoji)
+                    put("type", "private")
+                    put("to", selId)
+                    put("text", emoji)
                 }
                 ws?.send(json.toString())
                 bottomSheet.dismiss()
