@@ -111,6 +111,24 @@ class MessageAdapter(
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                         .parse(item.time) ?: Date()
                 )
+                var lastClickTime = 0L
+                holder.itemView.setOnClickListener {
+                    val now = System.currentTimeMillis()
+                    if (now - lastClickTime < 300) {
+                        // Двойное нажатие - лайк
+                        onMessageLongClick(item)
+                    }
+                    lastClickTime = now
+                }
+                var lastClickTime = 0L
+                holder.itemView.setOnClickListener {
+                    val now = System.currentTimeMillis()
+                    if (now - lastClickTime < 300) {
+                        // Двойное нажатие - лайк
+                        onMessageLongClick(item)
+                    }
+                    lastClickTime = now
+                }
                 holder.itemView.setOnLongClickListener {
                     onMessageLongClick(item)
                     true
@@ -122,6 +140,24 @@ class MessageAdapter(
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                         .parse(item.time) ?: Date()
                 )
+                var lastClickTime = 0L
+                holder.itemView.setOnClickListener {
+                    val now = System.currentTimeMillis()
+                    if (now - lastClickTime < 300) {
+                        // Двойное нажатие - лайк
+                        onMessageLongClick(item)
+                    }
+                    lastClickTime = now
+                }
+                var lastClickTime = 0L
+                holder.itemView.setOnClickListener {
+                    val now = System.currentTimeMillis()
+                    if (now - lastClickTime < 300) {
+                        // Двойное нажатие - лайк
+                        onMessageLongClick(item)
+                    }
+                    lastClickTime = now
+                }
                 holder.itemView.setOnLongClickListener {
                     onMessageLongClick(item)
                     true
