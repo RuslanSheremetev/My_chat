@@ -722,6 +722,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refreshMessages() {
+        // Сначала показываем из Room (мгновенно)
+        thread {
+            try {
+                val localMessages = db.messageDao().getMessages(selId)
+                if (localMessages.isNotEmpty()) {
+                    val msgs = localMessages.map { entity ->
+                        ChatMessage(
+                            id = entity.id,
+                            from = entity.fromUser,
+                            to = entity.toUser,
+                            text = entity.text,
+                            time = entity.time,
+                            file = if (entity.fileUrl.isNotEmpty()) FileInfo(entity.fileName, entity.fileUrl) else null
+                        )
+                    }
+                    handler.post { msgAdapter.update(msgs) }
+                }
+            } catch (e: Exception) {}
+        }
+        // Потом обновляем с сервера
         if (selId.isEmpty()) return
         thread {
             try {
