@@ -130,7 +130,8 @@ class MainActivity : AppCompatActivity() {
         chatList.adapter = chatAdapter
         
         // Создаём адаптер позже
-        messagesList.layoutManager = LinearLayoutManager(this)
+        val lm = LinearLayoutManager(this).apply { stackFromEnd = true }
+        messagesList.layoutManager = lm
         
         findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
         findViewById<Button>(R.id.btnRegister).setOnClickListener { register() }
