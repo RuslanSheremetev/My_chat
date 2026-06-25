@@ -16,6 +16,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import android.content.ClipboardManager
+import android.content.ClipData
 import android.os.Vibrator
 import android.os.VibrationEffect
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -525,6 +527,12 @@ class MainActivity : AppCompatActivity() {
         view.findViewById<LinearLayout>(R.id.actionEdit)?.setOnClickListener {
             bottomSheet.dismiss()
             t("Изменить сообщение")
+        }
+        view.findViewById<LinearLayout>(R.id.actionCopy)?.setOnClickListener {
+            bottomSheet.dismiss()
+            val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            clipboard.setPrimaryClip(ClipData.newPlainText("message", msg.text))
+            t("Текст скопирован!")
         }
         view.findViewById<LinearLayout>(R.id.actionForward)?.setOnClickListener {
             bottomSheet.dismiss()
