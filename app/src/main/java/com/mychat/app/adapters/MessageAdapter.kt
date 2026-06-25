@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.ImageView
 import android.graphics.BitmapFactory
-import android.graphics.BitmapFactory
 import java.net.URL
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
