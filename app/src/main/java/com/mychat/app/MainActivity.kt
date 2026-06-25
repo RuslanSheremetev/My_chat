@@ -281,32 +281,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showCreateGroupDialog() {
-        val input = EditText(this).apply {
-            hint = "Название группы"
-            setTextColor(0xffffffff.toInt())
-            setHintTextColor(0xff636366.toInt())
-            setBackgroundResource(R.drawable.bg_input)
-            setPadding(30, 20, 30, 20)
+        val v = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(40, 20, 40, 20)
         }
-        AlertDialog.Builder(this)
-            .setTitle("Создать группу")
-            .setView(input)
-            .setPositiveButton("Создать") { _, _ ->
-                val name = input.text.toString().trim()
-                if (name.isNotEmpty()) {
-                    val json = JSONObject().apply {
-                        put("type", "create_group")
-                        put("name", name)
-                        put("members", JSONArray().apply { put(me) })
-                        put("private", false)
-                    }
-                    ws?.send(json.toString())
-                    t("Группа создаётся!")
-                }
-            }
-            .setNegativeButton("Отмена", null)
-            .show()
-    }
         val nameIn = EditText(this).apply {
             hint = "Название группы"
             setTextColor(0xffffffff.toInt())
@@ -350,32 +328,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showCreateFeedDialog() {
-        val input = EditText(this).apply {
-            hint = "Название ленты"
-            setTextColor(0xffffffff.toInt())
-            setHintTextColor(0xff636366.toInt())
-            setBackgroundResource(R.drawable.bg_input)
-            setPadding(30, 20, 30, 20)
+        val v = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(40, 20, 40, 20)
         }
-        AlertDialog.Builder(this)
-            .setTitle("Создать ленту")
-            .setView(input)
-            .setPositiveButton("Создать") { _, _ ->
-                val name = input.text.toString().trim()
-                if (name.isNotEmpty()) {
-                    val json = JSONObject().apply {
-                        put("type", "create_feed")
-                        put("name", name)
-                        put("description", "")
-                        put("private", false)
-                    }
-                    ws?.send(json.toString())
-                    t("Лента создаётся!")
-                }
-            }
-            .setNegativeButton("Отмена", null)
-            .show()
-    }
         val nameIn = EditText(this).apply {
             hint = "Название ленты"
             setTextColor(0xffffffff.toInt())
