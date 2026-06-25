@@ -16,6 +16,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import android.view.inputmethod.InputMethodManager
 import android.content.ClipboardManager
 import android.content.ClipData
 import android.os.Vibrator
@@ -134,6 +135,13 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnSend).setOnClickListener { sendMessage() }
         findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { showAttachmentMenu() }
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
+        findViewById<ImageButton>(R.id.btnSearch).setOnClickListener { showSearchBar() }
+        msgSearchClose.setOnClickListener { hideSearchBar() }
+        msgSearchInput.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) { msgAdapter?.filter(s.toString()) }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
         findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
         
@@ -1102,6 +1110,21 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+    
+    private fun showSearchBar() {
+        searchBar.visibility = View.VISIBLE
+        msgSearchInput.requestFocus()
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        imm.showSoftInput(msgSearchInput, 0)
+    }
+    
+    private fun hideSearchBar() {
+        searchBar.visibility = View.GONE
+        msgSearchInput.text.clear()
+        msgAdapter?.filter("")
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        imm.hideSoftInputFromWindow(msgSearchInput.windowToken, 0)
     }
     
     private fun t(msg: String) {
