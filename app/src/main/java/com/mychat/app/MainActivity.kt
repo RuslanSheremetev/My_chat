@@ -94,12 +94,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FileCache.init(this)
-        fileCache = FileCache(this)
-        db = AppDatabase.getInstance(this)
         setContentView(R.layout.activity_main)
         FileCache.init(this)
-        fileCache = FileCache(this)
         db = AppDatabase.getInstance(this)
         
         loginLayout = findViewById(R.id.loginLayout)
