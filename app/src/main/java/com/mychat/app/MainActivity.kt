@@ -1010,22 +1010,30 @@ class MainActivity : AppCompatActivity() {
     
     private fun showForwardDialog(msg: ChatMessage) {
         val users = chatAdapter.getUsers()
-        if (users.isEmpty()) {
+        val filtered = users.filter { it.username != me && !it.isGroup && !it.isFeed }
+        if (filtered.isEmpty()) {
             t("Нет контактов для пересылки")
             return
         }
-        val names = users.map { it.name.ifEmpty { it.username } }.toTypedArray()
+        val names = filtered.map { it.name.ifEmpty { it.username } }.toTypedArray()
         AlertDialog.Builder(this)
-            .setTitle("Переслать сообщение")
+            .setTitle("Переслать: ${msg.text.take(30)}...")
             .setItems(names) { _, which ->
-                val toUser = users[which].username
+                val toUser = filtered[which].username
+                val forwardData = JSONObject().apply {
+                    put("from", msg.from)
+                    put("text", msg.text)
+                }
+                if (msg.file != null) {
+                    forwardData.put("file", JSONObject().apply {
+                        put("url", msg.file.url)
+                        put("name", msg.file.name)
+                    })
+                }
                 val json = JSONObject().apply {
                     put("type", "forward")
                     put("to", toUser)
-                    put("forward", JSONObject().apply {
-                        put("from", msg.from)
-                        put("text", msg.text)
-                    })
+                    put("forward", forwardData)
                 }
                 ws?.send(json.toString())
                 t("Переслано!")
