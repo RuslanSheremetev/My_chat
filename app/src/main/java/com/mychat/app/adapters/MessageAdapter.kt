@@ -176,7 +176,7 @@ class MessageAdapter(
         val from: TextView = view.findViewById(R.id.from)
         val text: TextView = view.findViewById(R.id.text)
         val time: TextView = view.findViewById(R.id.time)
-        val image: ImageView = view.findViewById(R.id.image)
+        val imageMsg: ImageView = view.findViewById(R.id.imageMsg)
     }
 
     class OutViewHolder(view: View) : RecyclerView.ViewHolder(view) {
