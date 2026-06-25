@@ -7,8 +7,6 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.GestureDetectorCompat
-import android.view.GestureDetector
 import com.mychat.app.R
 import com.mychat.app.utils.FileCache
 import kotlin.concurrent.thread
@@ -18,7 +16,7 @@ class GalleryActivity : AppCompatActivity() {
     private var currentIndex = 0
     private lateinit var imageView: ImageView
     private lateinit var counter: TextView
-    private lateinit var gestureDetector: GestureDetectorCompat
+    private var startX = 0f
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,22 +32,23 @@ class GalleryActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.galleryPrev).setOnClickListener { showPhoto(currentIndex - 1) }
         findViewById<ImageButton>(R.id.galleryNext).setOnClickListener { showPhoto(currentIndex + 1) }
         
-        gestureDetector = GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-                if (e1 == null) return false
-                val diffX = e2.x - e1.x
-                if (Math.abs(diffX) > 100 && Math.abs(velocityX) > 200) {
-                    if (diffX > 0) showPhoto(currentIndex - 1)
-                    else showPhoto(currentIndex + 1)
-                    return true
-                }
-                return false
-            }
-        })
-        
+        // Свайп через OnTouchListener
         imageView.setOnTouchListener { _, event ->
-            gestureDetector.onTouchEvent(event)
-            true
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    startX = event.x
+                    true
+                }
+                MotionEvent.ACTION_UP -> {
+                    val diffX = event.x - startX
+                    if (Math.abs(diffX) > 100) {
+                        if (diffX > 0) showPhoto(currentIndex - 1)
+                        else showPhoto(currentIndex + 1)
+                    }
+                    true
+                }
+                else -> false
+            }
         }
         
         showPhoto(currentIndex)
@@ -78,4 +77,3 @@ class GalleryActivity : AppCompatActivity() {
         }
     }
 }
-
