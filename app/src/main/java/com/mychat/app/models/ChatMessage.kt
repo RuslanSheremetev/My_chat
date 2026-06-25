@@ -7,5 +7,6 @@ data class ChatMessage(
     val text: String = "",
     val time: String = "",
     val file: FileInfo? = null,
-    val isGroup: Boolean = false
+    val isGroup: Boolean = false,
+    val read: Boolean = false
 )
