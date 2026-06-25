@@ -493,6 +493,7 @@ class MainActivity : AppCompatActivity() {
     }
     
     private var selectedMessage: ChatMessage? = null
+    private var pendingForward: ChatMessage? = null
     
     private fun showMessageActions(msg: ChatMessage) {
         selectedMessage = msg
@@ -1009,37 +1010,9 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun showForwardDialog(msg: ChatMessage) {
-        val users = chatAdapter.getUsers()
-        val filtered = users.filter { it.username != me && !it.isGroup && !it.isFeed }
-        if (filtered.isEmpty()) {
-            t("Нет контактов для пересылки")
-            return
-        }
-        val names = filtered.map { it.name.ifEmpty { it.username } }.toTypedArray()
-        AlertDialog.Builder(this)
-            .setTitle("Переслать: ${msg.text.take(30)}...")
-            .setItems(names) { _, which ->
-                val toUser = filtered[which].username
-                val forwardData = JSONObject().apply {
-                    put("from", msg.from)
-                    put("text", msg.text)
-                }
-                if (msg.file != null) {
-                    forwardData.put("file", JSONObject().apply {
-                        put("url", msg.file.url)
-                        put("name", msg.file.name)
-                    })
-                }
-                val json = JSONObject().apply {
-                    put("type", "forward")
-                    put("to", toUser)
-                    put("forward", forwardData)
-                }
-                ws?.send(json.toString())
-                t("Переслано!")
-            }
-            .setNegativeButton("Отмена", null)
-            .show()
+        pendingForward = msg
+        closeChat()
+        t("Выберите чат для пересылки")
     }
     
     private fun forwardMessage(msg: ChatMessage) {
