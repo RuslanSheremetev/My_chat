@@ -472,17 +472,7 @@ class MainActivity : AppCompatActivity() {
         lastMessageCount = 0
         refreshMessages()
         // Отмечаем сообщения прочитанными
-        handler.postDelayed({
-            val msgIds = msgAdapter.getMessages().map { it.id }
-            if (msgIds.isNotEmpty()) {
-                val json = JSONObject().apply {
-                    put("type", "read_batch")
-                    put("to", id)
-                    put("msg_ids", JSONArray(msgIds))
-                }
-                ws?.send(json.toString())
-            }
-        }, 500)
+
         startPolling()
     }
 

@@ -11,6 +11,7 @@ import com.mychat.app.R
 import com.mychat.app.models.ChatMessage
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.concurrent.thread
 
 class MessageAdapter(
     private val me: String,
