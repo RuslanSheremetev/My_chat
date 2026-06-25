@@ -182,7 +182,6 @@ class MessageAdapter(
     class OutViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val text: TextView = view.findViewById(R.id.text)
         val time: TextView = view.findViewById(R.id.time)
-        val readStatus: TextView = view.findViewById(R.id.readStatus)
     }
     fun getMessages(): List<ChatMessage> {
         return items.filterIsInstance<ChatMessage>()
