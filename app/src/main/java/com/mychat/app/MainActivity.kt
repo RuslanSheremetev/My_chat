@@ -996,6 +996,10 @@ class MainActivity : AppCompatActivity() {
             put("msg_id", msg.id)
         }
         ws?.send(json.toString())
+        // Перезагружаем сообщения через 500мс
+        handler.postDelayed({
+            loadMessages(selId)
+        }, 500)
         t("Сообщение удалено")
     }
     
