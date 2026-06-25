@@ -138,6 +138,19 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnMic).setOnClickListener {
             t("Аудио будет позже")
         }
+        msgInput.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if (selId.isNotEmpty() && s?.isNotEmpty() == true) {
+                    val json = JSONObject().apply {
+                        put("type", "typing")
+                        put("to", selId)
+                    }
+                    ws?.send(json.toString())
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
         findViewById<ImageButton>(R.id.btnSend).setOnClickListener { sendMessage() }
         findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { showAttachmentMenu() }
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
