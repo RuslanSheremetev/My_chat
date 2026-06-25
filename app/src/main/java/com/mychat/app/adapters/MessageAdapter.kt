@@ -124,6 +124,14 @@ class MessageAdapter(
         val fi = item.file
         if (fi != null && fi.url.isNotEmpty()) {
             imageView.visibility = View.VISIBLE
+            imageView.setOnClickListener {
+                var openUrl = fi.url
+                if (!openUrl.startsWith("http")) openUrl = "http://2.26.71.102:8000$openUrl"
+                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                    setDataAndType(android.net.Uri.parse(openUrl), "image/*")
+                }
+                imageView.context.startActivity(intent)
+            }
             var url = fi.url
             if (!url.startsWith("http")) url = "http://2.26.71.102:8000$url"
             
