@@ -896,11 +896,12 @@ class MainActivity : AppCompatActivity() {
                 ).execute()
                 if (r.isSuccessful) {
                     val u = JSONObject(r.body!!.string()).optString("url", "")
+                    val isImage = fn.endsWith(".jpg") || fn.endsWith(".jpeg") || fn.endsWith(".png") || fn.endsWith(".gif") || fn.endsWith(".webp")
                     ws?.send(
                         JSONObject().apply {
                             put("type", "private")
                             put("to", selId)
-                            put("text", "File: $fn")
+                            put("text", if (isImage) "" else "File: $fn")
                             put("file", JSONObject().apply {
                                 put("name", fn)
                                 put("url", u)
