@@ -522,7 +522,7 @@ class MainActivity : AppCompatActivity() {
         }
         view.findViewById<LinearLayout>(R.id.actionDelete)?.setOnClickListener {
             bottomSheet.dismiss()
-            t("Удалить сообщение")
+            deleteMessage(msg)
         }
         
         bottomSheet.show()
@@ -964,6 +964,20 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+    
+    private fun deleteMessage(msg: ChatMessage) {
+        if (msg.from != me) {
+            t("Можно удалить только свои сообщения")
+            return
+        }
+        val json = JSONObject().apply {
+            put("type", "delete")
+            put("to", msg.to)
+            put("msg_id", msg.id)
+        }
+        ws?.send(json.toString())
+        t("Сообщение удалено")
     }
     
     private fun addToFavorites(msg: ChatMessage) {
