@@ -2,7 +2,7 @@ name: Build Profile
 
 on:
   push:
-    branches: [ profile ]
+    branches: [ profile, feature/cache ]
   workflow_dispatch:
 
 jobs:
