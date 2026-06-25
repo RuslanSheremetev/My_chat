@@ -923,7 +923,13 @@ class MainActivity : AppCompatActivity() {
         // Проверяем кеш
         val cached = FileCache.getFile(fullUrl)
         if (cached != null) {
-            handler.post { openFile(cached, name) }
+            handler.post {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(androidx.core.content.FileProvider.getUriForFile(this@MainActivity, "$packageName.fileprovider", cached), "*/*")
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                startActivity(intent)
+            }
             return
         }
         thread {
