@@ -788,6 +788,7 @@ class MainActivity : AppCompatActivity() {
                                 )
                             }
                             db.messageDao().insertMessages(entities)
+                            db.messageDao().deleteOldMessages(selId)
                         } catch (e: Exception) {}
                     }
                     msgAdapter.update(nm)
@@ -851,6 +852,7 @@ class MainActivity : AppCompatActivity() {
                                 )
                             }
                             db.messageDao().insertMessages(entities)
+                            db.messageDao().deleteOldMessages(selId)
                         } catch (e: Exception) {}
                     }
                     msgAdapter.update(nm)
