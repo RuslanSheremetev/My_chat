@@ -16,6 +16,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import android.os.Vibrator
+import android.os.VibrationEffect
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
