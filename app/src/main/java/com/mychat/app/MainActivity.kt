@@ -985,6 +985,42 @@ class MainActivity : AppCompatActivity() {
         t("Сообщение переслано!")
     }
     
+    private fun loadMessages(userId: String) {
+        val request = Request.Builder()
+            .url("$server/messages/$userId?me=$me&token=$token")
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
+            override fun onResponse(call: Call, response: Response) {
+                response.body?.let { body ->
+                    try {
+                        val json = JSONArray(body.string())
+                        val messages = mutableListOf<ChatMessage>()
+                        for (i in 0 until json.length()) {
+                            val obj = json.getJSONObject(i)
+                            messages.add(ChatMessage(
+                                id = obj.optString("id"),
+                                from = obj.optString("from"),
+                                to = obj.optString("to"),
+                                text = obj.optString("text"),
+                                time = obj.optString("time")
+                            ))
+                        }
+                        runOnUiThread {
+                            msgAdapter = MessageAdapter(messages, me,
+                                onMessageLongClick = { msg -> showMessageActions(msg) }
+                            )
+                            messagesList.adapter = msgAdapter
+                            messagesList.scrollToPosition(messages.size - 1)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        })
+    }
+    
     private fun deleteMessage(msg: ChatMessage) {
         if (msg.from != me) {
             t("Можно удалить только свои сообщения")
