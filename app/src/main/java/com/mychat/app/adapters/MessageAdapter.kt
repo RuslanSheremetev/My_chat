@@ -2,8 +2,12 @@ package com.mychat.app.adapters
 
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.ImageView
+import android.graphics.BitmapFactory
+import java.net.URL
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.mychat.app.R
@@ -173,6 +177,7 @@ class MessageAdapter(
         val from: TextView = view.findViewById(R.id.from)
         val text: TextView = view.findViewById(R.id.text)
         val time: TextView = view.findViewById(R.id.time)
+        val image: ImageView = view.findViewById(R.id.image)
     }
 
     class OutViewHolder(view: View) : RecyclerView.ViewHolder(view) {
