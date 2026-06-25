@@ -1007,7 +1007,7 @@ class MainActivity : AppCompatActivity() {
                             ))
                         }
                         runOnUiThread {
-                            msgAdapter = MessageAdapter(messages, me,
+                            msgAdapter = MessageAdapter(me, { url, name -> downloadFile(url, name) },
                                 onMessageLongClick = { msg -> showMessageActions(msg) }
                             )
                             messagesList.adapter = msgAdapter
