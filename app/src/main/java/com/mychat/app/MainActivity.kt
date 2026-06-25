@@ -131,6 +131,9 @@ class MainActivity : AppCompatActivity() {
         
         findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
         findViewById<Button>(R.id.btnRegister).setOnClickListener { register() }
+        findViewById<ImageButton>(R.id.btnMic).setOnClickListener {
+            t("Аудио будет позже")
+        }
         findViewById<ImageButton>(R.id.btnSend).setOnClickListener { sendMessage() }
         findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { showAttachmentMenu() }
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
