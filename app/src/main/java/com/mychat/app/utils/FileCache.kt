@@ -1,32 +1,40 @@
 package com.mychat.app.utils
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import java.io.File
 import java.io.FileOutputStream
 
-object FileCache {
-    private lateinit var cacheDir: File
+class FileCache(context: Context) {
+    private val cacheDir = File(context.cacheDir, "media")
     
-    fun init(context: Context) {
-        cacheDir = File(context.cacheDir, "media")
+    init {
         if (!cacheDir.exists()) cacheDir.mkdirs()
     }
     
-    fun getCachedFile(url: String): File? {
-        val name = url.substringAfterLast("/")
-        val file = File(cacheDir, name)
-        return if (file.exists()) file else null
+    fun getBitmap(url: String): Bitmap? {
+        val file = getFile(url)
+        return if (file.exists()) BitmapFactory.decodeFile(file.absolutePath) else null
     }
     
-    fun saveToCache(url: String, bytes: ByteArray): File {
-        val name = url.substringAfterLast("/")
-        val file = File(cacheDir, name)
-        FileOutputStream(file).use { it.write(bytes) }
-        return file
+    fun saveToCache(url: String, bytes: ByteArray): File? {
+        return try {
+            val file = getFile(url)
+            FileOutputStream(file).use { it.write(bytes) }
+            file
+        } catch (e: Exception) { null }
     }
+    
+    fun isCached(url: String): Boolean = getFile(url).exists()
     
     fun clearCache() {
         cacheDir.deleteRecursively()
         cacheDir.mkdirs()
+    }
+    
+    private fun getFile(url: String): File {
+        val name = url.substringAfterLast("/").ifEmpty { "file_${System.currentTimeMillis()}" }
+        return File(cacheDir, name)
     }
 }
