@@ -151,6 +151,21 @@ class MessageAdapter(
         return items.filterIsInstance<ChatMessage>()
     }
     
+    fun addReaction(msgId: String, emoji: String, username: String) {
+        val index = items.indexOfFirst { it is ChatMessage && it.id == msgId }
+        if (index >= 0) {
+            val msg = items[index] as ChatMessage
+            val reactions = msg.reactions.toMutableMap()
+            val users = reactions.getOrDefault(emoji, mutableListOf()).toMutableList()
+            if (!users.contains(username)) {
+                users.add(username)
+                reactions[emoji] = users
+                items[index] = msg.copy(reactions = reactions)
+                notifyItemChanged(index)
+            }
+        }
+    }
+    
     fun markRead(msgId: String) {
         val index = items.indexOfFirst { 
             it is ChatMessage && it.id == msgId 
