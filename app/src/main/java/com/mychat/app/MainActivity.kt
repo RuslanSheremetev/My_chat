@@ -536,7 +536,7 @@ class MainActivity : AppCompatActivity() {
         }
         view.findViewById<LinearLayout>(R.id.actionForward)?.setOnClickListener {
             bottomSheet.dismiss()
-            t("Переслать сообщение")
+            showForwardDialog(msg)
         }
         view.findViewById<LinearLayout>(R.id.actionFavorite)?.setOnClickListener {
             bottomSheet.dismiss()
