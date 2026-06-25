@@ -905,7 +905,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 handler.post {
                     pd.dismiss()
-                    loadUsers()
                 }
             } catch (e: Exception) {
                 handler.post {
