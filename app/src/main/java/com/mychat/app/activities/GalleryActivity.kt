@@ -35,11 +35,12 @@ class GalleryActivity : AppCompatActivity() {
         
         // Жесты для свайпа
         gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-                val diffX = e2.x - (e1?.x ?: 0f)
+            override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
+                if (e1 == null || e2 == null) return false
+                val diffX = e2.x - e1.x
                 if (Math.abs(diffX) > 100 && Math.abs(velocityX) > 200) {
-                    if (diffX > 0) showPhoto(currentIndex - 1) // свайп вправо
-                    else showPhoto(currentIndex + 1) // свайп влево
+                    if (diffX > 0) showPhoto(currentIndex - 1)
+                    else showPhoto(currentIndex + 1)
                     return true
                 }
                 return false
