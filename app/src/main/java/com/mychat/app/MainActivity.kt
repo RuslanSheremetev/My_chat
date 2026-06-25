@@ -518,7 +518,7 @@ class MainActivity : AppCompatActivity() {
         }
         view.findViewById<LinearLayout>(R.id.actionFavorite)?.setOnClickListener {
             bottomSheet.dismiss()
-            t("В избранное")
+            addToFavorites(msg)
         }
         view.findViewById<LinearLayout>(R.id.actionDelete)?.setOnClickListener {
             bottomSheet.dismiss()
@@ -960,6 +960,35 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         t("Ошибка удаления")
                         loadUsers() // перезагружаем список
+                    }
+                }
+            }
+        })
+    }
+    
+    private fun addToFavorites(msg: ChatMessage) {
+        val json = JSONObject().apply {
+            put("id", msg.id)
+            put("from", msg.from)
+            put("to", msg.to)
+            put("text", msg.text)
+            put("time", msg.time)
+        }
+        val requestBody = json.toString().toRequestBody("application/json".toMediaType())
+        val request = Request.Builder()
+            .url("$server/favorites/add?token=$token")
+            .post(requestBody)
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                runOnUiThread { t("Ошибка") }
+            }
+            override fun onResponse(call: Call, response: Response) {
+                runOnUiThread {
+                    if (response.isSuccessful) {
+                        t("✅ Добавлено в избранное!")
+                    } else {
+                        t("Ошибка добавления")
                     }
                 }
             }
