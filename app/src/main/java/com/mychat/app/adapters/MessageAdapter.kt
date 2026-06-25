@@ -28,7 +28,7 @@ class MessageAdapter(
         private const val TYPE_OUT = 2
     }
 
-    override fun update(list: List<ChatMessage>) {
+    fun update(list: List<ChatMessage>) {
         items.clear()
         var lastDate = ""
         for (msg in list) {
@@ -197,30 +197,6 @@ class MessageAdapter(
                 notifyItemChanged(index)
             }
         }
-    }
-    
-    private var allMessages = mutableListOf<Any>()
-    
-    fun filter(query: String) {
-        if (query.isEmpty()) {
-            update(getMessages())
-            return
-        }
-        val filtered = allMessages.filterIsInstance<ChatMessage>()
-            .filter { it.text.contains(query, ignoreCase = true) }
-        val newItems = mutableListOf<Any>()
-        for (msg in filtered) {
-            newItems.add(msg)
-        }
-        items.clear()
-        items.addAll(newItems)
-        notifyDataSetChanged()
-    }
-    
-    override fun update(list: List<ChatMessage>) {
-        allMessages.clear()
-        allMessages.addAll(list)
-        super.update(list)
     }
     
     fun markRead(msgId: String) {
