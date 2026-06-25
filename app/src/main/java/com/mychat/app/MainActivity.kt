@@ -921,7 +921,7 @@ class MainActivity : AppCompatActivity() {
     private fun downloadFile(url: String, name: String) {
         val fullUrl = if (url.startsWith("http")) url else "$server$url"
         // Проверяем кеш
-        val cached = FileCache.getFile(fullUrl)
+        val cached = FileCache.getCachedFile(fullUrl)
         if (cached != null) {
             handler.post {
                 val intent = Intent(Intent.ACTION_VIEW).apply {
