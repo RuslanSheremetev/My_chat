@@ -6,10 +6,11 @@ import android.graphics.BitmapFactory
 import java.io.File
 import java.io.FileOutputStream
 
-class FileCache(context: Context) {
-    private val cacheDir = File(context.cacheDir, "media")
+object FileCache {
+    private lateinit var cacheDir: File
     
-    init {
+    fun init(context: Context) {
+        cacheDir = File(context.cacheDir, "media")
         if (!cacheDir.exists()) cacheDir.mkdirs()
     }
     
@@ -24,6 +25,11 @@ class FileCache(context: Context) {
             FileOutputStream(file).use { it.write(bytes) }
             file
         } catch (e: Exception) { null }
+    }
+    
+    fun getCachedFile(url: String): File? {
+        val file = getFile(url)
+        return if (file.exists()) file else null
     }
     
     fun isCached(url: String): Boolean = getFile(url).exists()

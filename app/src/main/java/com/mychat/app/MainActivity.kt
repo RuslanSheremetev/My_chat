@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         FileCache.init(this)
         setContentView(R.layout.activity_main)
-        fileCache = FileCache(this)
+        FileCache.init(this)
         
         loginLayout = findViewById(R.id.loginLayout)
         mainContainer = findViewById(R.id.mainContainer)
