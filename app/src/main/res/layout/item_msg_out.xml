@@ -21,12 +21,26 @@
             android:textSize="14sp"
             android:textColor="#fff"/>
 
-        <TextView
-            android:id="@+id/time"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:textColor="#88ffffff"
-            android:layout_gravity="end"/>
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_gravity="end">
+            <TextView
+                android:id="@+id/readStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="✅"
+                android:textSize="10sp"
+                android:layout_marginEnd="4dp"
+                android:visibility="gone"/>
+            <TextView
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:textColor="#88ffffff"/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
