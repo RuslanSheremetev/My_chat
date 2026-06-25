@@ -526,7 +526,7 @@ class MainActivity : AppCompatActivity() {
         }
         view.findViewById<LinearLayout>(R.id.actionEdit)?.setOnClickListener {
             bottomSheet.dismiss()
-            t("Изменить сообщение")
+            editMessage(msg)
         }
         view.findViewById<LinearLayout>(R.id.actionCopy)?.setOnClickListener {
             bottomSheet.dismiss()
@@ -1055,6 +1055,40 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+    
+    private fun editMessage(msg: ChatMessage) {
+        if (msg.from != me) {
+            t("Можно изменить только свои сообщения")
+            return
+        }
+        val input = EditText(this).apply {
+            setText(msg.text)
+            setTextColor(0xffffffff.toInt())
+            setHintTextColor(0xff636366.toInt())
+            setBackgroundResource(R.drawable.bg_input)
+            setPadding(30, 20, 30, 20)
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Изменить сообщение")
+            .setView(input)
+            .setPositiveButton("Сохранить") { _, _ ->
+                val newText = input.text.toString().trim()
+                if (newText.isNotEmpty() && newText != msg.text) {
+                    val json = JSONObject().apply {
+                        put("type", "edit")
+                        put("to", msg.to)
+                        put("msg_id", msg.id)
+                        put("text", newText)
+                    }
+                    ws?.send(json.toString())
+                    t("Сообщение изменено")
+                    // Обновляем через 500мс
+                    handler.postDelayed({ refreshMessages() }, 500)
+                }
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
     }
     
     private fun deleteMessage(msg: ChatMessage) {
