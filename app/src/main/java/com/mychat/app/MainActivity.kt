@@ -506,7 +506,7 @@ class MainActivity : AppCompatActivity() {
         
         view.findViewById<LinearLayout>(R.id.actionReply)?.setOnClickListener {
             bottomSheet.dismiss()
-            t("Ответ на сообщение")
+            replyToMessage(msg)
         }
         view.findViewById<LinearLayout>(R.id.actionEdit)?.setOnClickListener {
             bottomSheet.dismiss()
