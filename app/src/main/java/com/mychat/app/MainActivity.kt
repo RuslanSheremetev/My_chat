@@ -78,6 +78,7 @@ class MainActivity : AppCompatActivity() {
     private var token = ""
     private var me = ""
     private var selId = ""
+    private lateinit var db: AppDatabase
     private var ws: WebSocket? = null
     private val users = mutableListOf<User>()
     private val handler = Handler(Looper.getMainLooper())
