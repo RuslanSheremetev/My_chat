@@ -125,10 +125,14 @@ class MessageAdapter(
         if (fi != null && fi.url.isNotEmpty()) {
             imageView.visibility = View.VISIBLE
             imageView.setOnClickListener {
-                var openUrl = fi.url
-                if (!openUrl.startsWith("http")) openUrl = "http://2.26.71.102:8000$openUrl"
-                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
-                    setDataAndType(android.net.Uri.parse(openUrl), "image/*")
+                // Собираем все фото из чата и открываем галерею
+                val allPhotos = items.filterIsInstance<ChatMessage>()
+                    .filter { it.file != null && it.file!!.url.isNotEmpty() }
+                    .map { it.file!!.url }
+                val index = allPhotos.indexOf(fi.url)
+                val intent = android.content.Intent(imageView.context, com.mychat.app.activities.GalleryActivity::class.java).apply {
+                    putStringArrayListExtra("photos", ArrayList(allPhotos))
+                    putExtra("index", if (index >= 0) index else 0)
                 }
                 imageView.context.startActivity(intent)
             }
