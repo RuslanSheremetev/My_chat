@@ -49,6 +49,8 @@ class ChatAdapter(
         holder.bind(user)
     }
 
+    fun getUsers(): List<User> = users.toList()
+    
     override fun getItemCount(): Int = users.size
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

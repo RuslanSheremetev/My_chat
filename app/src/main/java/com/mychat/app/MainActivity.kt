@@ -1008,6 +1008,32 @@ class MainActivity : AppCompatActivity() {
         msgInput.setSelection(msgInput.text.length)
     }
     
+    private fun showForwardDialog(msg: ChatMessage) {
+        val users = chatAdapter.getUsers()
+        if (users.isEmpty()) {
+            t("Нет контактов для пересылки")
+            return
+        }
+        val names = users.map { it.name.ifEmpty { it.username } }.toTypedArray()
+        AlertDialog.Builder(this)
+            .setTitle("Переслать сообщение")
+            .setItems(names) { _, which ->
+                val toUser = users[which].username
+                val json = JSONObject().apply {
+                    put("type", "forward")
+                    put("to", toUser)
+                    put("forward", JSONObject().apply {
+                        put("from", msg.from)
+                        put("text", msg.text)
+                    })
+                }
+                ws?.send(json.toString())
+                t("Переслано!")
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
+    
     private fun forwardMessage(msg: ChatMessage) {
         val json = JSONObject().apply {
             put("type", "forward")
