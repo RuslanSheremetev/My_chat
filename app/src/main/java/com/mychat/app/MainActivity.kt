@@ -912,7 +912,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 handler.post {
                     pd.dismiss()
-                    refreshMessages()
                     loadUsers()
                 }
             } catch (e: Exception) {
