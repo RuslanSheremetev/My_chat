@@ -99,6 +99,7 @@ class MessageAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        var lastClickTime = 0L
         val item = items[position]
         when {
             item is String && holder is DateViewHolder -> {
@@ -111,7 +112,6 @@ class MessageAdapter(
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                         .parse(item.time) ?: Date()
                 )
-                var lastClickTime = 0L
                 holder.itemView.setOnClickListener {
                     val now = System.currentTimeMillis()
                     if (now - lastClickTime < 300) {
@@ -120,7 +120,6 @@ class MessageAdapter(
                     }
                     lastClickTime = now
                 }
-                var lastClickTime = 0L
                 holder.itemView.setOnClickListener {
                     val now = System.currentTimeMillis()
                     if (now - lastClickTime < 300) {
@@ -140,7 +139,6 @@ class MessageAdapter(
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                         .parse(item.time) ?: Date()
                 )
-                var lastClickTime = 0L
                 holder.itemView.setOnClickListener {
                     val now = System.currentTimeMillis()
                     if (now - lastClickTime < 300) {
@@ -149,7 +147,6 @@ class MessageAdapter(
                     }
                     lastClickTime = now
                 }
-                var lastClickTime = 0L
                 holder.itemView.setOnClickListener {
                     val now = System.currentTimeMillis()
                     if (now - lastClickTime < 300) {
