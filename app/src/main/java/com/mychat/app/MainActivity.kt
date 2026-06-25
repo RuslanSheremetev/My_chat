@@ -966,6 +966,25 @@ class MainActivity : AppCompatActivity() {
         })
     }
     
+    private fun replyToMessage(msg: ChatMessage) {
+        msgInput.setText("↪ ${msg.from}: ${msg.text.take(50)}...
+")
+        msgInput.setSelection(msgInput.text.length)
+    }
+    
+    private fun forwardMessage(msg: ChatMessage) {
+        val json = JSONObject().apply {
+            put("type", "forward")
+            put("to", selId)
+            put("forward", JSONObject().apply {
+                put("from", msg.from)
+                put("text", msg.text)
+            })
+        }
+        ws?.send(json.toString())
+        t("Сообщение переслано!")
+    }
+    
     private fun deleteMessage(msg: ChatMessage) {
         if (msg.from != me) {
             t("Можно удалить только свои сообщения")
