@@ -12,5 +12,6 @@ data class User(
     val name: String = "",
     var lastMsg: String = "",
     var lastTime: String = "",
-    var lastMsgType: String = ""
+    var lastMsgType: String = "",
+    var lastFileUrl: String = ""
 )

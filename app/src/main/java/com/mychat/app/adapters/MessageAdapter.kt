@@ -9,6 +9,8 @@ import android.graphics.BitmapFactory
 import androidx.recyclerview.widget.RecyclerView
 import com.mychat.app.R
 import com.mychat.app.models.ChatMessage
+import com.mychat.app.utils.FileCache
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.thread
@@ -124,9 +126,21 @@ class MessageAdapter(
             imageView.visibility = View.VISIBLE
             var url = fi.url
             if (!url.startsWith("http")) url = "http://2.26.71.102:8000$url"
+            
+            // Проверяем кеш
+            val cached = FileCache.getCachedFile(url)
+            if (cached != null) {
+                val bmp = BitmapFactory.decodeFile(cached.absolutePath)
+                imageView.setImageBitmap(bmp)
+                return
+            }
+            
+            // Загружаем и кешируем
             thread {
                 try {
-                    val bmp = BitmapFactory.decodeStream(java.net.URL(url).openStream())
+                    val bytes = java.net.URL(url).readBytes()
+                    FileCache.saveToCache(url, bytes)
+                    val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                     imageView.post {
                         if (bmp != null) imageView.setImageBitmap(bmp)
                         else imageView.visibility = View.GONE

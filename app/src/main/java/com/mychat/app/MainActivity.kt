@@ -35,6 +35,7 @@ import com.mychat.app.adapters.circleBg
 import com.mychat.app.models.ChatMessage
 import com.mychat.app.models.FileInfo
 import com.mychat.app.models.User
+import com.mychat.app.utils.FileCache
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -91,6 +92,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FileCache.init(this)
         setContentView(R.layout.activity_main)
         
         loginLayout = findViewById(R.id.loginLayout)
