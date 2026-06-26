@@ -494,6 +494,7 @@ class MainActivity : AppCompatActivity() {
         
         lastMessageCount = 0
         refreshMessages()
+        pendingForward?.let { msg -> handler.postDelayed({ forwardMessage(msg); pendingForward = null }, 500) }
         // Отмечаем сообщения прочитанными
 
         startPolling()
