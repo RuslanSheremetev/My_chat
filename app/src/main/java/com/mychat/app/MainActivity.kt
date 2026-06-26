@@ -880,6 +880,7 @@ class MainActivity : AppCompatActivity() {
             }.toString()
         )
         msgInput.text.clear()
+        handler.postDelayed({ refreshMessages() }, 200)
         handler.postDelayed({ loadUsers() }, 1000)
     }
 
