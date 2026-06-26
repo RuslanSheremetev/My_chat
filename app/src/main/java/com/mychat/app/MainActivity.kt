@@ -166,11 +166,19 @@ class MainActivity : AppCompatActivity() {
                 val mic = findViewById<ImageButton>(R.id.btnMic)
                 val send = findViewById<ImageButton>(R.id.btnSend)
                 if (hasText) {
-                    mic.visibility = View.GONE
-                    send.visibility = View.VISIBLE
+                    if (mic.visibility == View.VISIBLE) {
+                        mic.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this@MainActivity, R.anim.icon_fade_out))
+                        mic.visibility = View.GONE
+                        send.visibility = View.VISIBLE
+                        send.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this@MainActivity, R.anim.icon_fade_in))
+                    }
                 } else {
-                    send.visibility = View.GONE
-                    mic.visibility = View.VISIBLE
+                    if (send.visibility == View.VISIBLE) {
+                        send.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this@MainActivity, R.anim.icon_fade_out))
+                        send.visibility = View.GONE
+                        mic.visibility = View.VISIBLE
+                        mic.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this@MainActivity, R.anim.icon_fade_in))
+                    }
                 }
                 // Отправка typing
                 if (selId.isNotEmpty() && hasText) {
