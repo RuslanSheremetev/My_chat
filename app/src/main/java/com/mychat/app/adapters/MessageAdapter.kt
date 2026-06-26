@@ -167,6 +167,15 @@ class MessageAdapter(
         }
     }
 
+    fun markDeleted(msgId: String) {
+        val index = items.indexOfFirst { it is ChatMessage && it.id == msgId }
+        if (index >= 0) {
+            val msg = items[index] as ChatMessage
+            items[index] = msg.copy(text = "Сообщение удалено")
+            notifyItemChanged(index)
+        }
+    }
+    
     fun addMessage(msg: ChatMessage) {
         items.add(msg)
         notifyItemInserted(items.size - 1)
