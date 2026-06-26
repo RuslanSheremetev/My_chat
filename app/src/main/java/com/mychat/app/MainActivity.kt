@@ -179,6 +179,26 @@ class MainActivity : AppCompatActivity() {
         }
         findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { showAttachmentMenu() }
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
+        
+        // Свайп вправо для возврата в список чатов
+        messagesList.setOnTouchListener(object : android.view.View.OnTouchListener {
+            private var startX = 0f
+            override fun onTouch(v: View?, event: android.view.MotionEvent?): Boolean {
+                if (event == null) return false
+                when (event.action) {
+                    android.view.MotionEvent.ACTION_DOWN -> {
+                        startX = event.x
+                    }
+                    android.view.MotionEvent.ACTION_UP -> {
+                        if (event.x - startX > 150 && startX < 50) {
+                            closeChat()
+                            return true
+                        }
+                    }
+                }
+                return false
+            }
+        })
         findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
         
