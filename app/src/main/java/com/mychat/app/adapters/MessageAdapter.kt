@@ -187,6 +187,11 @@ class MessageAdapter(
 
     class DateViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val dateText: TextView = view.findViewById(R.id.dateText)
+        init {
+            itemView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
+                itemView.context, R.anim.date_appear
+            ))
+        }
     }
 
     class InViewHolder(view: View) : RecyclerView.ViewHolder(view) {
