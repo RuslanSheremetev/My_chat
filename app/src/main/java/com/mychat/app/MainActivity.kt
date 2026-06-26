@@ -160,12 +160,14 @@ class MainActivity : AppCompatActivity() {
         msgInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val hasText = s?.isNotEmpty() == true
+                val mic = findViewById<ImageButton>(R.id.btnMic)
+                val send = findViewById<ImageButton>(R.id.btnSend)
                 if (hasText) {
-                    btnMic.visibility = View.GONE
-                    btnSend.visibility = View.VISIBLE
+                    mic.visibility = View.GONE
+                    send.visibility = View.VISIBLE
                 } else {
-                    btnMic.visibility = View.VISIBLE
-                    btnSend.visibility = View.GONE
+                    mic.visibility = View.VISIBLE
+                    send.visibility = View.GONE
                 }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
