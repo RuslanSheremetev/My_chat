@@ -103,6 +103,7 @@ class MessageAdapter(
             item is ChatMessage && holder is InViewHolder -> {
                 holder.from.text = item.from
                 holder.text.text = item.text
+                holder.msgStatus.text = if (item.id.startsWith("sending_")) "🕒" else "✅✅"
                 holder.time.text = timeFormat.format(
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.time) ?: Date()
                 )
@@ -111,6 +112,7 @@ class MessageAdapter(
             }
             item is ChatMessage && holder is OutViewHolder -> {
                 holder.text.text = item.text
+                holder.msgStatus.text = if (item.id.startsWith("sending_")) "🕒" else "✅✅"
                 holder.time.text = timeFormat.format(
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.time) ?: Date()
                 )
@@ -188,5 +190,6 @@ class MessageAdapter(
         val text: TextView = view.findViewById(R.id.text)
         val time: TextView = view.findViewById(R.id.time)
         val imageMsg: ImageView = view.findViewById(R.id.imageMsg)
+        val msgStatus: TextView = view.findViewById(R.id.msgStatus)
     }
 }
