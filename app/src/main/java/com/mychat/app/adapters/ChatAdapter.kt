@@ -20,7 +20,7 @@ fun circleBg(color: String): GradientDrawable {
 
 class ChatAdapter(
     private val onClick: (User) -> Unit,
-    private val onDelete: ((User) -> Unit)? = null
+    private val onLongClick: ((User) -> Unit)? = null
 ) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
     private val users = mutableListOf<User>()
