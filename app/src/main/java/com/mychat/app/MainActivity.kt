@@ -1257,13 +1257,24 @@ class MainActivity : AppCompatActivity() {
             layoutManager = GridLayoutManager(this@MainActivity, 4)
             adapter = StickerAdapter(list) { resId ->
             bs.dismiss()
-            // Конвертируем вектор в Bitmap и отправляем
-            val drawable = resources.getDrawable(resId, theme)
-            val bitmap = android.graphics.Bitmap.createBitmap(512, 512, android.graphics.Bitmap.Config.ARGB_8888)
-            val canvas = android.graphics.Canvas(bitmap)
-            drawable.setBounds(0, 0, 512, 512)
-            drawable.draw(canvas)
-            uploadBitmap(bitmap)
+            // Отправляем стикер как эмодзи-текст (временно)
+            val stickerNames = mapOf(
+                R.drawable.sticker1 to "🐱❤️",
+                R.drawable.sticker2 to "🐱🦁",
+                R.drawable.sticker3 to "🐱🖤",
+                R.drawable.sticker4 to "🐱🤍",
+                R.drawable.sticker5 to "🐱✨",
+                R.drawable.sticker6 to "🐱😴",
+                R.drawable.sticker7 to "🐱🎀",
+                R.drawable.sticker8 to "🐱🐼"
+            )
+            val emoji = stickerNames[resId] ?: "🐱"
+            val json = JSONObject().apply {
+                put("type", "private")
+                put("to", selId)
+                put("text", emoji)
+            }
+            ws?.send(json.toString())
         }
         }
         bs.show()
