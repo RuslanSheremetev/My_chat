@@ -59,6 +59,7 @@ class ChatAdapter(
         private val lastMessage: TextView = itemView.findViewById(R.id.lastMessage)
         private val lastTime: TextView = itemView.findViewById(R.id.lastTime)
         private val onlineDot: View = itemView.findViewById(R.id.onlineDot)
+        private val msgStatusIcon: ImageView = itemView.findViewById(R.id.msgStatusIcon)
 
         fun bind(user: User) {
             val displayName = if (user.name.isNotEmpty()) user.name else user.username
@@ -85,6 +86,26 @@ class ChatAdapter(
             }
             
             lastTime.text = user.lastTime
+            // Статус последнего сообщения
+            if (user.lastMsgStatus == "sending") {
+                msgStatusIcon.visibility = View.VISIBLE
+                msgStatusIcon.setImageResource(R.drawable.ic_check_sending)
+                msgStatusIcon.setColorFilter(0xff8e8e93.toInt())
+            } else if (user.lastMsgStatus == "sent") {
+                msgStatusIcon.visibility = View.VISIBLE
+                msgStatusIcon.setImageResource(R.drawable.ic_check_sent)
+                msgStatusIcon.setColorFilter(0xff8e8e93.toInt())
+            } else if (user.lastMsgStatus == "delivered") {
+                msgStatusIcon.visibility = View.VISIBLE
+                msgStatusIcon.setImageResource(R.drawable.ic_check_delivered)
+                msgStatusIcon.setColorFilter(0xff8e8e93.toInt())
+            } else if (user.lastMsgStatus == "read") {
+                msgStatusIcon.visibility = View.VISIBLE
+                msgStatusIcon.setImageResource(R.drawable.ic_check_read)
+                msgStatusIcon.setColorFilter(0xff4fc3f7.toInt())
+            } else {
+                msgStatusIcon.visibility = View.GONE
+            }
             
             // Показываем зеленую точку, если пользователь онлайн
             onlineDot.visibility = if (user.online) View.VISIBLE else View.GONE

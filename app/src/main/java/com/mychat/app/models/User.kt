@@ -13,5 +13,6 @@ data class User(
     var lastMsg: String = "",
     var lastTime: String = "",
     var lastMsgType: String = "",
-    var lastFileUrl: String = ""
+    var lastFileUrl: String = "",
+    var lastMsgStatus: String = "sent"
 )
