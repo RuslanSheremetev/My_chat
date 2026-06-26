@@ -156,7 +156,7 @@ class MainActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
-        btnStickers.setOnClickListener { showStickers() }
+        findViewById<ImageButton>(R.id.btnStickers).setOnClickListener { showStickers() }
         findViewById<ImageButton>(R.id.btnSend).setOnClickListener { sendMessage() }
         findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { showAttachmentMenu() }
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
