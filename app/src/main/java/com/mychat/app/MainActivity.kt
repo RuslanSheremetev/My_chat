@@ -815,7 +815,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     msgAdapter.update(nm)
                         if (nm.isNotEmpty()) {
-                            handler.postDelayed({ messagesList.scrollToPosition(msgAdapter.itemCount - 1) }, 300)
+                            messagesList.scrollToPosition(msgAdapter.itemCount - 1)
                         }
                     }
                 }
@@ -888,7 +888,7 @@ class MainActivity : AppCompatActivity() {
                     msgAdapter.update(nm)
                             lastMessageCount = nm.size
                             if (wasAtBottom && nm.isNotEmpty()) {
-                                handler.postDelayed({ messagesList.scrollToPosition(msgAdapter.itemCount - 1) }, 300)
+                                messagesList.scrollToPosition(msgAdapter.itemCount - 1)
                             }
                         }
                     }
@@ -1181,7 +1181,7 @@ class MainActivity : AppCompatActivity() {
                                 onMessageLongClick = { msg -> showMessageActions(msg) }
                             )
                             messagesList.adapter = msgAdapter
-                            handler.postDelayed({ messagesList.scrollToPosition(msgAdapter.itemCount - 1) }, 300)
+                            messagesList.scrollToPosition(msgAdapter.itemCount - 1)
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
