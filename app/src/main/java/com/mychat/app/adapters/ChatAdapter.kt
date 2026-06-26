@@ -75,13 +75,19 @@ class ChatAdapter(
             
             val lastMsg = user.lastMsg
             if (lastMsg.isNotEmpty()) {
-                val icon = when {
-                    user.lastMsgType == "file" -> "📎 "
-                    user.lastMsgType == "photo" -> "🖼️ "
-                    user.lastMsgType == "voice" -> "🎤 "
-                    else -> ""
+                lastMessage.text = lastMsg
+                val iconRes = when {
+                    user.lastMsgType == "photo" -> R.drawable.ic_msg_photo
+                    user.lastMsgType == "file" -> R.drawable.ic_msg_file
+                    user.lastMsgType == "voice" -> R.drawable.ic_msg_audio
+                    else -> 0
                 }
-                lastMessage.text = icon + lastMsg
+                if (iconRes != 0) {
+                    lastMessage.setCompoundDrawablesWithIntrinsicBounds(iconRes, 0, 0, 0)
+                    lastMessage.compoundDrawablePadding = 6
+                } else {
+                    lastMessage.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                }
             } else {
                 lastMessage.text = user.bio
             }
