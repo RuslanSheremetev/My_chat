@@ -1143,13 +1143,22 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun forwardMessage(msg: ChatMessage) {
+        val forwardData = JSONObject().apply {
+            put("from", msg.from)
+            put("text", msg.text)
+        }
+        // Пересылаем и файл, если есть
+        if (msg.file != null) {
+            forwardData.put("file", JSONObject().apply {
+                put("url", msg.file!!.url)
+                put("name", msg.file!!.name)
+                put("size", msg.file!!.size)
+            })
+        }
         val json = JSONObject().apply {
             put("type", "forward")
             put("to", selId)
-            put("forward", JSONObject().apply {
-                put("from", msg.from)
-                put("text", msg.text)
-            })
+            put("forward", forwardData)
         }
         ws?.send(json.toString())
         t("Сообщение переслано!")
