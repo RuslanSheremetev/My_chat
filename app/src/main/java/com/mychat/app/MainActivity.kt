@@ -198,6 +198,8 @@ class MainActivity : AppCompatActivity() {
             msgInput.text.clear()
         }
         findViewById<ImageButton>(R.id.btnSend).setOnClickListener { v ->
+            v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_scale))
+            v.postDelayed({ v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_release)) }, 150)
             v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.send_button_in))
             sendMessage()
         }

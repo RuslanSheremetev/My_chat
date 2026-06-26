@@ -117,7 +117,17 @@ class ChatAdapter(
             // Показываем зеленую точку, если пользователь онлайн
             onlineDot.visibility = if (user.online) View.VISIBLE else View.GONE
             
-            itemView.setOnClickListener { onClick(user) }
+            itemView.setOnClickListener { 
+            itemView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
+                itemView.context, R.anim.item_click_scale
+            ))
+            itemView.postDelayed({
+                itemView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
+                    itemView.context, R.anim.item_click_release
+                ))
+            }, 150)
+            onClick(user) 
+        }
         }
     }
 }
