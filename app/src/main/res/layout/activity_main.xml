@@ -417,17 +417,40 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:tint="#8e8e93"/>
 
-            <EditText
-                android:id="@+id/msgInput"
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/bg_input"
-                android:hint="Message..."
-                android:textColor="#fff"
-                android:textColorHint="#636366"
-                android:padding="10dp"
-                android:maxLines="4"/>
+                android:minHeight="44dp"
+                android:background="@drawable/bg_input">
+                <EditText
+                    android:id="@+id/msgInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="44dp"
+                    android:background="@null"
+                    android:hint="Message..."
+                    android:textColor="#fff"
+                    android:textColorHint="#636366"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="40dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:maxLines="5"
+                    android:gravity="top"/>
+                <ImageButton
+                    android:id="@+id/btnClearInput"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_alignEnd="@+id/msgInput"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_close"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:tint="#8e8e93"
+                    android:visibility="gone"
+                    android:scaleType="fitCenter"/>
+            </RelativeLayout>
 
             <ImageButton
                 android:id="@+id/btnMic"

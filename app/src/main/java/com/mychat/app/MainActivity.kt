@@ -165,6 +165,9 @@ class MainActivity : AppCompatActivity() {
         })
         findViewById<ImageButton>(R.id.btnStickers).setOnClickListener { showStickers() }
 
+        findViewById<ImageButton>(R.id.btnClearInput).setOnClickListener {
+            msgInput.text.clear()
+        }
         findViewById<ImageButton>(R.id.btnSend).setOnClickListener { sendMessage() }
         findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { showAttachmentMenu() }
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
