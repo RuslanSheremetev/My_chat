@@ -791,6 +791,14 @@ class MainActivity : AppCompatActivity() {
                             db.messageDao().deleteOldMessages(selId)
                         } catch (e: Exception) {}
                     }
+                    // Удаляем временные сообщения (отправленные локально)
+                    thread {
+                        val local = db.messageDao().getMessages(selId)
+                        val tempIds = local.filter { it.id.startsWith("sending_") }.map { it.id }
+                        if (tempIds.isNotEmpty()) {
+                            db.messageDao().deleteTempMessages(tempIds)
+                        }
+                    }
                     msgAdapter.update(nm)
                         if (nm.isNotEmpty()) {
                             handler.postDelayed({ messagesList.scrollToPosition(msgAdapter.itemCount - 1) }, 300)
@@ -854,6 +862,14 @@ class MainActivity : AppCompatActivity() {
                             db.messageDao().insertMessages(entities)
                             db.messageDao().deleteOldMessages(selId)
                         } catch (e: Exception) {}
+                    }
+                    // Удаляем временные сообщения (отправленные локально)
+                    thread {
+                        val local = db.messageDao().getMessages(selId)
+                        val tempIds = local.filter { it.id.startsWith("sending_") }.map { it.id }
+                        if (tempIds.isNotEmpty()) {
+                            db.messageDao().deleteTempMessages(tempIds)
+                        }
                     }
                     msgAdapter.update(nm)
                             lastMessageCount = nm.size
