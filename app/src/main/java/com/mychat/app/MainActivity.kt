@@ -152,11 +152,9 @@ class MainActivity : AppCompatActivity() {
                 if (hasText) {
                     mic.visibility = View.GONE
                     send.visibility = View.VISIBLE
-                    send.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this@MainActivity, R.anim.send_button_in))
                 } else {
-                    mic.visibility = View.VISIBLE
-                    send.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this@MainActivity, R.anim.send_button_out))
                     send.visibility = View.GONE
+                    mic.visibility = View.VISIBLE
                 }
                 // Отправка typing
                 if (selId.isNotEmpty() && hasText) {
@@ -175,7 +173,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnClearInput).setOnClickListener {
             msgInput.text.clear()
         }
-        findViewById<ImageButton>(R.id.btnSend).setOnClickListener { sendMessage() }
+        findViewById<ImageButton>(R.id.btnSend).setOnClickListener { v ->
+            v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.send_button_in))
+            sendMessage()
+        }
         findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { showAttachmentMenu() }
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
         findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
