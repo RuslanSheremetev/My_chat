@@ -1360,7 +1360,11 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
     }
     
     private fun t(msg: String) {
-        handler.post { Toast.makeText(this, msg, Toast.LENGTH_SHORT).show() }
+        handler.post {
+            val toast = Toast.makeText(this, msg, Toast.LENGTH_SHORT)
+            toast.view?.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.notification_slide_down))
+            toast.show()
+        }
     }
 
     private fun thread(r: () -> Unit) = Thread(r).start()
