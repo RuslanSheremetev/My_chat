@@ -148,20 +148,23 @@ class MessageAdapter(
                 return
             }
             
-            // Загружаем и кешируем
-            thread {
-                try {
-                    val bytes = java.net.URL(url).readBytes()
-                    FileCache.saveToCache(url, bytes)
-                    val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                    imageView.post {
-                        if (bmp != null) imageView.setImageBitmap(bmp)
-                        else imageView.visibility = View.GONE
+            // Загружаем с задержкой и уменьшением
+            imageView.postDelayed({
+                thread {
+                    try {
+                        val bytes = java.net.URL(url).readBytes()
+                        FileCache.saveToCache(url, bytes)
+                        val opts = BitmapFactory.Options().apply { inSampleSize = 2 }
+                        val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts)
+                        imageView.post {
+                            if (bmp != null) imageView.setImageBitmap(bmp)
+                            else imageView.visibility = View.GONE
+                        }
+                    } catch (e: Exception) {
+                        imageView.post { imageView.visibility = View.GONE }
                     }
-                } catch (e: Exception) {
-                    imageView.post { imageView.visibility = View.GONE }
                 }
-            }
+            }, 50)
         } else {
             imageView.visibility = View.GONE
         }
