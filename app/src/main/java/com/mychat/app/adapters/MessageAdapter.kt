@@ -125,6 +125,10 @@ class MessageAdapter(
         val fi = item.file
         if (fi != null && fi.url.isNotEmpty()) {
             imageView.visibility = View.VISIBLE
+            imageView.setBackgroundResource(R.drawable.shimmer_placeholder)
+            imageView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
+                imageView.context, R.anim.shimmer
+            ))
             imageView.setOnClickListener {
                 // Собираем все фото из чата и открываем галерею
                 val allPhotos = items.filterIsInstance<ChatMessage>()
@@ -157,7 +161,14 @@ class MessageAdapter(
                         val opts = BitmapFactory.Options().apply { inSampleSize = 2 }
                         val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts)
                         imageView.post {
-                            if (bmp != null) imageView.setImageBitmap(bmp)
+                            if (bmp != null) {
+                        imageView.setImageBitmap(bmp)
+                        imageView.clearAnimation()
+                        imageView.setBackgroundResource(0)
+                        imageView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
+                            imageView.context, R.anim.photo_load_in
+                        ))
+                    }
                             else imageView.visibility = View.GONE
                         }
                     } catch (e: Exception) {
