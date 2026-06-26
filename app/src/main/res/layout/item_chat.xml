@@ -8,6 +8,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="12dp"
+        android:background="@drawable/chat_item_ripple"
         android:gravity="center_vertical">
         <FrameLayout
             android:layout_width="48dp"
