@@ -514,6 +514,9 @@ class MainActivity : AppCompatActivity() {
         chatLayout.visibility = View.GONE
         mainContainer.visibility = View.VISIBLE
         bottomNav.visibility = View.VISIBLE
+        // Скрываем клавиатуру
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        currentFocus?.let { imm.hideSoftInputFromWindow(it.windowToken, 0) }
         loadUsers()
     }
     
