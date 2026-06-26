@@ -181,6 +181,21 @@ class MessageAdapter(
         }
     }
 
+    fun addReaction(msgId: String, emoji: String, from: String) {
+        val index = items.indexOfFirst { it is ChatMessage && it.id == msgId }
+        if (index >= 0) {
+            val msg = items[index] as ChatMessage
+            val newReactions = msg.reactions.toMutableMap()
+            val users = newReactions.getOrDefault(emoji, mutableListOf()).toMutableList()
+            if (!users.contains(from)) {
+                users.add(from)
+                newReactions[emoji] = users
+                items[index] = msg.copy(reactions = newReactions)
+                notifyItemChanged(index)
+            }
+        }
+    }
+    
     fun markDeleted(msgId: String) {
         val index = items.indexOfFirst { it is ChatMessage && it.id == msgId }
         if (index >= 0) {
