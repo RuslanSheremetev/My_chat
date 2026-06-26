@@ -137,6 +137,10 @@ class MainActivity : AppCompatActivity() {
         // Создаём адаптер позже
         val lm = LinearLayoutManager(this).apply { stackFromEnd = true }
         messagesList.layoutManager = lm
+        messagesList.itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator().apply {
+            removeDuration = 250
+            addDuration = 300
+        }
         
         findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
         findViewById<Button>(R.id.btnRegister).setOnClickListener { register() }
