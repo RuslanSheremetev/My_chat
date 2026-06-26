@@ -9,5 +9,6 @@ data class ChatMessage(
     val file: FileInfo? = null,
     val isGroup: Boolean = false,
     val read: Boolean = false,
+    val delivered: Boolean = false,
     val reactions: MutableMap<String, MutableList<String>> = mutableMapOf()
 )
