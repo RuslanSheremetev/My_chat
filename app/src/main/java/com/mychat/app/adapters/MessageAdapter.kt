@@ -166,6 +166,11 @@ class MessageAdapter(
         }
     }
 
+    fun addMessage(msg: ChatMessage) {
+        items.add(msg)
+        notifyItemInserted(items.size - 1)
+    }
+    
     override fun getItemCount(): Int = items.size
 
     class DateViewHolder(view: View) : RecyclerView.ViewHolder(view) {
