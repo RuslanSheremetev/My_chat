@@ -149,8 +149,15 @@ class MainActivity : AppCompatActivity() {
                 // Переключение кнопок
                 val mic = findViewById<ImageButton>(R.id.btnMic)
                 val send = findViewById<ImageButton>(R.id.btnSend)
-                mic.visibility = if (hasText) View.GONE else View.VISIBLE
-                send.visibility = if (hasText) View.VISIBLE else View.GONE
+                if (hasText) {
+                    mic.visibility = View.GONE
+                    send.visibility = View.VISIBLE
+                    send.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this@MainActivity, R.anim.send_button_in))
+                } else {
+                    mic.visibility = View.VISIBLE
+                    send.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this@MainActivity, R.anim.send_button_out))
+                    send.visibility = View.GONE
+                }
                 // Отправка typing
                 if (selId.isNotEmpty() && hasText) {
                     val json = JSONObject().apply {
