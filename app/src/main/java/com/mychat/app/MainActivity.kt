@@ -137,6 +137,18 @@ class MainActivity : AppCompatActivity() {
         // Создаём адаптер позже
         val lm = LinearLayoutManager(this).apply { stackFromEnd = true }
         messagesList.layoutManager = lm
+        messagesList.overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS
+        // Эффект растяжения при прокрутке
+        messagesList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                // Лёгкое затемнение краёв при скролле
+                val topChild = recyclerView.getChildAt(0)
+                val bottomChild = recyclerView.getChildAt(recyclerView.childCount - 1)
+                topChild?.alpha = if (recyclerView.canScrollVertically(-1)) 0.7f else 1.0f
+                bottomChild?.alpha = if (recyclerView.canScrollVertically(1)) 0.7f else 1.0f
+            }
+        })
         messagesList.itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator().apply {
             removeDuration = 250
             addDuration = 300
