@@ -1,0 +1,8 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp" android:height="512dp" android:viewportWidth="512" android:viewportHeight="512">
+    <!-- Белый котик -->
+    <path android:fillColor="#fff" android:pathData="M256,80c-97,0-176,79-176,176s79,176 176,176 176,-79 176,-176S353,80 256,80z"/>
+    <path android:fillColor="#f06292" android:pathData="M210,210c-6,0-10,4-10,10s4,10 10,10 10,-4 10,-10 -4,-10 -10,-10zM302,210c-6,0-10,4-10,10s4,10 10,10 10,-4 10,-10 -4,-10 -10,-10z"/>
+    <path android:fillColor="#333" android:pathData="M240,260c0,0 12,18 28,18s28,-18 28,-18"/>
+    <path android:fillColor="#E0E0E0" android:pathData="M256,78c-2,0-4,2-4,4v12c0,2 2,4 4,4s4,-2 4,-4v-12c0,-2 -2,-4 -4,-4zM256,414c-2,0-4,2-4,4v12c0,2 2,4 4,4s4,-2 4,-4v-12c0,-2 -2,-4 -4,-4zM178,98c-2,-1-4,0-4,2l-6,10c-1,2 0,4 2,4s4,0 4,-2l6,-10c1,-2 0,-4 -2,-4zM334,398c-2,-1-4,0-4,2l-6,10c-1,2 0,4 2,4s4,0 4,-2l6,-10c1,-2 0,-4 -2,-4z"/>
+</vector>

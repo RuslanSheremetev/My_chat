@@ -1,0 +1,7 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp" android:height="512dp" android:viewportWidth="512" android:viewportHeight="512">
+    <!-- Котик со звёздами в глазах -->
+    <path android:fillColor="#E1BEE7" android:pathData="M256,100c-86,0-156,70-156,156s70,156 156,156 156,-70 156,-156S342,100 256,100z"/>
+    <path android:fillColor="#FFD700" android:pathData="M206,220l8,12 8,-12 -8,4zM298,220l8,12 8,-12 -8,4z"/>
+    <path android:fillColor="#333" android:pathData="M240,280c0,0 10,20 30,20s30,-20 30,-20"/>
+</vector>

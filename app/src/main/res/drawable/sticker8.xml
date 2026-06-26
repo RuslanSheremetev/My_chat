@@ -1,0 +1,8 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp" android:height="512dp" android:viewportWidth="512" android:viewportHeight="512">
+    <!-- Котик-панда -->
+    <path android:fillColor="#fff" android:pathData="M256,80c-97,0-176,79-176,176s79,176 176,176 176,-79 176,-176S353,80 256,80z"/>
+    <path android:fillColor="#333" android:pathData="M180,180c0,0 30,30 76,30s76,-30 76,-30c0,0-20,50-76,50s-76,-50 -76,-50z"/>
+    <path android:fillColor="#fff" android:pathData="M210,200c-8,0-14,8-14,8s6,14 14,14 14,-6 14,-14 -6,-8 -14,-8zM302,200c-8,0-14,8-14,8s6,14 14,14 14,-6 14,-14 -6,-8 -14,-8z"/>
+    <path android:fillColor="#333" android:pathData="M236,250c0,0 8,8 20,8s20,-8 20,-8"/>
+</vector>

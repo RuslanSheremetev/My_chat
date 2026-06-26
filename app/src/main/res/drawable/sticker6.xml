@@ -1,0 +1,8 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp" android:height="512dp" android:viewportWidth="512" android:viewportHeight="512">
+    <!-- Спящий котик -->
+    <path android:fillColor="#B0BEC5" android:pathData="M256,120c-75,0-136,61-136,136s61,136 136,136 136,-61 136,-136S331,120 256,120z"/>
+    <path android:fillColor="#333" android:pathData="M220,230c0,0 5,2 10,2s10,-2 10,-2M292,230c0,0 5,2 10,2s10,-2 10,-2"/>
+    <path android:fillColor="#333" android:pathData="M246,290c0,0 10,5 20,5s20,-5 20,-5"/>
+    <path android:fillColor="#90A4AE" android:pathData="M256,270c-5,0-8,3-8,8s3,8 8,8 8,-3 8,-8 -3,-8 -8,-8z"/>
+</vector>

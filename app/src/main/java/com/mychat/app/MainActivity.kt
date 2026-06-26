@@ -1252,10 +1252,19 @@ class MainActivity : AppCompatActivity() {
         val bs = BottomSheetDialog(this)
         val v = layoutInflater.inflate(R.layout.bottom_stickers, null)
         bs.setContentView(v)
-        val list = listOf(R.drawable.ic_heart, R.drawable.ic_heart_simple, R.drawable.ic_plus_circle, R.drawable.ic_send, R.drawable.ic_camera, R.drawable.ic_gallery, R.drawable.ic_paperclip, R.drawable.ic_copy)
+        val list = listOf(R.drawable.sticker1, R.drawable.sticker2, R.drawable.sticker3, R.drawable.sticker4, R.drawable.sticker5, R.drawable.sticker6, R.drawable.sticker7, R.drawable.sticker8)
         v.findViewById<RecyclerView>(R.id.stickersGrid).apply {
             layoutManager = GridLayoutManager(this@MainActivity, 4)
-            adapter = StickerAdapter(list) { t("Стикер!") }
+            adapter = StickerAdapter(list) { resId ->
+            bs.dismiss()
+            // Конвертируем вектор в Bitmap и отправляем
+            val drawable = resources.getDrawable(resId, theme)
+            val bitmap = android.graphics.Bitmap.createBitmap(512, 512, android.graphics.Bitmap.Config.ARGB_8888)
+            val canvas = android.graphics.Canvas(bitmap)
+            drawable.setBounds(0, 0, 512, 512)
+            drawable.draw(canvas)
+            uploadBitmap(bitmap)
+        }
         }
         bs.show()
     }

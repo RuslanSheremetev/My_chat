@@ -1,0 +1,8 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp" android:height="512dp" android:viewportWidth="512" android:viewportHeight="512">
+    <!-- Серый котик с сердечком -->
+    <path android:fillColor="#e0e0e0" android:pathData="M256,100c-86,0-156,70-156,156s70,156 156,156 156,-70 156,-156S342,100 256,100z"/>
+    <path android:fillColor="#f06292" android:pathData="M210,220c-8,0-14,6-14,14s6,14 14,14 14,-6 14,-14 -6,-14 -14,-14zM302,220c-8,0-14,6-14,14s6,14 14,14 14,-6 14,-14 -6,-14 -14,-14z"/>
+    <path android:fillColor="#333" android:pathData="M240,270c0-5,4-10,16-10s16,5 16,10"/>
+    <path android:fillColor="#f06292" android:pathData="M246,340c-10,10-20,4-20,4s10,20 30,20 30,-20 30,-20 -10,6 -20,-4z"/>
+</vector>

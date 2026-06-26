@@ -1,0 +1,8 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp" android:height="512dp" android:viewportWidth="512" android:viewportHeight="512">
+    <!-- Рыжий котик -->
+    <path android:fillColor="#FF9800" android:pathData="M256,80c-97,0-176,79-176,176s79,176 176,176 176,-79 176,-176S353,80 256,80z"/>
+    <path android:fillColor="#fff" android:pathData="M200,220c-10,0-18,8-18,18s8,18 18,18 18,-8 18,-18 -8,-18 -18,-18zM312,220c-10,0-18,8-18,18s8,18 18,18 18,-8 18,-18 -8,-18 -18,-18z"/>
+    <path android:fillColor="#333" android:pathData="M206,218c-3,0-5,2-5,5s2,5 5,5 5,-2 5,-5 -2,-5 -5,-5zM306,218c-3,0-5,2-5,5s2,5 5,5 5,-2 5,-5 -2,-5 -5,-5z"/>
+    <path android:fillColor="#333" android:pathData="M246,300c5,8 15,8 20,0"/>
+</vector>

@@ -1,0 +1,8 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp" android:height="512dp" android:viewportWidth="512" android:viewportHeight="512">
+    <!-- Чёрный котик с жёлтыми глазами -->
+    <path android:fillColor="#424242" android:pathData="M256,90c-92,0-166,74-166,166s74,166 166,166 166,-74 166,-166S348,90 256,90z"/>
+    <path android:fillColor="#FFEB3B" android:pathData="M200,210c-8,0-14,14-14,14s6,14 14,14 14,-6 14,-14 -6,-14 -14,-14zM312,210c-8,0-14,14-14,14s6,14 14,14 14,-6 14,-14 -6,-14 -14,-14z"/>
+    <path android:fillColor="#FFEB3B" android:pathData="M196,208c-3,0-5,5-5,5s2,5 5,5 5,-2 5,-5 -2,-5 -5,-5zM316,208c-3,0-5,5-5,5s2,5 5,5 5,-2 5,-5 -2,-5 -5,-5z"/>
+    <path android:fillColor="#333" android:pathData="M240,280c0,0 10,15 26,15s26,-15 26,-15"/>
+</vector>
