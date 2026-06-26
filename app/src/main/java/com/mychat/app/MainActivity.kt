@@ -26,6 +26,7 @@ import androidx.core.content.FileProvider
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.mychat.app.activities.FavoritesActivity
 import com.mychat.app.activities.ProfileActivity
@@ -1244,6 +1245,18 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+    
+    private fun showStickers() {
+        val bs = BottomSheetDialog(this)
+        val v = layoutInflater.inflate(R.layout.bottom_stickers, null)
+        bs.setContentView(v)
+        val list = listOf(R.drawable.ic_heart, R.drawable.ic_heart_simple, R.drawable.ic_plus_circle, R.drawable.ic_send, R.drawable.ic_camera, R.drawable.ic_gallery, R.drawable.ic_paperclip, R.drawable.ic_copy)
+        v.findViewById<RecyclerView>(R.id.stickersGrid).apply {
+            layoutManager = GridLayoutManager(this@MainActivity, 4)
+            adapter = StickerAdapter(list) { t("Стикер!") }
+        }
+        bs.show()
     }
     
     private fun t(msg: String) {

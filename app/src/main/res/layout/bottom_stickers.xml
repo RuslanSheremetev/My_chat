@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#1a1a1a"
+    android:paddingTop="12dp"
+    android:paddingBottom="20dp">
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:background="#444"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="12dp"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/stickersGrid"
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:padding="8dp"/>
+</LinearLayout>

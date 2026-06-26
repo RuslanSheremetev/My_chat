@@ -403,6 +403,14 @@
             android:paddingBottom="16dp">
 
             <ImageButton
+                <ImageButton
+                android:id="@+id/btnStickers"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_sticker"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="#8e8e93"/>
+            <ImageButton
                 android:id="@+id/btnAttach"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
