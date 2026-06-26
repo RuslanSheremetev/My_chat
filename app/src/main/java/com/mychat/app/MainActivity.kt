@@ -168,10 +168,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnClearInput).setOnClickListener {
             msgInput.text.clear()
         }
-        findViewById<ImageButton>(R.id.btnSend).setOnClickListener { v ->
-            v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.send_pulse))
-            sendMessage()
-        }
+        findViewById<ImageButton>(R.id.btnSend).setOnClickListener { sendMessage() }
         findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { showAttachmentMenu() }
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
         findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
