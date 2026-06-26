@@ -32,6 +32,7 @@ import com.mychat.app.activities.FavoritesActivity
 import com.mychat.app.activities.ProfileActivity
 import com.mychat.app.adapters.ChatAdapter
 import com.mychat.app.adapters.MessageAdapter
+import com.mychat.app.adapters.StickerAdapter
 import com.mychat.app.adapters.circleBg
 import com.mychat.app.models.ChatMessage
 import com.mychat.app.models.FileInfo
