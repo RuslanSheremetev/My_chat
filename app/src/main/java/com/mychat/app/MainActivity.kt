@@ -1086,6 +1086,20 @@ class MainActivity : AppCompatActivity() {
         pollRunnable = null
     }
 
+    private fun showChatActions(user: User) {
+        val options = arrayOf("Удалить чат", "Заблокировать")
+        AlertDialog.Builder(this)
+            .setTitle(user.name.ifEmpty { user.username })
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> deleteChat(user)
+                    1 -> t("Заблокировано: ${user.username}")
+                }
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
+    
     private fun deleteChat(user: User) {
         val request = Request.Builder()
             .url("$server/chat/delete/${user.username}?token=$token")
