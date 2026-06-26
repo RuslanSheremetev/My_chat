@@ -193,6 +193,35 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/actionSelect"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="6dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_check_sent"
+                android:background="@drawable/bg_attach_icon"
+                android:padding="14dp"
+                android:tint="#a0a0a0"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Выбрать"
+                android:textSize="11sp"
+                android:textColor="#a0a0a0"
+                android:layout_marginTop="6dp"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/actionForward"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

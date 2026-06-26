@@ -518,6 +518,8 @@ class MainActivity : AppCompatActivity() {
     }
     
     private var selectedMessage: ChatMessage? = null
+    private var selectedMessages = mutableListOf<ChatMessage>()
+    private var isSelectMode = false
     private var pendingForward: ChatMessage? = null
     
     private fun showMessageActions(msg: ChatMessage) {
@@ -553,6 +555,13 @@ class MainActivity : AppCompatActivity() {
         view.findViewById<LinearLayout>(R.id.actionEdit)?.setOnClickListener {
             bottomSheet.dismiss()
             editMessage(msg)
+        }
+        view.findViewById<LinearLayout>(R.id.actionSelect)?.setOnClickListener {
+            bottomSheet.dismiss()
+            isSelectMode = true
+            selectedMessages.clear()
+            selectedMessages.add(msg)
+            t("Сообщение выбрано. Нажмите ещё для выбора нескольких")
         }
         view.findViewById<LinearLayout>(R.id.actionCopy)?.setOnClickListener {
             bottomSheet.dismiss()
