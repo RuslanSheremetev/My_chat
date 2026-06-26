@@ -13,5 +13,6 @@ data class MessageEntity(
     val time: String,
     val fileUrl: String = "",
     val fileName: String = "",
-    val isRead: Boolean = false
+    val isRead: Boolean = false,
+    val status: String = "sent"
 )

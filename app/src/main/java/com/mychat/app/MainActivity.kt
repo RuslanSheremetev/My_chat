@@ -737,6 +737,8 @@ class MainActivity : AppCompatActivity() {
                             file = if (entity.fileUrl.isNotEmpty()) FileInfo(entity.fileName, entity.fileUrl) else null
                         )
                     }
+                    // Обновляем статусы на sent
+                    thread { db.messageDao().markSent(selId) }
                     handler.post { msgAdapter.update(msgs) }
                 }
             } catch (e: Exception) {}
