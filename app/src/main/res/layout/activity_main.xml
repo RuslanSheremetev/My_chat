@@ -418,8 +418,7 @@
                 android:layout_weight="1"
                 android:minHeight="44dp"
                 android:background="@drawable/bg_input">
-                <EditText
-                    <ImageButton
+                <ImageButton
                         android:id="@+id/btnStickers"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
