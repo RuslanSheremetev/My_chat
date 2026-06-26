@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity() {
         serverUrl.setText(server)
         chatAdapter = ChatAdapter(
             onClick = { user -> openChat(user.username) },
-            onDelete = { user -> deleteChat(user) }
+            onLongClick = { user -> showChatActions(user) }
         )
         chatList.layoutManager = LinearLayoutManager(this)
         chatList.adapter = chatAdapter
