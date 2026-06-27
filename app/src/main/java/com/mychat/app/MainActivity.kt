@@ -209,7 +209,6 @@ class MainActivity : AppCompatActivity() {
 findViewById<ImageButton>(R.id.btnChatMenu)?.setOnClickListener { v ->
             val popup = android.widget.PopupMenu(this, v)
             val view = layoutInflater.inflate(R.layout.popup_chat_menu, null)
-            popup.menuView = view  // Не работает, используем ListPopupWindow вместо этого
             
             // Проще — используем AlertDialog с кастомной разметкой
             val dialog = AlertDialog.Builder(this).create()
