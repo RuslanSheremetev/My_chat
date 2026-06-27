@@ -1082,6 +1082,7 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
             background = getDrawable(R.drawable.bg_send_btn)
             setColorFilter(0xffffffff.toInt())
             layoutParams = LinearLayout.LayoutParams(48, 48).apply { marginStart = 8 }
+            scaleType = ImageView.ScaleType.CENTER
         }
         closeBtn.setOnClickListener { dialog.dismiss() }
         sendBtn.setOnClickListener {
