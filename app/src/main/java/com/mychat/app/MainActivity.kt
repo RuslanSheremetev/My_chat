@@ -206,7 +206,8 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { showAttachmentMenu() }
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
         
-findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
+findViewById<ImageButton>(R.id.btnChatMenu)?.setOnClickListener { t("Меню чата") }
+        findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
         
         navChats.setOnClickListener { showTab(0) }

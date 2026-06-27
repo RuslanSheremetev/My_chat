@@ -384,6 +384,13 @@
                     android:text="online"
                     android:textColor="#34c759"
                     android:textSize="12sp"/>
+            <ImageButton
+                android:id="@+id/btnChatMenu"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_dots"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="#8e8e93"/>
             </LinearLayout>
         </LinearLayout>
 
