@@ -208,20 +208,32 @@ class MainActivity : AppCompatActivity() {
         
 findViewById<ImageButton>(R.id.btnChatMenu)?.setOnClickListener { v ->
             val popup = android.widget.PopupMenu(this, v)
-            popup.menu.add("Информация")
-            popup.menu.add("Поиск")
-            popup.menu.add("Очистить историю")
-            popup.menu.add("Заблокировать")
-            popup.setOnMenuItemClickListener { item ->
-                when (item.title) {
-                    "Информация" -> t("Информация о чате")
-                    "Поиск" -> t("Поиск по сообщениям")
-                    "Очистить историю" -> t("История очищена")
-                    "Заблокировать" -> t("Пользователь заблокирован")
-                }
-                true
+            val view = layoutInflater.inflate(R.layout.popup_chat_menu, null)
+            popup.menuView = view  // Не работает, используем ListPopupWindow вместо этого
+            
+            // Проще — используем AlertDialog с кастомной разметкой
+            val dialog = AlertDialog.Builder(this).create()
+            dialog.setView(view)
+            dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+            
+            view.findViewById<LinearLayout>(R.id.menuInfo).setOnClickListener {
+                dialog.dismiss()
+                t("Информация о чате")
             }
-            popup.show()
+            view.findViewById<LinearLayout>(R.id.menuSearch).setOnClickListener {
+                dialog.dismiss()
+                t("Поиск по сообщениям")
+            }
+            view.findViewById<LinearLayout>(R.id.menuClear).setOnClickListener {
+                dialog.dismiss()
+                t("История очищена")
+            }
+            view.findViewById<LinearLayout>(R.id.menuBlock).setOnClickListener {
+                dialog.dismiss()
+                t("Пользователь заблокирован")
+            }
+            
+            dialog.show()
         }
         findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
