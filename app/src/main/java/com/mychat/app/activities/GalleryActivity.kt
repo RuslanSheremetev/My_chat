@@ -1,8 +1,10 @@
 package com.mychat.app.activities
 
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.os.Bundle
 import android.view.MotionEvent
+import android.view.ScaleGestureDetector
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -17,6 +19,9 @@ class GalleryActivity : AppCompatActivity() {
     private lateinit var imageView: ImageView
     private lateinit var counter: TextView
     private var startX = 0f
+    private lateinit var scaleGestureDetector: ScaleGestureDetector
+    private val matrix = Matrix()
+    private var scaleFactor = 1f
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,20 +33,30 @@ class GalleryActivity : AppCompatActivity() {
         imageView = findViewById(R.id.galleryImage)
         counter = findViewById(R.id.galleryCounter)
         
-        findViewById<ImageButton>(R.id.galleryBack).setOnClickListener { finish() }
-        findViewById<ImageButton>(R.id.galleryPrev).setOnClickListener { showPhoto(currentIndex - 1) }
-        findViewById<ImageButton>(R.id.galleryNext).setOnClickListener { showPhoto(currentIndex + 1) }
+        // Zoom
+        scaleGestureDetector = ScaleGestureDetector(this, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            override fun onScale(detector: ScaleGestureDetector): Boolean {
+                scaleFactor *= detector.scaleFactor
+                scaleFactor = Math.max(1f, Math.min(scaleFactor, 5f))
+                imageView.scaleX = scaleFactor
+                imageView.scaleY = scaleFactor
+                return true
+            }
+        })
         
-        // Свайп через OnTouchListener
         imageView.setOnTouchListener { _, event ->
+            if (event.pointerCount > 1) {
+                scaleGestureDetector.onTouchEvent(event)
+                return@setOnTouchListener true
+            }
             when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    startX = event.x
-                    true
-                }
+                MotionEvent.ACTION_DOWN -> { startX = event.x; true }
                 MotionEvent.ACTION_UP -> {
                     val diffX = event.x - startX
                     if (Math.abs(diffX) > 100) {
+                        scaleFactor = 1f
+                        imageView.scaleX = 1f
+                        imageView.scaleY = 1f
                         if (diffX > 0) showPhoto(currentIndex - 1)
                         else showPhoto(currentIndex + 1)
                     }
@@ -51,6 +66,10 @@ class GalleryActivity : AppCompatActivity() {
             }
         }
         
+        findViewById<ImageButton>(R.id.galleryBack).setOnClickListener { finish() }
+        findViewById<ImageButton>(R.id.galleryPrev).setOnClickListener { showPhoto(currentIndex - 1) }
+        findViewById<ImageButton>(R.id.galleryNext).setOnClickListener { showPhoto(currentIndex + 1) }
+        
         showPhoto(currentIndex)
     }
     
@@ -58,6 +77,11 @@ class GalleryActivity : AppCompatActivity() {
         if (index < 0 || index >= photos.size) return
         currentIndex = index
         counter.text = "${index + 1}/${photos.size}"
+        
+        // Сбрасываем зум
+        scaleFactor = 1f
+        imageView.scaleX = 1f
+        imageView.scaleY = 1f
         
         var url = photos[index]
         if (!url.startsWith("http")) url = "http://2.26.71.102:8000$url"
