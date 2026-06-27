@@ -1057,7 +1057,7 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
         val imageView = ImageView(this).apply {
             setImageURI(uri)
             scaleType = ImageView.ScaleType.FIT_CENTER
-            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f)
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
         }
         val bottomBar = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
