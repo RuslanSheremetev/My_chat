@@ -1028,13 +1028,6 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
     override fun onActivityResult(rc: Int, rc2: Int, data: Intent?) {
         super.onActivityResult(rc, rc2, data)
         if (rc == 200 && rc2 == RESULT_OK) {
-            // Фото с камеры — сразу отправляем
-            val bitmap = data?.extras?.get("data") as? android.graphics.Bitmap
-            if (bitmap != null) {
-                uploadBitmap(bitmap)
-            }
-        }
-        if (rc == 200 && rc2 == RESULT_OK) {
             val bitmap = data?.extras?.get("data") as? android.graphics.Bitmap
             if (bitmap != null) { uploadBitmap(bitmap) }
             return
