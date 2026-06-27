@@ -108,23 +108,40 @@ class MessageAdapter(
                     holder.text.isClickable = true
                     holder.text.setOnClickListener {
                         val url = item.file!!.url.let { if (it.startsWith("http")) it else "http://2.26.71.102:8000$it" }
-                        // Скачиваем во временный файл и открываем
-                        thread {
-                            try {
-                                val bytes = java.net.URL(url).readBytes()
-                                val tmpFile = java.io.File(holder.itemView.context.cacheDir, item.file!!.name)
-                                tmpFile.writeBytes(bytes)
-                                val uri = androidx.core.content.FileProvider.getUriForFile(
-                                    holder.itemView.context,
-                                    "${holder.itemView.context.packageName}.fileprovider",
-                                    tmpFile
-                                )
-                                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
-                                    setDataAndType(uri, "*/*")
-                                    addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                }
-                                holder.itemView.context.startActivity(intent)
-                            } catch (e: Exception) {}
+                        // Проверяем кеш
+                        var cached = com.mychat.app.utils.FileCache.getCachedFile(url)
+                        if (cached != null) {
+                            val uri = androidx.core.content.FileProvider.getUriForFile(
+                                holder.itemView.context,
+                                "${holder.itemView.context.packageName}.fileprovider",
+                                cached
+                            )
+                            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                                setDataAndType(uri, "*/*")
+                                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                            holder.itemView.context.startActivity(intent)
+                        } else {
+                            thread {
+                                try {
+                                    val bytes = java.net.URL(url).readBytes()
+                                    cached = com.mychat.app.utils.FileCache.saveToCache(url, bytes)
+                                    cached?.let { file ->
+                                        val uri = androidx.core.content.FileProvider.getUriForFile(
+                                            holder.itemView.context,
+                                            "${holder.itemView.context.packageName}.fileprovider",
+                                            file
+                                        )
+                                        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                                            setDataAndType(uri, "*/*")
+                                            addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                        }
+                                        holder.itemView.post {
+                                            holder.itemView.context.startActivity(intent)
+                                        }
+                                    }
+                                } catch (e: Exception) {}
+                            }
                         }
                     }
                 }
@@ -141,23 +158,40 @@ class MessageAdapter(
                     holder.text.isClickable = true
                     holder.text.setOnClickListener {
                         val url = item.file!!.url.let { if (it.startsWith("http")) it else "http://2.26.71.102:8000$it" }
-                        // Скачиваем во временный файл и открываем
-                        thread {
-                            try {
-                                val bytes = java.net.URL(url).readBytes()
-                                val tmpFile = java.io.File(holder.itemView.context.cacheDir, item.file!!.name)
-                                tmpFile.writeBytes(bytes)
-                                val uri = androidx.core.content.FileProvider.getUriForFile(
-                                    holder.itemView.context,
-                                    "${holder.itemView.context.packageName}.fileprovider",
-                                    tmpFile
-                                )
-                                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
-                                    setDataAndType(uri, "*/*")
-                                    addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                }
-                                holder.itemView.context.startActivity(intent)
-                            } catch (e: Exception) {}
+                        // Проверяем кеш
+                        var cached = com.mychat.app.utils.FileCache.getCachedFile(url)
+                        if (cached != null) {
+                            val uri = androidx.core.content.FileProvider.getUriForFile(
+                                holder.itemView.context,
+                                "${holder.itemView.context.packageName}.fileprovider",
+                                cached
+                            )
+                            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                                setDataAndType(uri, "*/*")
+                                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                            holder.itemView.context.startActivity(intent)
+                        } else {
+                            thread {
+                                try {
+                                    val bytes = java.net.URL(url).readBytes()
+                                    cached = com.mychat.app.utils.FileCache.saveToCache(url, bytes)
+                                    cached?.let { file ->
+                                        val uri = androidx.core.content.FileProvider.getUriForFile(
+                                            holder.itemView.context,
+                                            "${holder.itemView.context.packageName}.fileprovider",
+                                            file
+                                        )
+                                        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                                            setDataAndType(uri, "*/*")
+                                            addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                        }
+                                        holder.itemView.post {
+                                            holder.itemView.context.startActivity(intent)
+                                        }
+                                    }
+                                } catch (e: Exception) {}
+                            }
                         }
                     }
                 }
