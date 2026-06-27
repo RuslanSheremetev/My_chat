@@ -126,6 +126,7 @@ class MessageAdapter(
         val isImage = fi?.url?.let { it.endsWith(".jpg") || it.endsWith(".jpeg") || it.endsWith(".png") || it.endsWith(".gif") || it.endsWith(".webp") } ?: false
             if (fi != null && fi.url.isNotEmpty() && isImage) {
             imageView.visibility = View.VISIBLE
+            imageView.setOnLongClickListener { onMessageLongClick(item); true }
             imageView.setBackgroundResource(R.drawable.shimmer_placeholder)
             imageView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
                 imageView.context, R.anim.shimmer
