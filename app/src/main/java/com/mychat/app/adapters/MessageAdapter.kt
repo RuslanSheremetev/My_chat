@@ -215,7 +215,7 @@ class MessageAdapter(
         val dateText: TextView = view.findViewById(R.id.dateText)
         init {
             itemView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
-                itemView.context, R.anim.date_appear
+                itemView.context, R.anim.date_slide_down
             ))
         }
     }
