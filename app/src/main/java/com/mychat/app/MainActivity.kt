@@ -1034,8 +1034,12 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
                 uploadBitmap(bitmap)
             }
         }
-        if (rc == 100 && rc2 == RESULT_OK) if (rc == 101) data?.data?.let { showPhotoDialog(it) }
-        if (rc == 100) data?.data?.let { uploadFile(it) }
+        if (rc == 200 && rc2 == RESULT_OK) {
+            val bitmap = data?.extras?.get("data") as? android.graphics.Bitmap
+            if (bitmap != null) { uploadBitmap(bitmap) }
+        }
+        if (rc == 101 && rc2 == RESULT_OK) data?.data?.let { showPhotoDialog(it) }
+        if (rc == 100 && rc2 == RESULT_OK) data?.data?.let { uploadFile(it) }
     }
 
     private fun showCaptionDialog(uri: Uri) {
