@@ -37,7 +37,7 @@ class GalleryActivity : AppCompatActivity() {
         scaleGestureDetector = ScaleGestureDetector(this, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 scaleFactor *= detector.scaleFactor
-                scaleFactor = Math.max(1f, Math.min(scaleFactor, 5f))
+                scaleFactor = Math.max(1f, Math.min(scaleFactor, 3f))
                 imageView.scaleX = scaleFactor
                 imageView.scaleY = scaleFactor
                 return true
@@ -78,10 +78,9 @@ class GalleryActivity : AppCompatActivity() {
         currentIndex = index
         counter.text = "${index + 1}/${photos.size}"
         
-        // Сбрасываем зум
+        // Плавно сбрасываем зум
+        imageView.animate().scaleX(1f).scaleY(1f).setDuration(200).start()
         scaleFactor = 1f
-        imageView.scaleX = 1f
-        imageView.scaleY = 1f
         
         var url = photos[index]
         if (!url.startsWith("http")) url = "http://2.26.71.102:8000$url"
