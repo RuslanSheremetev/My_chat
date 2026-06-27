@@ -972,7 +972,13 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
         
         view.findViewById<LinearLayout>(R.id.attachCamera).setOnClickListener {
             bottomSheet.dismiss()
-            pickPhoto()
+            // Сразу камера для фото
+            val intent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
+            if (intent.resolveActivity(packageManager) != null) {
+                startActivityForResult(intent, 200)
+            } else {
+                t("Камера не доступна")
+            }
         }
         view.findViewById<LinearLayout>(R.id.attachGallery).setOnClickListener {
             bottomSheet.dismiss()
@@ -1021,6 +1027,13 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
 
     override fun onActivityResult(rc: Int, rc2: Int, data: Intent?) {
         super.onActivityResult(rc, rc2, data)
+        if (rc == 200 && rc2 == RESULT_OK) {
+            // Фото с камеры — сразу отправляем
+            val bitmap = data?.extras?.get("data") as? android.graphics.Bitmap
+            if (bitmap != null) {
+                uploadBitmap(bitmap)
+            }
+        }
         if (rc == 100 && rc2 == RESULT_OK) data?.data?.let { showPhotoDialog(it) }
     }
 
@@ -1040,6 +1053,41 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
             }
             .setNegativeButton("Отмена", null)
             .show()
+    }
+    
+    private fun uploadBitmap(bitmap: android.graphics.Bitmap) {
+        thread {
+            try {
+                val baos = java.io.ByteArrayOutputStream()
+                bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, baos)
+                val bytes = baos.toByteArray()
+                val fn = "photo_${System.currentTimeMillis()}.jpg"
+                val rb = MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("file", fn, bytes.toRequestBody("image/jpeg".toMediaType()))
+                    .build()
+                val r = client.newCall(
+                    Request.Builder().url("$server/upload?token=$token").post(rb).build()
+                ).execute()
+                if (r.isSuccessful) {
+                    val u = JSONObject(r.body!!.string()).optString("url", "")
+                    ws?.send(
+                        JSONObject().apply {
+                            put("type", "private")
+                            put("to", selId)
+                            put("text", "📷 Фото")
+                            put("file", JSONObject().apply {
+                                put("name", fn)
+                                put("url", u)
+                                put("size", bytes.size)
+                            })
+                        }.toString()
+                    )
+                }
+            } catch (e: Exception) {
+                handler.post { t("Ошибка") }
+            }
+        }
     }
     
     private fun showPhotoDialog(uri: Uri) {
