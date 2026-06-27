@@ -1021,7 +1021,7 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
 
     override fun onActivityResult(rc: Int, rc2: Int, data: Intent?) {
         super.onActivityResult(rc, rc2, data)
-        if (rc == 100 && rc2 == RESULT_OK) data?.data?.let { showCaptionDialog(it) }
+        if (rc == 100 && rc2 == RESULT_OK) data?.data?.let { showPhotoDialog(it) }
     }
 
     private fun showCaptionDialog(uri: Uri) {
