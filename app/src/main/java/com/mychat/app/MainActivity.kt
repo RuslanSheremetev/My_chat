@@ -1098,6 +1098,10 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
     
     private fun showPhotoDialog(uri: Uri) {
         val dialog = AlertDialog.Builder(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen).create()
+        dialog.window?.setLayout(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        )
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(0xff000000.toInt())
