@@ -1047,6 +1047,10 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(0xff000000.toInt())
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
         }
         val closeBtn = ImageButton(this).apply {
             setImageResource(R.drawable.ic_close)
