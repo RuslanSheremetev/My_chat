@@ -109,12 +109,12 @@ class MessageAdapter(
                     holder.text.setOnClickListener {
                         val url = item.file!!.url.let { if (it.startsWith("http")) it else "http://2.26.71.102:8000$it" }
                         // Проверяем кеш
-                        var cached = com.mychat.app.utils.FileCache.getCachedFile(url)
-                        if (cached != null) {
+                        val cachedFile = com.mychat.app.utils.FileCache.getCachedFile(url)
+                        if (cachedFile != null) {
                             val uri = androidx.core.content.FileProvider.getUriForFile(
                                 holder.itemView.context,
                                 "${holder.itemView.context.packageName}.fileprovider",
-                                cached
+                                cachedFile
                             )
                             val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
                                 setDataAndType(uri, "*/*")
@@ -125,8 +125,8 @@ class MessageAdapter(
                             thread {
                                 try {
                                     val bytes = java.net.URL(url).readBytes()
-                                    cached = com.mychat.app.utils.FileCache.saveToCache(url, bytes)
-                                    cached?.let { file ->
+                                    val savedFile = com.mychat.app.utils.FileCache.saveToCache(url, bytes)
+                                    savedFile?.let { file ->
                                         val uri = androidx.core.content.FileProvider.getUriForFile(
                                             holder.itemView.context,
                                             "${holder.itemView.context.packageName}.fileprovider",
@@ -159,12 +159,12 @@ class MessageAdapter(
                     holder.text.setOnClickListener {
                         val url = item.file!!.url.let { if (it.startsWith("http")) it else "http://2.26.71.102:8000$it" }
                         // Проверяем кеш
-                        var cached = com.mychat.app.utils.FileCache.getCachedFile(url)
-                        if (cached != null) {
+                        val cachedFile = com.mychat.app.utils.FileCache.getCachedFile(url)
+                        if (cachedFile != null) {
                             val uri = androidx.core.content.FileProvider.getUriForFile(
                                 holder.itemView.context,
                                 "${holder.itemView.context.packageName}.fileprovider",
-                                cached
+                                cachedFile
                             )
                             val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
                                 setDataAndType(uri, "*/*")
@@ -175,8 +175,8 @@ class MessageAdapter(
                             thread {
                                 try {
                                     val bytes = java.net.URL(url).readBytes()
-                                    cached = com.mychat.app.utils.FileCache.saveToCache(url, bytes)
-                                    cached?.let { file ->
+                                    val savedFile = com.mychat.app.utils.FileCache.saveToCache(url, bytes)
+                                    savedFile?.let { file ->
                                         val uri = androidx.core.content.FileProvider.getUriForFile(
                                             holder.itemView.context,
                                             "${holder.itemView.context.packageName}.fileprovider",
