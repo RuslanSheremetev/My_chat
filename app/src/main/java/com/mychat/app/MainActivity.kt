@@ -1043,24 +1043,7 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
         if (rc == 100 && rc2 == RESULT_OK) data?.data?.let { uploadFile(it) }
     }
 
-    private fun showCaptionDialog(uri: Uri) {
-        val input = EditText(this).apply {
-            hint = "Добавить подпись..."
-            setTextColor(0xffffffff.toInt())
-            setHintTextColor(0xff636366.toInt())
-            setBackgroundResource(R.drawable.bg_input)
-            setPadding(30, 20, 30, 20)
-        }
-        AlertDialog.Builder(this)
-            .setTitle("Отправить фото")
-            .setView(input)
-            .setPositiveButton("Отправить") { _, _ ->
-                uploadFile(uri, input.text.toString().trim())
-            }
-            .setNegativeButton("Отмена", null)
-            .show()
-    }
-    
+
     private fun uploadBitmap(bitmap: android.graphics.Bitmap) {
         thread {
             try {
