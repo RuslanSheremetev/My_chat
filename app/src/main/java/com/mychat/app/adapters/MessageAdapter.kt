@@ -103,6 +103,15 @@ class MessageAdapter(
             item is ChatMessage && holder is InViewHolder -> {
                 holder.from.text = item.from
                 holder.text.text = item.text
+                // Если это файл — делаем кликабельным
+                if (item.file != null && item.text.startsWith("File:")) {
+                    holder.text.setOnClickListener {
+                        var url = item.file!!.url
+                        if (!url.startsWith("http")) url = "http://2.26.71.102:8000$url"
+                        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+                        holder.itemView.context.startActivity(intent)
+                    }
+                }
                 holder.time.text = timeFormat.format(
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.time) ?: Date()
                 )
@@ -111,6 +120,15 @@ class MessageAdapter(
             }
             item is ChatMessage && holder is OutViewHolder -> {
                 holder.text.text = item.text
+                // Если это файл — делаем кликабельным
+                if (item.file != null && item.text.startsWith("File:")) {
+                    holder.text.setOnClickListener {
+                        var url = item.file!!.url
+                        if (!url.startsWith("http")) url = "http://2.26.71.102:8000$url"
+                        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+                        holder.itemView.context.startActivity(intent)
+                    }
+                }
                 holder.msgStatus.text = if (item.id.startsWith("sending_")) "🕒" else "✅✅"
                 holder.time.text = timeFormat.format(
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.time) ?: Date()
