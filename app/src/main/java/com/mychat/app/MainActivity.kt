@@ -1042,6 +1042,58 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
             .show()
     }
     
+    private fun showPhotoDialog(uri: Uri) {
+        val dialog = AlertDialog.Builder(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen).create()
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(0xff000000.toInt())
+        }
+        val closeBtn = ImageButton(this).apply {
+            setImageResource(R.drawable.ic_close)
+            setColorFilter(0xffffffff.toInt())
+            background = null
+            layoutParams = LinearLayout.LayoutParams(48, 48).apply { setMargins(8, 24, 0, 0) }
+        }
+        val imageView = ImageView(this).apply {
+            setImageURI(uri)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f)
+        }
+        val bottomBar = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = android.view.Gravity.CENTER_VERTICAL
+            setPadding(8, 8, 8, 16)
+            setBackgroundColor(0xff1c1c1e.toInt())
+        }
+        val captionInput = EditText(this).apply {
+            hint = "Добавить подпись..."
+            setTextColor(0xffffffff.toInt())
+            setHintTextColor(0xff636366.toInt())
+            setBackgroundResource(R.drawable.bg_input)
+            setPadding(30, 20, 30, 20)
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        val sendBtn = ImageButton(this).apply {
+            setImageResource(R.drawable.ic_send)
+            background = getDrawable(R.drawable.bg_send_btn)
+            setColorFilter(0xffffffff.toInt())
+            layoutParams = LinearLayout.LayoutParams(48, 48).apply { marginStart = 8 }
+        }
+        closeBtn.setOnClickListener { dialog.dismiss() }
+        sendBtn.setOnClickListener {
+            val caption = captionInput.text.toString().trim()
+            uploadFile(uri, caption)
+            dialog.dismiss()
+        }
+        bottomBar.addView(captionInput)
+        bottomBar.addView(sendBtn)
+        container.addView(closeBtn)
+        container.addView(imageView)
+        container.addView(bottomBar)
+        dialog.setView(container)
+        dialog.show()
+    }
+    
     private fun uploadFile(uri: Uri, caption: String = "") {
         val pd = AlertDialog.Builder(this)
             .setTitle("Uploading...")
