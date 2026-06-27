@@ -1217,13 +1217,16 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
             put("from", msg.from)
             put("text", msg.text)
         }
-        // Пересылаем и файл, если есть
+        // Если текст пустой, но есть файл — добавляем подпись
         if (msg.file != null) {
             forwardData.put("file", JSONObject().apply {
                 put("url", msg.file!!.url)
                 put("name", msg.file!!.name)
                 put("size", msg.file!!.size)
             })
+            if (msg.text.isEmpty()) {
+                forwardData.put("text", "📷 Фото")
+            }
         }
         val json = JSONObject().apply {
             put("type", "forward")
