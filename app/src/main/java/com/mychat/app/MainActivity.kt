@@ -1011,7 +1011,7 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
             Intent(Intent.ACTION_PICK).apply {
                 type = "image/*"
             },
-            100
+            101
         )
     }
     
@@ -1034,7 +1034,8 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
                 uploadBitmap(bitmap)
             }
         }
-        if (rc == 100 && rc2 == RESULT_OK) data?.data?.let { showPhotoDialog(it) }
+        if (rc == 100 && rc2 == RESULT_OK) if (rc == 101) data?.data?.let { showPhotoDialog(it) }
+        if (rc == 100) data?.data?.let { uploadFile(it) }
     }
 
     private fun showCaptionDialog(uri: Uri) {
