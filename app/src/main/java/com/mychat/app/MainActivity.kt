@@ -206,7 +206,8 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { showAttachmentMenu() }
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
         
-findViewById<ImageButton>(R.id.btnChatMenu)?.setOnClickListener { v ->
+findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") }
+        findViewById<ImageButton>(R.id.btnChatMenu)?.setOnClickListener { v ->
             val popup = android.widget.PopupMenu(this, v)
             val view = layoutInflater.inflate(R.layout.popup_chat_menu, null)
             

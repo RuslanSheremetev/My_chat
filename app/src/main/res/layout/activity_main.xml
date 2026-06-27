@@ -387,6 +387,14 @@
             </LinearLayout>
 
             <ImageButton
+                android:id="@+id/btnCall"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_phone"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="#8e8e93"/>
+
+            <ImageButton
                 android:id="@+id/btnChatMenu"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
