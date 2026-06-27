@@ -206,7 +206,23 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { showAttachmentMenu() }
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
         
-findViewById<ImageButton>(R.id.btnChatMenu)?.setOnClickListener { t("Меню чата") }
+findViewById<ImageButton>(R.id.btnChatMenu)?.setOnClickListener { v ->
+            val popup = android.widget.PopupMenu(this, v)
+            popup.menu.add("Информация")
+            popup.menu.add("Поиск")
+            popup.menu.add("Очистить историю")
+            popup.menu.add("Заблокировать")
+            popup.setOnMenuItemClickListener { item ->
+                when (item.title) {
+                    "Информация" -> t("Информация о чате")
+                    "Поиск" -> t("Поиск по сообщениям")
+                    "Очистить историю" -> t("История очищена")
+                    "Заблокировать" -> t("Пользователь заблокирован")
+                }
+                true
+            }
+            popup.show()
+        }
         findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
         
