@@ -106,10 +106,25 @@ class MessageAdapter(
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
                     holder.text.setOnClickListener {
-                        var url = item.file!!.url
-                        if (!url.startsWith("http")) url = "http://2.26.71.102:8000$url"
-                        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
-                        holder.itemView.context.startActivity(intent)
+                        val url = item.file!!.url.let { if (it.startsWith("http")) it else "http://2.26.71.102:8000$it" }
+                        // Скачиваем во временный файл и открываем
+                        thread {
+                            try {
+                                val bytes = java.net.URL(url).readBytes()
+                                val tmpFile = java.io.File(holder.itemView.context.cacheDir, item.file!!.name)
+                                tmpFile.writeBytes(bytes)
+                                val uri = androidx.core.content.FileProvider.getUriForFile(
+                                    holder.itemView.context,
+                                    "${holder.itemView.context.packageName}.fileprovider",
+                                    tmpFile
+                                )
+                                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                                    setDataAndType(uri, "*/*")
+                                    addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+                                holder.itemView.context.startActivity(intent)
+                            } catch (e: Exception) {}
+                        }
                     }
                 }
                 holder.time.text = timeFormat.format(
@@ -123,10 +138,25 @@ class MessageAdapter(
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
                     holder.text.setOnClickListener {
-                        var url = item.file!!.url
-                        if (!url.startsWith("http")) url = "http://2.26.71.102:8000$url"
-                        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
-                        holder.itemView.context.startActivity(intent)
+                        val url = item.file!!.url.let { if (it.startsWith("http")) it else "http://2.26.71.102:8000$it" }
+                        // Скачиваем во временный файл и открываем
+                        thread {
+                            try {
+                                val bytes = java.net.URL(url).readBytes()
+                                val tmpFile = java.io.File(holder.itemView.context.cacheDir, item.file!!.name)
+                                tmpFile.writeBytes(bytes)
+                                val uri = androidx.core.content.FileProvider.getUriForFile(
+                                    holder.itemView.context,
+                                    "${holder.itemView.context.packageName}.fileprovider",
+                                    tmpFile
+                                )
+                                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                                    setDataAndType(uri, "*/*")
+                                    addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+                                holder.itemView.context.startActivity(intent)
+                            } catch (e: Exception) {}
+                        }
                     }
                 }
                 holder.msgStatus.text = if (item.id.startsWith("sending_")) "🕒" else "✅✅"
