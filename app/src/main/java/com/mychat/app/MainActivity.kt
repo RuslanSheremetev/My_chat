@@ -1021,10 +1021,28 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
 
     override fun onActivityResult(rc: Int, rc2: Int, data: Intent?) {
         super.onActivityResult(rc, rc2, data)
-        if (rc == 100 && rc2 == RESULT_OK) data?.data?.let { uploadFile(it) }
+        if (rc == 100 && rc2 == RESULT_OK) data?.data?.let { showCaptionDialog(it) }
     }
 
-    private fun uploadFile(uri: Uri) {
+    private fun showCaptionDialog(uri: Uri) {
+        val input = EditText(this).apply {
+            hint = "Добавить подпись..."
+            setTextColor(0xffffffff.toInt())
+            setHintTextColor(0xff636366.toInt())
+            setBackgroundResource(R.drawable.bg_input)
+            setPadding(30, 20, 30, 20)
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Отправить фото")
+            .setView(input)
+            .setPositiveButton("Отправить") { _, _ ->
+                uploadFile(uri, input.text.toString().trim())
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
+    
+    private fun uploadFile(uri: Uri, caption: String = "") {
         val pd = AlertDialog.Builder(this)
             .setTitle("Uploading...")
             .setView(ProgressBar(this).apply { setPadding(40, 30, 40, 30) })
@@ -1053,7 +1071,8 @@ findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() 
                         JSONObject().apply {
                             put("type", "private")
                             put("to", selId)
-                            put("text", if (isImage) "" else "File: $fn")
+                            val text = if (caption.isNotEmpty()) caption else if (isImage) "📷 Фото" else "File: $fn"
+                            put("text", text)
                             put("file", JSONObject().apply {
                                 put("name", fn)
                                 put("url", u)
