@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <cache-path name="f" path="f/" />
-    <files-path name="f2" path="." />
-    <external-path name="d" path="Download/" />
+    <cache-path name="media" path="media/" />
+    <cache-path name="cache" path="/" />
+    <files-path name="files" path="/" />
 </paths>
