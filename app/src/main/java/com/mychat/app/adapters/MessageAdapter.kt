@@ -105,6 +105,7 @@ class MessageAdapter(
                 holder.text.text = item.text
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
+                    holder.text.isClickable = true
                     holder.text.setOnClickListener {
                         val url = item.file!!.url.let { if (it.startsWith("http")) it else "http://2.26.71.102:8000$it" }
                         // Скачиваем во временный файл и открываем
@@ -137,6 +138,7 @@ class MessageAdapter(
                 holder.text.text = item.text
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
+                    holder.text.isClickable = true
                     holder.text.setOnClickListener {
                         val url = item.file!!.url.let { if (it.startsWith("http")) it else "http://2.26.71.102:8000$it" }
                         // Скачиваем во временный файл и открываем
