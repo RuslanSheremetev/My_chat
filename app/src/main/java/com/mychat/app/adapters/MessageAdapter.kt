@@ -221,10 +221,7 @@ class MessageAdapter(
                 ))
             }
             imageView.setOnLongClickListener { onMessageLongClick(item); true }
-            imageView.setBackgroundResource(R.drawable.shimmer_placeholder)
-            imageView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
-                imageView.context, R.anim.shimmer
-            ))
+            imageView.setBackgroundColor(0xff1c1c1e.toInt())
             imageView.setOnClickListener {
                 // Собираем все фото из чата и открываем галерею
                 val allPhotos = items.filterIsInstance<ChatMessage>()
