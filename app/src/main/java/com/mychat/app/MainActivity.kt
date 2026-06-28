@@ -1607,6 +1607,19 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     
     private fun toggleMute() {
         isMuted = !isMuted
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        prefs.edit().putBoolean("mute_$selId", isMuted).apply()
+        // Синхронизация с MongoDB
+        thread {
+            try {
+                val json = JSONObject().apply {
+                    put("chat_key", selId)
+                    put("is_muted", isMuted)
+                }
+                val body = json.toString().toRequestBody("application/json".toMediaType())
+                client.newCall(Request.Builder().url("$server/chat_settings?token=$token").post(body).build()).execute()
+            } catch (e: Exception) {}
+        }
         if (isMuted) {
             t("🔇 Уведомления отключены")
         } else {
