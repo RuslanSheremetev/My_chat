@@ -13,6 +13,9 @@ interface MessageDao {
     @Query("DELETE FROM messages WHERE chatKey = :chatKey")
     fun deleteChat(chatKey: String)
     
+    @Query("SELECT * FROM messages WHERE chatKey = :chatKey AND text LIKE '%' || :query || '%' ORDER BY time ASC")
+    fun searchMessages(chatKey: String, query: String): List<MessageEntity>
+    
     @Query("DELETE FROM messages")
     fun clearAll()
     

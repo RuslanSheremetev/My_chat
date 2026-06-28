@@ -222,7 +222,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             }
             view.findViewById<LinearLayout>(R.id.menuSearch).setOnClickListener {
                 dialog.dismiss()
-                t("Поиск по сообщениям")
+                showSearchDialog()
             }
             view.findViewById<LinearLayout>(R.id.menuClear).setOnClickListener {
                 dialog.dismiss()
@@ -1513,6 +1513,48 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         ws?.send(json.toString())
         t("Пользователь заблокирован")
         closeChat()
+    }
+    
+    private fun showSearchDialog() {
+        val input = EditText(this).apply {
+            hint = "Поиск в чате..."
+            setTextColor(0xffffffff.toInt())
+            setHintTextColor(0xff636366.toInt())
+            setBackgroundResource(R.drawable.bg_input)
+            setPadding(30, 20, 30, 20)
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Поиск по сообщениям")
+            .setView(input)
+            .setPositiveButton("Искать") { _, _ ->
+                val query = input.text.toString().trim()
+                if (query.isNotEmpty()) {
+                    searchInChat(query)
+                }
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
+    
+    private fun searchInChat(query: String) {
+        thread {
+            try {
+                val results = db.messageDao().searchMessages(selId, query)
+                if (results.isNotEmpty()) {
+                    val msgs = results.map { e ->
+                        ChatMessage(e.id, e.fromUser, e.toUser, e.text, e.time)
+                    }
+                    handler.post {
+                        msgAdapter.update(msgs)
+                        t("Найдено: ${results.size}")
+                    }
+                } else {
+                    handler.post { t("Ничего не найдено") }
+                }
+            } catch (e: Exception) {
+                handler.post { t("Ошибка поиска") }
+            }
+        }
     }
     
     private fun t(msg: String) {
