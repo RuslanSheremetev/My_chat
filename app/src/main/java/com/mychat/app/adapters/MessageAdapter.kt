@@ -19,7 +19,8 @@ class MessageAdapter(
     private val me: String,
     private val onDownload: (String, String) -> Unit,
     private val onMessageLongClick: (ChatMessage) -> Unit = {},
-    private val onSaveReaction: ((String, String) -> Unit)? = null
+    private val onSaveReaction: ((String, String) -> Unit)? = null,
+    private val appContext: android.content.Context? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val items = mutableListOf<Any>()
@@ -330,9 +331,10 @@ class MessageAdapter(
             android.util.Log.d("Reaction", "After: reactions=${newReactions}, formatted=${formatReactions(newReactions)}")
             notifyItemChanged(index)
             // Сохраняем в Room
+            val ctx = appContext ?: return
             try {
                 val json = org.json.JSONObject(newReactions as Map<*, *>).toString()
-                val db = com.mychat.app.data.AppDatabase.getInstance(itemView.context.applicationContext)
+                val db = com.mychat.app.data.AppDatabase.getInstance(ctx)
                 kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
                     db.messageDao().updateReactions(msgId, json)
                 }
