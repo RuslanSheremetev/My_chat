@@ -218,7 +218,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             
             view.findViewById<LinearLayout>(R.id.menuInfo).setOnClickListener {
                 dialog.dismiss()
-                t("Информация о чате")
+                showUserInfo()
             }
             view.findViewById<LinearLayout>(R.id.menuSearch).setOnClickListener {
                 dialog.dismiss()
@@ -1576,6 +1576,27 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 handler.post { t("Ошибка") }
             }
         }
+    }
+    
+    private fun showUserInfo() {
+        val user = users.find { it.username == selId }
+        if (user == null) {
+            t("Информация не найдена")
+            return
+        }
+        val info = """
+            Имя: ${user.name.ifEmpty { user.username }}
+            Логин: ${user.username}
+            Статус: ${if (user.online) "Онлайн" else "Офлайн"}
+            Последний вход: ${user.lastSeen.ifEmpty { "Неизвестно" }}
+            О себе: ${user.bio.ifEmpty { "Не указано" }}
+        """.trimIndent()
+        
+        AlertDialog.Builder(this)
+            .setTitle("Информация")
+            .setMessage(info)
+            .setPositiveButton("OK", null)
+            .show()
     }
     
     private fun t(msg: String) {
