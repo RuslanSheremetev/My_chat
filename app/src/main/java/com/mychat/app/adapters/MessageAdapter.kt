@@ -286,7 +286,9 @@ class MessageAdapter(
 
     private fun formatReactions(reactions: Map<String, out List<String>>): String {
         if (reactions.isEmpty()) return ""
-        return reactions.keys.joinToString(" ")
+        return reactions.entries.joinToString("  ") { (emoji, users) ->
+            if (users.size > 1) "$emoji ${users.size}" else emoji
+        }
     }
 
 
