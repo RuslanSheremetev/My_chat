@@ -329,6 +329,7 @@ class MessageAdapter(
             items[index] = msg.copy(reactions = newReactions)
             android.util.Log.d("Reaction", "After: reactions=${newReactions}, formatted=${formatReactions(newReactions)}")
             notifyItemChanged(index)
+            android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
             onSaveReaction?.invoke(msgId, org.json.JSONObject(newReactions as Map<*, *>).toString())
         }
     }
