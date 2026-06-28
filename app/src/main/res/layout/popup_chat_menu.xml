@@ -34,6 +34,32 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/menuMute"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:clickable="true"
+        android:background="?attr/selectableItemBackground">
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/ic_mic"
+            android:tint="#ffb74d"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Отключить звук"
+            android:textSize="15sp"
+            android:textColor="#ffb74d"
+            android:layout_marginStart="14dp"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/menuSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

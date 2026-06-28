@@ -220,6 +220,10 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 dialog.dismiss()
                 showUserInfo()
             }
+            view.findViewById<LinearLayout>(R.id.menuMute).setOnClickListener {
+                dialog.dismiss()
+                toggleMute()
+            }
             view.findViewById<LinearLayout>(R.id.menuSearch).setOnClickListener {
                 dialog.dismiss()
                 showSearchDialog()
@@ -1597,6 +1601,17 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             .setMessage(info)
             .setPositiveButton("OK", null)
             .show()
+    }
+    
+    private var isMuted = false
+    
+    private fun toggleMute() {
+        isMuted = !isMuted
+        if (isMuted) {
+            t("🔇 Уведомления отключены")
+        } else {
+            t("🔔 Уведомления включены")
+        }
     }
     
     private fun t(msg: String) {
