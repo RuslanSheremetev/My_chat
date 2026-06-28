@@ -907,7 +907,9 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                             db.messageDao().deleteTempMessages(tempIds)
                         }
                     }
-                    msgAdapter.update(nm)
+                    // Фильтруем удалённые сообщения
+                    val filtered = nm.filter { it.text != "Сообщение удалено" }
+                    msgAdapter.update(filtered)
                         if (nm.isNotEmpty()) {
                             messagesList.scrollToPosition(msgAdapter.itemCount - 1)
                         }
@@ -979,7 +981,9 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                             db.messageDao().deleteTempMessages(tempIds)
                         }
                     }
-                    msgAdapter.update(nm)
+                    // Фильтруем удалённые сообщения
+                    val filtered = nm.filter { it.text != "Сообщение удалено" }
+                    msgAdapter.update(filtered)
                             lastMessageCount = nm.size
                             if (wasAtBottom && nm.isNotEmpty()) {
                                 messagesList.scrollToPosition(msgAdapter.itemCount - 1)
