@@ -152,6 +152,7 @@ class MessageAdapter(
                 holder.itemView.setOnLongClickListener { onMessageLongClick(item); true }
                 // Показываем реакции
                 val reactionsStr = formatReactions(item.reactions)
+                android.util.Log.d("Reaction", "In bind: id=${item.id}, reactions=${item.reactions}, str=$reactionsStr")
                 holder.reactionsText.text = reactionsStr
                 holder.reactionsText.visibility = if (reactionsStr.isNotEmpty()) View.VISIBLE else View.GONE
             }
@@ -292,8 +293,10 @@ class MessageAdapter(
 
     fun addReaction(msgId: String, emoji: String, from: String) {
         val index = items.indexOfFirst { it is ChatMessage && it.id == msgId }
+        android.util.Log.d("Reaction", "addReaction: msgId=$msgId, emoji=$emoji, from=$from, index=$index")
         if (index >= 0) {
             val msg = items[index] as ChatMessage
+            android.util.Log.d("Reaction", "Before: reactions=${msg.reactions}")
             val newReactions = msg.reactions.toMutableMap()
             // Удаляем пользователя из других реакций
             for (key in newReactions.keys) {
@@ -313,6 +316,7 @@ class MessageAdapter(
                 newReactions[emoji] = users
             }
             items[index] = msg.copy(reactions = newReactions)
+            android.util.Log.d("Reaction", "After: reactions=${newReactions}, formatted=${formatReactions(newReactions)}")
             notifyItemChanged(index)
         }
     }
