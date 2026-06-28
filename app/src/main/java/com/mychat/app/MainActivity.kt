@@ -226,7 +226,14 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             }
             view.findViewById<LinearLayout>(R.id.menuClear).setOnClickListener {
                 dialog.dismiss()
-                t("История очищена")
+                AlertDialog.Builder(this)
+                    .setTitle("Очистить историю")
+                    .setMessage("Удалить все сообщения в этом чате?")
+                    .setPositiveButton("Очистить") { _, _ ->
+                        clearHistory()
+                    }
+                    .setNegativeButton("Отмена", null)
+                    .show()
             }
             view.findViewById<LinearLayout>(R.id.menuBlock).setOnClickListener {
                 dialog.dismiss()
@@ -1553,6 +1560,20 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 }
             } catch (e: Exception) {
                 handler.post { t("Ошибка поиска") }
+            }
+        }
+    }
+    
+    private fun clearHistory() {
+        thread {
+            try {
+                db.messageDao().deleteChat(selId)
+                handler.post {
+                    msgAdapter.update(emptyList())
+                    t("История очищена")
+                }
+            } catch (e: Exception) {
+                handler.post { t("Ошибка") }
             }
         }
     }
