@@ -39,6 +39,7 @@ import com.mychat.app.models.FileInfo
 import com.mychat.app.models.User
 import com.mychat.app.utils.FileCache
 import com.mychat.app.data.AppDatabase
+import com.mychat.app.data.ChatSettings
 import com.mychat.app.data.MessageEntity
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
