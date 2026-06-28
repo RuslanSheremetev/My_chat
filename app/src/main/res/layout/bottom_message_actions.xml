@@ -124,14 +124,6 @@
                 android:background="@drawable/bg_attach_icon"
                 android:padding="14dp"
                 android:tint="#a0a0a0"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ответить"
-                android:textSize="11sp"
-                android:textColor="#a0a0a0"
-                android:layout_marginTop="6dp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -153,14 +145,6 @@
                 android:background="@drawable/bg_attach_icon"
                 android:padding="14dp"
                 android:tint="#a0a0a0"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Изменить"
-                android:textSize="11sp"
-                android:textColor="#a0a0a0"
-                android:layout_marginTop="6dp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -182,14 +166,6 @@
                 android:background="@drawable/bg_attach_icon"
                 android:padding="14dp"
                 android:tint="#a0a0a0"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Копировать"
-                android:textSize="11sp"
-                android:textColor="#a0a0a0"
-                android:layout_marginTop="6dp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -211,14 +187,6 @@
                 android:background="@drawable/bg_attach_icon"
                 android:padding="14dp"
                 android:tint="#a0a0a0"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Выбрать"
-                android:textSize="11sp"
-                android:textColor="#a0a0a0"
-                android:layout_marginTop="6dp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -240,14 +208,6 @@
                 android:background="@drawable/bg_attach_icon"
                 android:padding="14dp"
                 android:tint="#a0a0a0"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Переслать"
-                android:textSize="11sp"
-                android:textColor="#a0a0a0"
-                android:layout_marginTop="6dp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -269,14 +229,6 @@
                 android:background="@drawable/bg_attach_icon"
                 android:padding="14dp"
                 android:tint="#a0a0a0"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="В избранное"
-                android:textSize="11sp"
-                android:textColor="#a0a0a0"
-                android:layout_marginTop="6dp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -298,14 +250,6 @@
                 android:background="@drawable/bg_attach_icon"
                 android:padding="14dp"
                 android:tint="#ff3b30"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Удалить"
-                android:textSize="11sp"
-                android:textColor="#ff3b30"
-                android:layout_marginTop="6dp"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

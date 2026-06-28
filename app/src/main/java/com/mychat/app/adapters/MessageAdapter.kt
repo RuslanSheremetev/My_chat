@@ -221,16 +221,7 @@ class MessageAdapter(
         val isImage = fi?.url?.let { it.endsWith(".jpg") || it.endsWith(".jpeg") || it.endsWith(".png") || it.endsWith(".gif") || it.endsWith(".webp") } ?: false
             if (fi != null && fi.url.isNotEmpty() && isImage) {
             imageView.visibility = View.VISIBLE
-            // Не показываем shimmer если клавиатура открыта
-            val imm = imageView.context.getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
-            if (imm.isAcceptingText) {
-                imageView.setBackgroundColor(0xff1c1c1e.toInt())
-            } else {
-                imageView.setBackgroundResource(R.drawable.shimmer_placeholder)
-                imageView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
-                    imageView.context, R.anim.shimmer
-                ))
-            }
+            imageView.setBackgroundColor(0xff1c1c1e.toInt())
             imageView.setOnLongClickListener { onMessageLongClick(item); true }
             imageView.setBackgroundColor(0xff1c1c1e.toInt())
             imageView.setOnClickListener {
@@ -267,7 +258,6 @@ class MessageAdapter(
                         imageView.post {
                             if (bmp != null) {
                         imageView.setImageBitmap(bmp)
-                        imageView.clearAnimation()
                         imageView.setBackgroundResource(0)
                         imageView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
                             imageView.context, R.anim.photo_load_in
