@@ -1405,6 +1405,40 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         }
     }
 
+
+    private fun loadReactions(msgs: List<ChatMessage>) {
+        log("loadReactions: ${msgs.size} messages")
+        for (msg in msgs) {
+            val request = Request.Builder()
+                .url("$server/api/messages/reactions/${msg.id}?token=$token")
+                .get()
+                .build()
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {}
+                override fun onResponse(call: Call, response: Response) {
+                    if (response.isSuccessful) {
+                        val body = response.body?.string() ?: return
+                        val json = JSONObject(body)
+                        val reactionsJson = json.optJSONObject("reactions")
+                        if (reactionsJson != null) {
+                            val reactions = mutableMapOf<String, MutableList<String>>()
+                            reactionsJson.keys().forEach { key ->
+                                val arr = reactionsJson.getJSONArray(key)
+                                val list = mutableListOf<String>()
+                                for (i in 0 until arr.length()) list.add(arr.getString(i))
+                                reactions[key] = list
+                            }
+                            runOnUiThread {
+                                log("Reactions loaded for ${msg.id}: $reactions")
+                                msgAdapter.setReactions(msg.id, reactions)
+                            }
+                        }
+                    }
+                }
+            })
+        }
+    }
+
     private fun hideContextMenu() {
         selectedUserForDelete = null
         chatAdapter.selectedPosition = -1
