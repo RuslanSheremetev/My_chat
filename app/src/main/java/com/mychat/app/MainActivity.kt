@@ -675,7 +675,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                             if (response.isSuccessful) {
                                 msgAdapter.addReaction(msg.id, emoji, currentUserPhone)
                                 // Сохраняем реакции в Room
-                                val reactionsJson = JSONObject(msg.reactions).toString()
+                                val reactionsJson = org.json.JSONObject(msg.reactions as Map<*, *>).toString()
                                 CoroutineScope(Dispatchers.IO).launch {
                                     db.messageDao().updateReactions(msg.id, reactionsJson)
                                 }

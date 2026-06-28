@@ -283,7 +283,7 @@ class MessageAdapter(
     }
 
 
-    private fun formatReactions(reactions: Map<String, List<String>>): String {
+    private fun formatReactions(reactions: Map<String, out List<String>>): String {
         if (reactions.isEmpty()) return ""
         return reactions.entries.joinToString("  ") { (emoji, users) ->
             "$emoji ${users.size}"
@@ -295,13 +295,25 @@ class MessageAdapter(
         if (index >= 0) {
             val msg = items[index] as ChatMessage
             val newReactions = msg.reactions.toMutableMap()
+            // Удаляем пользователя из других реакций
+            for (key in newReactions.keys) {
+                newReactions[key] = newReactions[key]?.filter { it != from }?.toMutableList() ?: mutableListOf()
+                if (newReactions[key]?.isEmpty() == true) {
+                    newReactions.remove(key)
+                }
+            }
+            // Добавляем/убираем реакцию
             val users = newReactions.getOrDefault(emoji, mutableListOf()).toMutableList()
-            if (!users.contains(from)) {
+            if (users.contains(from)) {
+                users.remove(from)
+                if (users.isEmpty()) newReactions.remove(emoji)
+                else newReactions[emoji] = users
+            } else {
                 users.add(from)
                 newReactions[emoji] = users
-                items[index] = msg.copy(reactions = newReactions)
-                notifyItemChanged(index)
             }
+            items[index] = msg.copy(reactions = newReactions)
+            notifyItemChanged(index)
         }
     }
     
