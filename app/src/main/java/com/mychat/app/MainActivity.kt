@@ -688,6 +688,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                                 log("addReaction: msgId=${msg.id}, emoji=$emoji, phone=$currentUserPhone")
                                 msgAdapter.addReaction(msg.id, emoji, currentUserPhone)
                                 // Сохраняем реакции в Room
+                                val reactionsJson = JSONObject(msg.reactions as Map<*, *>).toString()
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    db.messageDao().updateReactions(msg.id, reactionsJson)
+                                }
+                                // Сохраняем реакции в Room
                                 val reactionsJson = org.json.JSONObject(msg.reactions as Map<*, *>).toString()
                                 CoroutineScope(Dispatchers.IO).launch {
                                     db.messageDao().updateReactions(msg.id, reactionsJson)
@@ -1427,6 +1432,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                                 val list = mutableListOf<String>()
                                 for (i in 0 until arr.length()) list.add(arr.getString(i))
                                 reactions[key] = list
+                            }
+                            // Сохраняем в Room
+                            val reactionsJson = JSONObject(reactions as Map<*, *>).toString()
+                            CoroutineScope(Dispatchers.IO).launch {
+                                db.messageDao().updateReactions(msg.id, reactionsJson)
                             }
                             runOnUiThread {
                                 log("Reactions loaded for ${msg.id}: $reactions")
