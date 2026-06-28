@@ -589,9 +589,16 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         bottomNav.visibility = View.VISIBLE
         
         // СОЗДАЁМ АДАПТЕР ЗДЕСЬ, КОГДА me УЖЕ ЕСТЬ
-        msgAdapter = MessageAdapter(me, { url, name -> downloadFile(url, name) },
-                    onMessageLongClick = { msg -> showMessageActions(msg) }
-                )
+        msgAdapter = MessageAdapter(
+            me = me,
+            onDownload = { url, name -> downloadFile(url, name) },
+            onMessageLongClick = { msg -> showMessageActions(msg) },
+            onSaveReaction = { msgId, json ->
+                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                    db.messageDao().updateReactions(msgId, json)
+                }
+            }
+        )
         messagesList.adapter = msgAdapter
         
         connectWS()
@@ -1587,8 +1594,15 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                             ))
                         }
                         runOnUiThread {
-                            msgAdapter = MessageAdapter(me, { url, name -> downloadFile(url, name) },
-                                onMessageLongClick = { msg -> showMessageActions(msg) }
+                            msgAdapter = MessageAdapter(
+                                me = me,
+                                onDownload = { url, name -> downloadFile(url, name) },
+                                onMessageLongClick = { msg -> showMessageActions(msg) },
+                                onSaveReaction = { msgId, json ->
+                                    kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                                        db.messageDao().updateReactions(msgId, json)
+                                    }
+                                }
                             )
                             messagesList.adapter = msgAdapter
                             messagesList.scrollToPosition(msgAdapter.itemCount - 1)

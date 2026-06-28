@@ -18,7 +18,8 @@ import kotlin.concurrent.thread
 class MessageAdapter(
     private val me: String,
     private val onDownload: (String, String) -> Unit,
-    private val onMessageLongClick: (ChatMessage) -> Unit = {}
+    private val onMessageLongClick: (ChatMessage) -> Unit = {},
+    private val onSaveReaction: ((String, String) -> Unit)? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val items = mutableListOf<Any>()
@@ -328,6 +329,7 @@ class MessageAdapter(
             items[index] = msg.copy(reactions = newReactions)
             android.util.Log.d("Reaction", "After: reactions=${newReactions}, formatted=${formatReactions(newReactions)}")
             notifyItemChanged(index)
+            onSaveReaction?.invoke(msgId, org.json.JSONObject(newReactions as Map<*, *>).toString())
         }
     }
     
