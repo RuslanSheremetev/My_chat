@@ -685,7 +685,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                         try {
                             val j = JSONObject(text)
                             if (j.optString("type") == "ping") return
-                            if (isMuted || isBlocked) return
+                            if (isBlocked) return
                             if (selId.isNotEmpty()) {
                                 handler.post {
                                     updateMessagesSilent()
@@ -1294,7 +1294,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         stopPolling()
         pollRunnable = object : Runnable {
             override fun run() {
-                            if (isMuted || isBlocked) return
+                            if (isBlocked) return
                 if (selId.isNotEmpty()) {
                     updateMessagesSilent()
                     handler.postDelayed(this, 3000)
