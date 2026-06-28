@@ -220,10 +220,16 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 dialog.dismiss()
                 showUserInfo()
             }
-            view.findViewById<LinearLayout>(R.id.menuMute).setOnClickListener {
+            val muteBtn = view.findViewById<LinearLayout>(R.id.menuMute)
+            val muteText = view.findViewById<TextView>(R.id.muteText)
+            muteText.text = if (isMuted) "Включить звук" else "Отключить звук"
+            muteBtn.setOnClickListener {
                 dialog.dismiss()
                 toggleMute()
             }
+            // Обновляем текст кнопки
+            val muteText = view.findViewById<TextView>(R.id.menuMute).findViewById<TextView>(android.R.id.text1)
+            muteText?.text = if (isMuted) "Включить звук" else "Отключить звук"
             view.findViewById<LinearLayout>(R.id.menuSearch).setOnClickListener {
                 dialog.dismiss()
                 showSearchDialog()
