@@ -692,11 +692,6 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                                 CoroutineScope(Dispatchers.IO).launch {
                                     db.messageDao().updateReactions(msg.id, reactionsJson)
                                 }
-                                // Сохраняем реакции в Room
-                                val reactionsJson = org.json.JSONObject(msg.reactions as Map<*, *>).toString()
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    db.messageDao().updateReactions(msg.id, reactionsJson)
-                                }
                                 t("$emoji")
                             }
                         }
