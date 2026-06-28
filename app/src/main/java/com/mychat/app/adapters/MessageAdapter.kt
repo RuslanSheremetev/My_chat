@@ -150,6 +150,10 @@ class MessageAdapter(
                 )
                 loadPhoto(item, holder.imageMsg)
                 holder.itemView.setOnLongClickListener { onMessageLongClick(item); true }
+                // Показываем реакции
+                val reactionsStr = formatReactions(item.reactions)
+                holder.reactionsText.text = reactionsStr
+                holder.reactionsText.visibility = if (reactionsStr.isNotEmpty()) View.VISIBLE else View.GONE
             }
             item is ChatMessage && holder is OutViewHolder -> {
                 holder.text.text = item.text
@@ -201,6 +205,10 @@ class MessageAdapter(
                 )
                 loadPhoto(item, holder.imageMsg)
                 holder.itemView.setOnLongClickListener { onMessageLongClick(item); true }
+                // Показываем реакции
+                val reactionsStr = formatReactions(item.reactions)
+                holder.reactionsText.text = reactionsStr
+                holder.reactionsText.visibility = if (reactionsStr.isNotEmpty()) View.VISIBLE else View.GONE
             }
         }
     }
@@ -274,6 +282,14 @@ class MessageAdapter(
         }
     }
 
+
+    private fun formatReactions(reactions: Map<String, List<String>>): String {
+        if (reactions.isEmpty()) return ""
+        return reactions.entries.joinToString("  ") { (emoji, users) ->
+            "$emoji ${users.size}"
+        }
+    }
+
     fun addReaction(msgId: String, emoji: String, from: String) {
         val index = items.indexOfFirst { it is ChatMessage && it.id == msgId }
         if (index >= 0) {
@@ -318,6 +334,7 @@ class MessageAdapter(
         val text: TextView = view.findViewById(R.id.text)
         val time: TextView = view.findViewById(R.id.time)
         val imageMsg: ImageView = view.findViewById(R.id.imageMsg)
+        val reactionsText: TextView = view.findViewById(R.id.reactionsText)
     }
 
     class OutViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -325,5 +342,6 @@ class MessageAdapter(
         val time: TextView = view.findViewById(R.id.time)
         val imageMsg: ImageView = view.findViewById(R.id.imageMsg)
         val msgStatus: TextView = view.findViewById(R.id.msgStatus)
+        val reactionsText: TextView = view.findViewById(R.id.reactionsText)
     }
 }
