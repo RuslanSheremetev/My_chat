@@ -580,6 +580,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         
         lastMessageCount = 0
         refreshMessages()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        isMuted = prefs.getBoolean("mute_$id", false)
         pendingForward?.let { msg -> handler.postDelayed({ forwardMessage(msg); pendingForward = null }, 500) }
         // Отмечаем сообщения прочитанными
 
@@ -677,6 +679,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                         try {
                             val j = JSONObject(text)
                             if (j.optString("type") == "ping") return
+                            if (isMuted) return
                             if (selId.isNotEmpty()) {
                                 handler.post {
                                     updateMessagesSilent()
@@ -1281,6 +1284,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         stopPolling()
         pollRunnable = object : Runnable {
             override fun run() {
+                            if (isMuted) return
                 if (selId.isNotEmpty()) {
                     updateMessagesSilent()
                     handler.postDelayed(this, 3000)
