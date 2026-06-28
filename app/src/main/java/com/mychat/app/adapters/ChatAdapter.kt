@@ -24,19 +24,22 @@ class ChatAdapter(
 ) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
     private val users = mutableListOf<User>()
+    var selectedPosition: Int = -1
 
     fun update(list: List<User>) {
         users.clear()
         users.addAll(list)
+        selectedPosition = -1
         notifyDataSetChanged()
     }
-    
+
     fun removeItem(position: Int): User {
         val user = users.removeAt(position)
         notifyItemRemoved(position)
+        selectedPosition = -1
         return user
     }
-    
+
     fun getItem(position: Int): User = users[position]
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -48,10 +51,13 @@ class ChatAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val user = users[position]
         holder.bind(user)
+        
+        // Подсветка выбранного элемента
+        holder.itemView.isSelected = (position == selectedPosition)
     }
 
     fun getUsers(): List<User> = users.toList()
-    
+
     override fun getItemCount(): Int = users.size
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -65,24 +71,25 @@ class ChatAdapter(
         fun bind(user: User) {
             val displayName = if (user.name.isNotEmpty()) user.name else user.username
             avatar.text = displayName.take(1).uppercase()
-            
-            val colors = arrayOf("#2AABEE", "#34C759", "#FF9500", "#FF3B30", "#9C6BFF", "#FF6B9D", "#00BCD4", "#FF5722")
+
+            val colors = arrayOf("#2AABEE", "#34C759", "#FF9500",
+"#FF3B30", "#9C6BFF", "#FF6B9D", "#00BCD4", "#FF5722")
             val colorIndex = user.username.hashCode().mod(colors.size)
             val color = colors[if (colorIndex < 0) colorIndex * -1 else colorIndex]
             avatar.background = circleBg(color)
-            
+
             name.text = displayName
-            
+
             val lastMsg = user.lastMsg
             if (lastMsg.isNotEmpty()) {
                 lastMessage.text = lastMsg
-                // Показываем просто текст без иконок
                 lastMessage.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
             } else {
                 lastMessage.text = user.bio
             }
-            
+
             lastTime.text = user.lastTime
+            
             // Статус последнего сообщения
             if (user.lastMsgStatus == "sending") {
                 msgStatusIcon.visibility = View.VISIBLE
@@ -103,21 +110,28 @@ class ChatAdapter(
             } else {
                 msgStatusIcon.visibility = View.GONE
             }
-            
-            // Показываем зеленую точку, если пользователь онлайн
+
             onlineDot.visibility = if (user.online) View.VISIBLE else View.GONE
-            
-            itemView.setOnClickListener { 
-            itemView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
-                itemView.context, R.anim.item_click_scale
-            ))
-            itemView.postDelayed({
+
+            itemView.setOnClickListener {
                 itemView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
-                    itemView.context, R.anim.item_click_release
+                    itemView.context, R.anim.item_click_scale
                 ))
-            }, 150)
-            onClick(user) 
-        }
+                itemView.postDelayed({
+                    itemView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
+                        itemView.context, R.anim.item_click_release
+                    ))
+                }, 150)
+                onClick(user)
+            }
+            
+            // Долгое нажатие
+            itemView.setOnLongClickListener {
+                selectedPosition = adapterPosition
+                notifyDataSetChanged()
+                onLongClick?.invoke(user)
+                true
+            }
         }
     }
 }

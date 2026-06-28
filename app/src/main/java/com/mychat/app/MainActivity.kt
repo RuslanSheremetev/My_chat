@@ -31,6 +31,10 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import com.mychat.app.activities.FavoritesActivity
 import com.mychat.app.activities.ProfileActivity
 import com.mychat.app.adapters.ChatAdapter
+import android.view.animation.TranslateAnimation
+import android.view.animation.Animation
+import android.widget.FrameLayout
+
 import com.mychat.app.adapters.MessageAdapter
 import com.mychat.app.adapters.StickerAdapter
 import com.mychat.app.adapters.circleBg
@@ -88,6 +92,9 @@ class MainActivity : AppCompatActivity() {
     private var pollRunnable: Runnable? = null
     private var lastMessageCount = 0
     private lateinit var chatAdapter: ChatAdapter
+    private lateinit var contextMenuBar: FrameLayout
+    private var selectedUserForDelete: User? = null
+
     private lateinit var msgAdapter: MessageAdapter
     private val client = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
@@ -99,6 +106,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        // Контекстное меню для чатов
+        contextMenuBar = findViewById(R.id.contextMenuBar)
+        contextMenuBar.visibility = View.GONE
+        contextMenuBar.findViewById<ImageView>(R.id.btn_close).setOnClickListener { hideContextMenu() }
+        contextMenuBar.findViewById<ImageView>(R.id.btn_delete).setOnClickListener {
+            selectedUserForDelete?.let { deleteChat(it) }
+            hideContextMenu()
+        }
+
         FileCache.init(this)
         db = AppDatabase.getInstance(this)
         
@@ -1310,17 +1326,50 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     }
 
     private fun showChatActions(user: User) {
-        val options = arrayOf("Удалить чат", "Заблокировать")
-        AlertDialog.Builder(this)
-            .setTitle(user.name.ifEmpty { user.username })
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> deleteChat(user)
-                    1 -> t("Заблокировано: ${user.username}")
-                }
+        selectedUserForDelete = user
+        
+        // Подсвечиваем выбранный элемент
+        val index = users.indexOf(user)
+        if (index >= 0) {
+            chatAdapter.selectedPosition = index
+            chatAdapter.notifyDataSetChanged()
+        }
+        
+        // Показываем меню с анимацией
+        contextMenuBar.visibility = View.VISIBLE
+        contextMenuBar.clearAnimation()
+        val slideDown = TranslateAnimation(
+            Animation.RELATIVE_TO_SELF, 0f,
+            Animation.RELATIVE_TO_SELF, 0f,
+            Animation.RELATIVE_TO_SELF, -1f,
+            Animation.RELATIVE_TO_SELF, 0f
+        )
+        slideDown.duration = 300
+        slideDown.interpolator = android.view.animation.DecelerateInterpolator()
+        contextMenuBar.startAnimation(slideDown)
+    }
+    
+    private fun hideContextMenu() {
+        selectedUserForDelete = null
+        chatAdapter.selectedPosition = -1
+        chatAdapter.notifyDataSetChanged()
+        
+        val slideUp = TranslateAnimation(
+            Animation.RELATIVE_TO_SELF, 0f,
+            Animation.RELATIVE_TO_SELF, 0f,
+            Animation.RELATIVE_TO_SELF, 0f,
+            Animation.RELATIVE_TO_SELF, -1f
+        )
+        slideUp.duration = 250
+        slideUp.interpolator = android.view.animation.AccelerateInterpolator()
+        slideUp.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(a: Animation?) {}
+            override fun onAnimationEnd(a: Animation?) {
+                contextMenuBar.visibility = View.GONE
             }
-            .setNegativeButton("Отмена", null)
-            .show()
+            override fun onAnimationRepeat(a: Animation?) {}
+        })
+        contextMenuBar.startAnimation(slideUp)
     }
     
     private fun deleteChat(user: User) {
