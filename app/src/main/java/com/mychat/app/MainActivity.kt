@@ -1444,6 +1444,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 override fun onResponse(call: Call, response: Response) {
                     if (response.isSuccessful) {
                         val body = response.body?.string() ?: return
+                        log("GET reactions response: ${body.take(100)}")
                         val json = JSONObject(body)
                         val reactionsJson = json.optJSONObject("reactions")
                         if (reactionsJson != null) {
