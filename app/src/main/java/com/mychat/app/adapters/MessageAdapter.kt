@@ -289,6 +289,16 @@ class MessageAdapter(
         return reactions.keys.joinToString(" ")
     }
 
+
+    fun setReactions(msgId: String, reactions: MutableMap<String, MutableList<String>>) {
+        val index = items.indexOfFirst { it is ChatMessage && it.id == msgId }
+        if (index >= 0) {
+            val msg = items[index] as ChatMessage
+            items[index] = msg.copy(reactions = reactions)
+            notifyItemChanged(index)
+        }
+    }
+
     fun addReaction(msgId: String, emoji: String, from: String) {
         val index = items.indexOfFirst { it is ChatMessage && it.id == msgId }
         android.util.Log.d("Reaction", "addReaction: msgId=$msgId, emoji=$emoji, from=$from, index=$index")
