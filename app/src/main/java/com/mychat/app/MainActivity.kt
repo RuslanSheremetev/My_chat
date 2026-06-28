@@ -1530,6 +1530,19 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             put("to", selId)
         }
         ws?.send(json.toString())
+        // Сохраняем в Room
+        thread {
+            val settings = db.messageDao().getChatSettings(selId) ?: ChatSettings(selId)
+            db.messageDao().saveChatSettings(settings.copy(isBlocked = true))
+            // Синхронизация с сервером
+            try {
+                val body = JSONObject().apply {
+                    put("chat_key", selId)
+                    put("is_blocked", true)
+                }.toString().toRequestBody("application/json".toMediaType())
+                client.newCall(Request.Builder().url("$server/chat_settings?token=$token").post(body).build()).execute()
+            } catch (e: Exception) {}
+        }
         t("Пользователь заблокирован")
         closeChat()
     }
@@ -1619,10 +1632,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     
     private fun toggleMute() {
         isMuted = !isMuted
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        prefs.edit().putBoolean("mute_$selId", isMuted).apply()
-        // Синхронизация с MongoDB
+        // Сохраняем в Room
         thread {
+            val settings = db.messageDao().getChatSettings(selId) ?: ChatSettings(selId)
+            db.messageDao().saveChatSettings(settings.copy(isMuted = isMuted))
+            // Синхронизация с MongoDB
             try {
                 val json = JSONObject().apply {
                     put("chat_key", selId)

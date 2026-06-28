@@ -4,6 +4,18 @@ import androidx.room.*
 
 @Dao
 interface MessageDao {
+    @Query("SELECT * FROM chat_settings WHERE chatKey = :chatKey")
+    fun getChatSettings(chatKey: String): ChatSettings?
+    
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun saveChatSettings(settings: ChatSettings)
+    
+    @Query("UPDATE chat_settings SET isMuted = :muted WHERE chatKey = :chatKey")
+    fun updateMute(chatKey: String, muted: Boolean)
+    
+    @Query("UPDATE chat_settings SET isBlocked = :blocked WHERE chatKey = :chatKey")
+    fun updateBlocked(chatKey: String, blocked: Boolean)
+
     @Query("SELECT * FROM messages WHERE chatKey = :chatKey ORDER BY time ASC")
     fun getMessages(chatKey: String): List<MessageEntity>
     
