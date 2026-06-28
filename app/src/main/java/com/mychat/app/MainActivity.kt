@@ -97,6 +97,8 @@ class MainActivity : AppCompatActivity() {
     private var pollRunnable: Runnable? = null
     private var lastMessageCount = 0
     private lateinit var chatAdapter: ChatAdapter
+    private lateinit var logText: android.widget.TextView
+    private lateinit var logScroll: android.widget.ScrollView
     private lateinit var contextMenuBar: FrameLayout
     private var selectedUserForDelete: User? = null
 
@@ -112,6 +114,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // Контекстное меню для чатов
+        logText = findViewById(R.id.logText)
+        logScroll = findViewById(R.id.logScroll)
+        log("Log started")
         contextMenuBar = findViewById(R.id.contextMenuBar)
         contextMenuBar.visibility = View.GONE
         contextMenuBar.findViewById<ImageView>(R.id.btn_close).setOnClickListener { hideContextMenu() }
@@ -669,13 +674,16 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 client.newCall(request).enqueue(object : Callback {
                     override fun onFailure(call: Call, e: IOException) {
                         android.util.Log.e("REACTION", "Network error: ${e.message}")
+                        log("Network error: ${e.message}")
                         runOnUiThread { t("Ошибка реакции") }
                     }
                     override fun onResponse(call: Call, response: Response) {
                         runOnUiThread {
                             android.util.Log.d("REACTION", "Server response: isSuccessful=${response.isSuccessful}, code=${response.code}")
+                            log("Server response: OK, code=${response.code}")
                             if (response.isSuccessful) {
                                 android.util.Log.d("REACTION", "Calling addReaction: msgId=${msg.id}, emoji=$emoji, phone=$currentUserPhone")
+                                log("addReaction: msgId=${msg.id}, emoji=$emoji, phone=$currentUserPhone")
                                 msgAdapter.addReaction(msg.id, emoji, currentUserPhone)
                                 // Сохраняем реакции в Room
                                 val reactionsJson = org.json.JSONObject(msg.reactions as Map<*, *>).toString()
@@ -1386,6 +1394,15 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         contextMenuBar.startAnimation(slideDown)
     }
     
+
+    private fun log(msg: String) {
+        runOnUiThread {
+            val timestamp = android.text.format.DateFormat.format("HH:mm:ss", java.util.Date())
+            logText.append("$timestamp $msg\n")
+            logScroll.post { logScroll.fullScroll(android.view.View.FOCUS_DOWN) }
+        }
+    }
+
     private fun hideContextMenu() {
         selectedUserForDelete = null
         chatAdapter.selectedPosition = -1
@@ -1429,7 +1446,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             }
             override fun onResponse(call: Call, response: Response) {
                 runOnUiThread {
-                    if (response.isSuccessful) {
+                    log("Server response: OK, code=${response.code}")
+                            if (response.isSuccessful) {
                         // Удаляем чат локально из Room
                         CoroutineScope(Dispatchers.IO).launch {
                             db.messageDao().deleteChat(chatId)
@@ -1592,7 +1610,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             }
             override fun onResponse(call: Call, response: Response) {
                 runOnUiThread {
-                    if (response.isSuccessful) {
+                    log("Server response: OK, code=${response.code}")
+                            if (response.isSuccessful) {
                         t("✅ Добавлено в избранное!")
                     } else {
                         t("Ошибка добавления")
