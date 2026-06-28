@@ -583,6 +583,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         refreshMessages()
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         isMuted = prefs.getBoolean("mute_$id", false)
+        // Восстанавливаем блокировку из Room
+        thread {
+            val settings = db.messageDao().getChatSettings(id)
+            isBlocked = settings?.isBlocked ?: false
+        }
         pendingForward?.let { msg -> handler.postDelayed({ forwardMessage(msg); pendingForward = null }, 500) }
         // Отмечаем сообщения прочитанными
 
@@ -680,7 +685,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                         try {
                             val j = JSONObject(text)
                             if (j.optString("type") == "ping") return
-                            if (isMuted) return
+                            if (isMuted || isBlocked) return
                             if (selId.isNotEmpty()) {
                                 handler.post {
                                     updateMessagesSilent()
@@ -1289,7 +1294,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         stopPolling()
         pollRunnable = object : Runnable {
             override fun run() {
-                            if (isMuted) return
+                            if (isMuted || isBlocked) return
                 if (selId.isNotEmpty()) {
                     updateMessagesSilent()
                     handler.postDelayed(this, 3000)
@@ -1544,6 +1549,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 client.newCall(Request.Builder().url("$server/chat_settings?token=$token").post(body).build()).execute()
             } catch (e: Exception) {}
         }
+        isBlocked = true
         t("Пользователь заблокирован")
         closeChat()
     }
@@ -1630,6 +1636,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     }
     
     private var isMuted = false
+    private var isBlocked = false
     
     private fun toggleMute() {
         isMuted = !isMuted
