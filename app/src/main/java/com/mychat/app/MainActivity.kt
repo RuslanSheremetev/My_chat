@@ -668,11 +668,14 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                     .build()
                 client.newCall(request).enqueue(object : Callback {
                     override fun onFailure(call: Call, e: IOException) {
+                        android.util.Log.e("REACTION", "Network error: ${e.message}")
                         runOnUiThread { t("Ошибка реакции") }
                     }
                     override fun onResponse(call: Call, response: Response) {
                         runOnUiThread {
+                            android.util.Log.d("REACTION", "Server response: isSuccessful=${response.isSuccessful}, code=${response.code}")
                             if (response.isSuccessful) {
+                                android.util.Log.d("REACTION", "Calling addReaction: msgId=${msg.id}, emoji=$emoji, phone=$currentUserPhone")
                                 msgAdapter.addReaction(msg.id, emoji, currentUserPhone)
                                 // Сохраняем реакции в Room
                                 val reactionsJson = org.json.JSONObject(msg.reactions as Map<*, *>).toString()
