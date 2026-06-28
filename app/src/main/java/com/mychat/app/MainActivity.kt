@@ -302,7 +302,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         token = prefs.getString("token", "") ?: ""
-        currentUserId = prefs.getString("user_id", "") ?: ""
+        currentUserId = prefs.getString("username", "") ?: ""
         currentUserPhone = prefs.getString("phone", "") ?: ""
         me = prefs.getString("username", "") ?: ""
         me = prefs.getString("username", "") ?: ""
@@ -534,7 +534,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 if (r.isSuccessful) {
                     val d = JSONObject(r.body!!.string())
                     token = d.optString("access_token", "")
-                    currentUserId = d.optString("user_id", "")
+                    currentUserId = d.optString("username", d.optString("user_id", ""))
                     currentUserPhone = u
                     me = u
                     Log.d("MainActivity", "Login - me = '$me'")
