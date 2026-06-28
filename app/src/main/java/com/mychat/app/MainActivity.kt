@@ -292,6 +292,9 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         token = prefs.getString("token", "") ?: ""
+        currentUserId = prefs.getString("user_id", "") ?: ""
+        currentUserPhone = prefs.getString("phone", "") ?: ""
+        me = prefs.getString("username", "") ?: ""
         me = prefs.getString("username", "") ?: ""
         server = prefs.getString("server_url", server) ?: server
         
@@ -521,11 +524,15 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 if (r.isSuccessful) {
                     val d = JSONObject(r.body!!.string())
                     token = d.optString("access_token", "")
+                    currentUserId = d.optString("user_id", "")
+                    currentUserPhone = u
                     me = u
                     Log.d("MainActivity", "Login - me = '$me'")
                     PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
                         .edit()
                         .putString("token", token)
+                        .putString("user_id", currentUserId)
+                        .putString("phone", currentUserPhone)
                         .putString("username", me)
                         .putString("server_url", server)
                         .apply()
@@ -1372,9 +1379,18 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         contextMenuBar.startAnimation(slideUp)
     }
     
+
+    private fun generateChatId(phone1: String, phone2: String): String {
+        val ids = listOf(phone1, phone2).sorted()
+        return java.security.MessageDigest.getInstance("MD5")
+            .digest(ids.joinToString("").toByteArray())
+            .joinToString("") { "%02x".format(it) }
+    }
+
     private fun deleteChat(user: User) {
+        val chatId = generateChatId(currentUserPhone, user.username)
         val request = Request.Builder()
-            .url("$server/chat/delete/${user.username}?token=$token")
+            .url("$server/api/chat/$chatId?user_id=$currentUserId&token=$token")
             .delete()
             .build()
         client.newCall(request).enqueue(object : Callback {
@@ -1384,10 +1400,20 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             override fun onResponse(call: Call, response: Response) {
                 runOnUiThread {
                     if (response.isSuccessful) {
+                        // Удаляем чат локально из Room
+                        CoroutineScope(Dispatchers.IO).launch {
+                            db.messageDao().deleteChat(chatId)
+                        }
+                        // Удаляем из списка
+                        val index = users.indexOf(user)
+                        if (index >= 0) {
+                            users.removeAt(index)
+                            chatAdapter.update(users)
+                        }
                         t("Чат удалён")
                     } else {
                         t("Ошибка удаления")
-                        loadUsers() // перезагружаем список
+                        loadUsers()
                     }
                 }
             }
