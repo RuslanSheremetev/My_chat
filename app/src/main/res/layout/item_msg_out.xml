@@ -31,7 +31,8 @@
             android:gravity="end"
             android:layout_gravity="end">
             <TextView
-                android:id="@+id/msgStatus"
+                android:id="@+id/reactionsText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#8E8E93" android:layout_marginEnd="4dp" android:visibility="gone" />
+                <TextView android:id="@+id/msgStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🕒"
