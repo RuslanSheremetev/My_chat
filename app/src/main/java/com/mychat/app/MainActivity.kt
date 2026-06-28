@@ -909,7 +909,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                             to = entity.toUser,
                             text = entity.text,
                             time = entity.time,
-                            file = if (entity.fileUrl.isNotEmpty()) FileInfo(entity.fileName, entity.fileUrl) else null
+                            file = if (entity.fileUrl.isNotEmpty()) FileInfo(entity.fileName, entity.fileUrl) else null,
+                            reactions = parseReactions(entity.reactionsJson)
                         )
                     }
                     // Обновляем статусы на sent
@@ -1405,6 +1406,24 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         }
     }
 
+
+
+    private fun parseReactions(json: String): MutableMap<String, MutableList<String>> {
+        if (json.isEmpty() || json == "{}") return mutableMapOf()
+        return try {
+            val obj = JSONObject(json)
+            val result = mutableMapOf<String, MutableList<String>>()
+            obj.keys().forEach { key ->
+                val arr = obj.getJSONArray(key)
+                val list = mutableListOf<String>()
+                for (i in 0 until arr.length()) list.add(arr.getString(i))
+                result[key] = list
+            }
+            result
+        } catch (e: Exception) {
+            mutableMapOf()
+        }
+    }
 
     private fun loadReactions(msgs: List<ChatMessage>) {
         log("loadReactions: ${msgs.size} messages")
