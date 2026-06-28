@@ -1,4 +1,7 @@
 package com.mychat.app
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 import android.app.AlertDialog
 import android.content.Context
@@ -88,6 +91,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var db: AppDatabase
     private var ws: WebSocket? = null
     private val users = mutableListOf<User>()
+    private var currentUserId: String = ""
+    private var currentUserPhone: String = ""
     private val handler = Handler(Looper.getMainLooper())
     private var pollRunnable: Runnable? = null
     private var lastMessageCount = 0
