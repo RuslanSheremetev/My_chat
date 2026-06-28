@@ -230,7 +230,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             }
             view.findViewById<LinearLayout>(R.id.menuBlock).setOnClickListener {
                 dialog.dismiss()
-                t("Пользователь заблокирован")
+                blockUser()
             }
             
             dialog.show()
@@ -1502,6 +1502,17 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         }
         }
         bs.show()
+    }
+    
+    private fun blockUser() {
+        if (selId.isEmpty()) return
+        val json = JSONObject().apply {
+            put("type", "block")
+            put("to", selId)
+        }
+        ws?.send(json.toString())
+        t("Пользователь заблокирован")
+        closeChat()
     }
     
     private fun t(msg: String) {
