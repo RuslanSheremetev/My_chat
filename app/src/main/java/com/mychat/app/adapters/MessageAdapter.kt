@@ -286,9 +286,7 @@ class MessageAdapter(
 
     private fun formatReactions(reactions: Map<String, out List<String>>): String {
         if (reactions.isEmpty()) return ""
-        return reactions.entries.joinToString("  ") { (emoji, users) ->
-            "$emoji ${users.size}"
-        }
+        return reactions.keys.joinToString(" ")
     }
 
     fun addReaction(msgId: String, emoji: String, from: String) {

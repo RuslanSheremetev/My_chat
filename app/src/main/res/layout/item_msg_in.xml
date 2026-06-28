@@ -41,12 +41,4 @@
             android:layout_gravity="end"/>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/reactionsText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="13sp"
-        android:textColor="#8E8E93"
-        android:paddingTop="2dp"
-        android:visibility="gone" />
 </LinearLayout>
