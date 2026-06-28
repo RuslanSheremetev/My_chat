@@ -1577,17 +1577,21 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     }
     
     private fun clearHistory() {
-        thread {
-            try {
-                db.messageDao().deleteChat(selId)
+        thread { db.messageDao().deleteChat(selId) }
+        val ck = chatKey(me, selId)
+        val request = Request.Builder()
+            .url("$server/chat/clear/$ck?token=$token")
+            .post(RequestBody.create(null, ""))
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
+            override fun onResponse(call: Call, response: Response) {
                 handler.post {
                     msgAdapter.update(emptyList())
                     t("История очищена")
                 }
-            } catch (e: Exception) {
-                handler.post { t("Ошибка") }
             }
-        }
+        })
     }
     
     private fun showUserInfo() {
@@ -1634,6 +1638,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             t("🔔 Уведомления включены")
         }
     }
+    
+    private fun chatKey(u1: String, u2: String) = listOf(u1, u2).sorted().joinToString("_")
     
     private fun t(msg: String) {
         handler.post {
