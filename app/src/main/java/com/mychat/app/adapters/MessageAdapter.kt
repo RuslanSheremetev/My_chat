@@ -331,16 +331,18 @@ class MessageAdapter(
             android.util.Log.d("Reaction", "After: reactions=${newReactions}, formatted=${formatReactions(newReactions)}")
             notifyItemChanged(index)
             // Сохраняем в Room
-            val ctx = appContext ?: return
-            try {
-                val json = org.json.JSONObject(newReactions as Map<*, *>).toString()
-                val db = com.mychat.app.data.AppDatabase.getInstance(ctx)
-                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
-                    db.messageDao().updateReactions(msgId, json)
+            val ctx = appContext ?: return@addReaction
+            val json = org.json.JSONObject(newReactions as Map<*, *>).toString()
+            val msgIdCopy = msgId
+            Thread {
+                try {
+                    val db = com.mychat.app.data.AppDatabase.getInstance(ctx)
+                    db.messageDao().updateReactions(msgIdCopy, json)
+                    android.util.Log.d("REACTION", "Saved to Room: $msgIdCopy")
+                } catch (e: Exception) {
+                    android.util.Log.e("REACTION", "Failed to save to Room: ${e.message}")
                 }
-            } catch (e: Exception) {
-                android.util.Log.e("REACTION", "Failed to save to Room: ${e.message}")
-            }
+            }.start()
             android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
             onSaveReaction?.invoke(msgId, org.json.JSONObject(newReactions as Map<*, *>).toString())
         }
