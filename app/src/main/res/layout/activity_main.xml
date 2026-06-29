@@ -443,6 +443,7 @@
                 android:tint="#8e8e93"/>
         </LinearLayout>
 
+        <include android:id="@+id/selectPanel" layout="@layout/select_panel" android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone" />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/messagesList"
             android:background="@drawable/bg_chat_gradient"
@@ -551,6 +552,5 @@
             android:text="Логи реакций:\n" />
     </ScrollView>
 
-    <include android:id="@+id/selectPanel" layout="@layout/select_panel" android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone" />
 </LinearLayout>
 
