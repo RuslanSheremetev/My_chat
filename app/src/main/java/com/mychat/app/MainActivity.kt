@@ -1500,6 +1500,51 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     }
 
     private fun loadReactions(msgs: List<ChatMessage>) {
+        if (msgs.isEmpty()) return
+        log("loadReactions: ${msgs.size} messages (batch)")
+        
+        val ids = org.json.JSONArray()
+        msgs.forEach { ids.put(it.id) }
+        val body = org.json.JSONObject().apply { put("msg_ids", ids) }
+            .toString().toRequestBody("application/json".toMediaType())
+        
+        val request = Request.Builder()
+            .url("$server/api/messages/reactions/batch?token=$token")
+            .post(body)
+            .build()
+        
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    val respBody = response.body?.string() ?: return
+                    val json = JSONObject(respBody)
+                    val allReactions = json.optJSONObject("reactions") ?: return
+                    
+                    runOnUiThread {
+                        allReactions.keys().forEach { msgId ->
+                            val r = allReactions.optJSONObject(msgId)
+                            if (r != null && r.length() > 0) {
+                                val reactions = mutableMapOf<String, MutableList<String>>()
+                                r.keys().forEach { key ->
+                                    val arr = r.getJSONArray(key)
+                                    val list = mutableListOf<String>()
+                                    for (i in 0 until arr.length()) list.add(arr.getString(i))
+                                    reactions[key] = list
+                                }
+                                msgAdapter.setReactions(msgId, reactions)
+                                val jsonStr = org.json.JSONObject(reactions as Map<*, *>).toString()
+                                thread { db.messageDao().updateReactions(msgId, jsonStr) }
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+    
+    // Старый код удалён
+    private fun loadReactions_OLD(msgs: List<ChatMessage>) {
         log("loadReactions: ${msgs.size} messages")
         for (msg in msgs) {
             val request = Request.Builder()
