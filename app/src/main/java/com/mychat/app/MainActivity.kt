@@ -1741,34 +1741,40 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         selectPanel.visibility = android.view.View.GONE
     }
 
-    private fun deleteSelectedMessages() {
+        private fun deleteSelectedMessages() {
         val ids = msgAdapter.selectedIds.toList()
         if (ids.isEmpty()) {
             t("Ничего не выбрано")
             return
         }
-        // Удаляем каждое сообщение
-        for (msgId in ids) {
-            val msg = msgAdapter.getItems()
-                .filterIsInstance<ChatMessage>()
-                .find { it.id == msgId }
-            if (msg != null) {
-                val json = org.json.JSONObject().apply {
-                    put("type", "delete")
-                    put("to", msg.to)
-                    put("msg_id", msgId)
-                }
-                ws?.send(json.toString())
-                thread { db.messageDao().markDeleted(msgId) }
+        
+        log("DELETE: deleting ${ids.size} messages")
+        
+        // Сначала собираем все сообщения
+        val messagesToDelete = msgAdapter.getItems()
+            .filterIsInstance<ChatMessage>()
+            .filter { it.id in ids }
+            .toList()  // Фиксируем список
+        
+        // Отправляем на сервер и помечаем в Room
+        for (msg in messagesToDelete) {
+            val json = org.json.JSONObject().apply {
+                put("type", "delete")
+                put("to", msg.to)
+                put("msg_id", msg.id)
             }
+            ws?.send(json.toString())
+            thread { db.messageDao().markDeleted(msg.id) }
         }
-        // Убираем из адаптера
-        for (msgId in ids) {
-            msgAdapter.markDeleted(msgId)
+        
+        // Удаляем из адаптера все сразу
+        for (msg in messagesToDelete) {
+            msgAdapter.markDeleted(msg.id)
         }
+        
         exitSelectMode()
-        log("DELETE: ${ids.size} messages deleted")
-        t("Удалено: ${ids.size}")
+        log("DELETE: done ${messagesToDelete.size} messages")
+        t("Удалено: ${messagesToDelete.size}")
     }
 
     private fun deleteMessage(msg: ChatMessage) {
