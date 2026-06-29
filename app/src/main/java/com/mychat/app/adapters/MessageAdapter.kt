@@ -296,8 +296,11 @@ class MessageAdapter(
         val index = items.indexOfFirst { it is ChatMessage && it.id == msgId }
         if (index >= 0) {
             val msg = items[index] as ChatMessage
-            items[index] = msg.copy(reactions = reactions)
-            notifyItemChanged(index)
+            // Обновляем только если изменились
+            if (msg.reactions != reactions) {
+                items[index] = msg.copy(reactions = reactions)
+                notifyItemChanged(index)
+            }
         }
     }
 
