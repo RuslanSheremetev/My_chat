@@ -623,8 +623,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             }
             pendingForwardMessages = null
             isForwardMode = false
+            log("FORWARD: sent ${messages.size} messages to $id")
             t("Переслано: ${messages.size} сообщений")
-            return
+            pendingForwardMessages = null
+            isForwardMode = false
+            // Продолжаем открытие чата
         }
         selId = id
         val u = users.find { it.username == id }
