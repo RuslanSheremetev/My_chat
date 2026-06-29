@@ -614,6 +614,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     }
 
     private fun openChat(id: String) {
+        log("FORWARD: openChat id=$id, mode=$isForwardMode, msgs=${pendingForwardMessages?.size}")
         if (isForwardMode && pendingForwardMessages != null) {
             val messages = pendingForwardMessages!!
             for (msg in messages) {
@@ -1715,6 +1716,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         
         pendingForwardMessages = messagesToForward
         isForwardMode = true
+        log("FORWARD: ${messagesToForward.size} messages to forward")
         
         // Выходим из чата
         exitSelectMode()
@@ -1757,6 +1759,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             msgAdapter.markDeleted(msgId)
         }
         exitSelectMode()
+        log("DELETE: ${ids.size} messages deleted")
         t("Удалено: ${ids.size}")
     }
 
