@@ -5,7 +5,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#0a0a0c"
-    android:visibility="gone">
+    android:visibility="gone"
+    android:elevation="30dp"
+    android:clickable="true"
+    android:focusable="true">
     <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
         android:gravity="center_vertical" android:paddingHorizontal="16dp">
         <ImageButton android:id="@+id/btnSearchClose" android:layout_width="40dp"
