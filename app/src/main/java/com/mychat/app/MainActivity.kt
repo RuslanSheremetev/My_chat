@@ -1113,7 +1113,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
 
     private fun sendMessageTo(to: String, text: String) {
         val json = JSONObject().apply {
-            put("type", "message")
+            put("type", "private")
             put("to", to)
             put("text", text)
         }
