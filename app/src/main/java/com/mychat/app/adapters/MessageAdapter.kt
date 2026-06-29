@@ -293,7 +293,7 @@ class MessageAdapter(
     }
 
 
-    private fun formatReactions(reactions: Map<String, out List<String>>): String {
+    private fun formatReactions(reactions: Map<String, out List<String>>): String { android.util.Log.d("Reaction", "formatReactions: input=$reactions")
         if (reactions.isEmpty()) return ""
         return reactions.entries.joinToString("  ") { (emoji, users) ->
             if (users.size > 1) "$emoji ${users.size}" else emoji
