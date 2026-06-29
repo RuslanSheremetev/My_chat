@@ -117,6 +117,7 @@ class MainActivity : AppCompatActivity() {
         // Контекстное меню для чатов
         logText = findViewById(R.id.logText)
         logScroll = findViewById(R.id.logScroll)
+        logScroll.visibility = android.view.View.GONE  // Скрыто на главном экране
         log("Log started")
         selectPanel = findViewById(R.id.selectPanel)
         selectPanel.findViewById<TextView>(R.id.btnDeleteSelected).setOnClickListener {
