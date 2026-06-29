@@ -1008,8 +1008,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                                     fileName = msg.file?.name ?: ""
                                 )
                             }
-                            db.messageDao().insertMessages(entities)
-                            db.messageDao().deleteOldMessages(selId)
+                            db.messageDao().insertMessages(entities); log("Room: insertMessages ${entities.size}")
+                            db.messageDao().deleteOldMessages(selId); log("Room: deleteOldMessages $selId")
                         } catch (e: Exception) {}
                     }
                     // Удаляем временные сообщения (отправленные локально)
@@ -1082,8 +1082,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                                     fileName = msg.file?.name ?: ""
                                 )
                             }
-                            db.messageDao().insertMessages(entities)
-                            db.messageDao().deleteOldMessages(selId)
+                            db.messageDao().insertMessages(entities); log("Room: insertMessages ${entities.size}")
+                            db.messageDao().deleteOldMessages(selId); log("Room: deleteOldMessages $selId")
                         } catch (e: Exception) {}
                     }
                     // Удаляем временные сообщения (отправленные локально)
@@ -1810,7 +1810,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 put("msg_id", msg.id)
             }
             ws?.send(json.toString())
-            thread { db.messageDao().markDeleted(msg.id) }
+            thread { db.messageDao().markDeleted(msg.id); log("Room: markDeleted ${msg.id}") }
         }
         
         // Удаляем из адаптера все сразу
@@ -1834,7 +1834,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             put("msg_id", msg.id)
         }
         ws?.send(json.toString())
-        thread { db.messageDao().markDeleted(msg.id) }
+        thread { db.messageDao().markDeleted(msg.id); log("Room: markDeleted ${msg.id}") }
         msgAdapter.markDeleted(msg.id)
         // Меняем текст локально сразу
         msgAdapter.markDeleted(msg.id)
