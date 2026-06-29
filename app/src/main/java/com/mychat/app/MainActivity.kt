@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
             deleteSelectedMessages()
         }
         selectPanel.findViewById<TextView>(R.id.btnForwardSelected).setOnClickListener {
-            t("Переслать: ${msgAdapter.selectedIds.size} сообщений")
+            forwardSelectedMessages()
         }
         contextMenuBar = findViewById(R.id.contextMenuBar)
         contextMenuBar.visibility = View.GONE
@@ -614,6 +614,17 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     }
 
     private fun openChat(id: String) {
+        if (isForwardMode && pendingForwardMessages != null) {
+            val messages = pendingForwardMessages!!
+            for (msg in messages) {
+                val forwardText = "↪ ${msg.from}: ${msg.text}"
+                sendMessageTo(selId, forwardText)
+            }
+            pendingForwardMessages = null
+            isForwardMode = false
+            t("Переслано: ${messages.size} сообщений")
+            return
+        }
         selId = id
         val u = users.find { it.username == id }
         val name = u?.name ?: id
@@ -658,6 +669,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     private var isSelectMode = false
     private lateinit var selectPanel: android.view.View
     private var pendingForward: ChatMessage? = null
+    private var pendingForwardMessages: List<ChatMessage>? = null
+    private var isForwardMode = false
     
     private fun showMessageActions(msg: ChatMessage) {
         selectedMessage = msg
@@ -1090,6 +1103,25 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 e.printStackTrace()
             }
         }
+    }
+
+
+    private fun sendMessageTo(to: String, text: String) {
+        val json = JSONObject().apply {
+            put("type", "message")
+            put("to", to)
+            put("text", text)
+        }
+        ws?.send(json.toString())
+        // Добавляем в локальный список
+        val msg = ChatMessage(
+            id = "sending_${System.currentTimeMillis()}",
+            from = me,
+            to = to,
+            text = text,
+            time = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Date())
+        )
+        msgAdapter.addMessage(msg)
     }
 
     private fun sendMessage() {
@@ -1668,6 +1700,27 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             .show()
     }
     
+
+
+    private fun forwardSelectedMessages() {
+        val ids = msgAdapter.selectedIds.toList()
+        if (ids.isEmpty()) {
+            t("Ничего не выбрано")
+            return
+        }
+        // Собираем выбранные сообщения
+        val messagesToForward = msgAdapter.getItems()
+            .filterIsInstance<ChatMessage>()
+            .filter { it.id in ids }
+        
+        pendingForwardMessages = messagesToForward
+        isForwardMode = true
+        
+        // Выходим из чата
+        exitSelectMode()
+        closeChat()
+        t("Выберите чат для пересылки")
+    }
 
     private fun deleteSelectedMessages() {
         val ids = msgAdapter.selectedIds.toList()
