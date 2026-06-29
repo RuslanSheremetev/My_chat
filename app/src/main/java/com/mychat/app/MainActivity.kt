@@ -750,7 +750,6 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             selectedMessages.add(msg)
             msgAdapter.selectMode = true
             msgAdapter.selectedIds.clear()
-            msgAdapter.selectedIds.add(msg.id)
             msgAdapter.notifyDataSetChanged()
             selectPanel.visibility = android.view.View.VISIBLE
             log("Select mode ON")
