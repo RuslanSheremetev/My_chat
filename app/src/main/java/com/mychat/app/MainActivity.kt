@@ -1722,6 +1722,15 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         t("Выберите чат для пересылки")
     }
 
+
+    private fun exitSelectMode() {
+        isSelectMode = false
+        msgAdapter.selectMode = false
+        msgAdapter.selectedIds.clear()
+        msgAdapter.notifyDataSetChanged()
+        selectPanel.visibility = android.view.View.GONE
+    }
+
     private fun deleteSelectedMessages() {
         val ids = msgAdapter.selectedIds.toList()
         if (ids.isEmpty()) {
