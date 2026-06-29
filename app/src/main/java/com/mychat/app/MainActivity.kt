@@ -706,7 +706,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                     .url("$server/api/messages/reaction?token=$token")
                     .post(body)
                     .build()
-                client.newCall(request).enqueue(object : Callback {
+                log("HTTP: request"); client.newCall(request).enqueue(object : Callback {
                     override fun onFailure(call: Call, e: IOException) {
                         android.util.Log.e("REACTION", "Network error: ${e.message}")
                         log("Network error: ${e.message}")
@@ -808,6 +808,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     }
 
     private fun loadUsers() {
+        log("HTTP: loadUsers")
         thread {
             try {
                 val r = client.newCall(
@@ -1364,6 +1365,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     }
 
     private fun downloadFile(url: String, name: String) {
+        log("HTTP: download $name")
         val fullUrl = if (url.startsWith("http")) url else "$server$url"
         // Проверяем кеш
         val cached = FileCache.getCachedFile(fullUrl)
@@ -1495,7 +1497,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 .url("$server/api/messages/reactions/${msg.id}?token=$token")
                 .get()
                 .build()
-            client.newCall(request).enqueue(object : Callback {
+            log("HTTP: request"); client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {}
                 override fun onResponse(call: Call, response: Response) {
                     if (response.isSuccessful) {
@@ -1613,7 +1615,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             .url("$server/api/chat/$chatId?user_id=$currentUserId&token=$token")
             .delete()
             .build()
-        client.newCall(request).enqueue(object : Callback {
+        log("HTTP: request"); client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread { t("Ошибка удаления") }
             }
@@ -1682,7 +1684,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         val request = Request.Builder()
             .url("$server/messages/$userId?me=$me&token=$token")
             .build()
-        client.newCall(request).enqueue(object : Callback {
+        log("HTTP: request"); client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {}
             override fun onResponse(call: Call, response: Response) {
                 response.body?.let { body ->
@@ -1854,7 +1856,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             .url("$server/favorites/add?token=$token")
             .post(requestBody)
             .build()
-        client.newCall(request).enqueue(object : Callback {
+        log("HTTP: request"); client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread { t("Ошибка") }
             }
@@ -1956,7 +1958,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             .url("$server/chat/clear/$ck?token=$token")
             .post(RequestBody.create(null, ""))
             .build()
-        client.newCall(request).enqueue(object : Callback {
+        log("HTTP: request"); client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {}
             override fun onResponse(call: Call, response: Response) {
                 handler.post {
