@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/searchOverlay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0a0a0c"
+    android:visibility="gone">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+        android:gravity="center_vertical" android:paddingHorizontal="16dp">
+        <ImageButton android:id="@+id/btnSearchClose" android:layout_width="40dp"
+            android:layout_height="40dp" android:src="@drawable/ic_close_white"
+            android:background="?attr/selectableItemBackgroundBorderless" android:tint="#9ca3af"/>
+        <EditText android:id="@+id/searchField" android:layout_width="0dp"
+            android:layout_height="40dp" android:layout_weight="1"
+            android:background="@drawable/bg_search_field" android:textColor="#fff"
+            android:textSize="15sp" android:hint="Поиск по истории чата"
+            android:textColorHint="#4b5563" android:singleLine="true"
+            android:paddingHorizontal="12dp" android:layout_marginStart="12dp"/>
+    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/searchResults"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:padding="16dp"/>
+    <TextView android:id="@+id/searchCount" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:gravity="center"
+        android:textSize="13sp" android:textColor="#4b5563" android:padding="16dp"/>
+</LinearLayout>

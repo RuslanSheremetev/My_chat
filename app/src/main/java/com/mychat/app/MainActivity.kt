@@ -260,7 +260,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             }
             view.findViewById<LinearLayout>(R.id.menuSearch).setOnClickListener {
                 dialog.dismiss()
-                showSearchDialog()
+                showSearchOverlay()
             }
             view.findViewById<LinearLayout>(R.id.menuClear).setOnClickListener {
                 dialog.dismiss()
@@ -1530,6 +1530,51 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         }
     }
 
+
+    private fun showSearchOverlay() {
+        val overlay = findViewById<LinearLayout>(R.id.searchOverlay)
+        overlay.visibility = android.view.View.VISIBLE
+        
+        val searchField = overlay.findViewById<EditText>(R.id.searchField)
+        val searchResults = overlay.findViewById<RecyclerView>(R.id.searchResults)
+        val searchCount = overlay.findViewById<TextView>(R.id.searchCount)
+        
+        searchResults.layoutManager = LinearLayoutManager(this)
+        searchField.requestFocus()
+        
+        overlay.findViewById<ImageButton>(R.id.btnSearchClose).setOnClickListener {
+            overlay.visibility = android.view.View.GONE
+        }
+        
+        searchField.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val query = s?.toString() ?: ""
+                if (query.length >= 2) {
+                    thread {
+                        val results = db.messageDao().searchMessages(selId, query)
+                        runOnUiThread {
+                            searchResults.adapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                                override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+                                    val v = LayoutInflater.from(parent.context).inflate(R.layout.item_search_result, parent, false)
+                                    return object : RecyclerView.ViewHolder(v) {}
+                                }
+                                override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+                                    val msg = results[position]
+                                    holder.itemView.findViewById<TextView>(R.id.resultText).text = msg.text
+                                    holder.itemView.findViewById<TextView>(R.id.resultMeta).text = "${msg.fromUser} • ${msg.time}"
+                                }
+                                override fun getItemCount(): Int = results.size
+                            }
+                            searchCount.text = "Найдено: ${results.size}"
+                        }
+                    }
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+    }
+
     private fun hideContextMenu() {
         selectedUserForDelete = null
         chatAdapter.selectedPosition = -1
@@ -1882,7 +1927,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         closeChat()
     }
     
-    private fun showSearchDialog() {
+    private fun showSearchOverlay() {
         val input = EditText(this).apply {
             hint = "Поиск в чате..."
             setTextColor(0xffffffff.toInt())

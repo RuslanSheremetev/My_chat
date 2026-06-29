@@ -42,7 +42,8 @@
                 android:focusable="true"
                 android:background="@drawable/bg_delete_btn"
                 android:contentDescription="Удалить" />
-        </LinearLayout>
+            <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
     </FrameLayout>
 
     <!-- Экран логина -->
@@ -118,7 +119,8 @@
             android:textColor="#fff"
             android:background="@drawable/bg_btn_secondary"
             android:textStyle="bold"/>
-    </LinearLayout>
+        <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
 
     <!-- Главный контейнер -->
     <LinearLayout
@@ -163,14 +165,16 @@
                         android:textSize="22sp"
                         android:textColor="#fff"
                         android:textStyle="bold"/>
-                </LinearLayout>
+                    <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
                 <ImageButton
                     android:id="@+id/btnCreate"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:src="@drawable/ic_user_plus"
                     android:background="?attr/selectableItemBackgroundBorderless"/>
-            </LinearLayout>
+                <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -209,14 +213,16 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:tint="#8e8e93"
                     android:visibility="gone"/>
-            </LinearLayout>
+                <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/chatList"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
-        </LinearLayout>
+            <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
 
         <!-- Экран профиля -->
         <ScrollView
@@ -287,10 +293,13 @@
                         android:background="@drawable/bg_btn_primary"
                         android:textSize="12sp"
                         android:layout_marginStart="8dp"/>
-                </LinearLayout>
-            </LinearLayout>
+                    <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
+                <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
         </ScrollView>
-    </LinearLayout>
+        <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
 
     <!-- Нижняя навигация -->
     <LinearLayout
@@ -321,7 +330,8 @@
                 android:text="Чаты"
                 android:textSize="10sp"
                 android:textColor="#8e8e93"/>
-        </LinearLayout>
+            <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
 
         <LinearLayout
             android:id="@+id/navFavorites"
@@ -341,7 +351,8 @@
                 android:text="Избранное"
                 android:textSize="10sp"
                 android:textColor="#f06292"/>
-        </LinearLayout>
+            <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
 
         <LinearLayout
             android:id="@+id/navProfile"
@@ -361,8 +372,10 @@
                 android:text="Профиль"
                 android:textSize="10sp"
                 android:textColor="#8e8e93"/>
-        </LinearLayout>
-    </LinearLayout>
+            <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
+        <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
 
     <!-- Экран чата -->
     <LinearLayout
@@ -424,7 +437,8 @@
                     android:text="online"
                     android:textColor="#34c759"
                     android:textSize="12sp"/>
-            </LinearLayout>
+                <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
 
             <ImageButton
                 android:id="@+id/btnCall"
@@ -441,7 +455,8 @@
                 android:src="@drawable/ic_dots"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:tint="#8e8e93"/>
-        </LinearLayout>
+            <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
 
         <include android:id="@+id/selectPanel" layout="@layout/select_panel" android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone" />
         <androidx.recyclerview.widget.RecyclerView
@@ -531,8 +546,10 @@
                 android:src="@drawable/ic_send"
                 android:background="@drawable/bg_send_btn"
                 android:tint="#fff"/>
-        </LinearLayout>
-    </LinearLayout>
+            <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
+        <include layout="@layout/overlay_chat_search" />
+</LinearLayout>
 
 
     <ScrollView
@@ -552,5 +569,6 @@
             android:text="Логи реакций:\n" />
     </ScrollView>
 
+    <include layout="@layout/overlay_chat_search" />
 </LinearLayout>
 
