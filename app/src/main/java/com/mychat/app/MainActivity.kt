@@ -654,6 +654,9 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     }
 
     private fun closeChat() {
+        // Скрываем клавиатуру
+        val imm = getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        currentFocus?.let { imm.hideSoftInputFromWindow(it.windowToken, 0) }
         selId = ""
         stopPolling()
         chatLayout.visibility = View.GONE
