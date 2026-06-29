@@ -16,7 +16,7 @@ interface MessageDao {
     @Query("UPDATE chat_settings SET isBlocked = :blocked WHERE chatKey = :chatKey")
     fun updateBlocked(chatKey: String, blocked: Boolean)
 
-    @Query("SELECT * FROM messages WHERE chatKey = :chatKey ORDER BY time ASC")
+    @Query("SELECT * FROM messages WHERE chatKey = :chatKey AND deleted = 0 ORDER BY time ASC")
     fun getMessages(chatKey: String): List<MessageEntity>
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -44,4 +44,7 @@ interface MessageDao {
     @Query("UPDATE messages SET reactionsJson = :json WHERE id = :msgId")
     fun updateReactions(msgId: String, json: String)
 
+
+    @Query("UPDATE messages SET deleted = 1 WHERE id = :msgId")
+    fun markDeleted(msgId: String)
 }

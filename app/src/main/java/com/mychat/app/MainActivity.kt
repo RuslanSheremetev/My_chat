@@ -215,6 +215,8 @@ class MainActivity : AppCompatActivity() {
                         put("to", selId)
                     }
                     ws?.send(json.toString())
+        thread { db.messageDao().markDeleted(msg.id) }
+        msgAdapter.markDeleted(msg.id)
                 }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -1582,6 +1584,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             put("forward", forwardData)
         }
         ws?.send(json.toString())
+        thread { db.messageDao().markDeleted(msg.id) }
+        msgAdapter.markDeleted(msg.id)
         t("Сообщение переслано!")
     }
     
@@ -1653,6 +1657,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                         put("text", newText)
                     }
                     ws?.send(json.toString())
+        thread { db.messageDao().markDeleted(msg.id) }
+        msgAdapter.markDeleted(msg.id)
                     t("Сообщение изменено")
                     // Обновляем через 500мс
                     handler.postDelayed({ refreshMessages() }, 500)
@@ -1673,6 +1679,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             put("msg_id", msg.id)
         }
         ws?.send(json.toString())
+        thread { db.messageDao().markDeleted(msg.id) }
+        msgAdapter.markDeleted(msg.id)
         // Меняем текст локально сразу
         msgAdapter.markDeleted(msg.id)
         t("Сообщение удалено")
@@ -1735,6 +1743,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 put("text", emoji)
             }
             ws?.send(json.toString())
+        thread { db.messageDao().markDeleted(msg.id) }
+        msgAdapter.markDeleted(msg.id)
         }
         }
         bs.show()
@@ -1747,6 +1757,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             put("to", selId)
         }
         ws?.send(json.toString())
+        thread { db.messageDao().markDeleted(msg.id) }
+        msgAdapter.markDeleted(msg.id)
         // Сохраняем в Room
         thread {
             val settings = db.messageDao().getChatSettings(selId) ?: ChatSettings(selId)
