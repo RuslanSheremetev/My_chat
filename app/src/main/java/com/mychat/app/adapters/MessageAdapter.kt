@@ -113,6 +113,9 @@ class MessageAdapter(
                 holder.from.text = item.from
                 holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
                 holder.selectCheck.isChecked = selectedIds.contains(item.id)
+                holder.selectCheck.setOnCheckedChangeListener { _, checked ->
+                    if (checked) selectedIds.add(item.id) else selectedIds.remove(item.id)
+                }
                 holder.text.text = item.text
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
@@ -170,6 +173,9 @@ class MessageAdapter(
             item is ChatMessage && holder is OutViewHolder -> {
                 holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
                 holder.selectCheck.isChecked = selectedIds.contains(item.id)
+                holder.selectCheck.setOnCheckedChangeListener { _, checked ->
+                    if (checked) selectedIds.add(item.id) else selectedIds.remove(item.id)
+                }
                 holder.text.text = item.text
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
