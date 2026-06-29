@@ -394,7 +394,6 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         val text: TextView = view.findViewById(R.id.text)
         val time: TextView = view.findViewById(R.id.time)
         val imageMsg: ImageView = view.findViewById(R.id.imageMsg)
-        val msgStatus: TextView = view.findViewById(R.id.msgStatus)
-        val reactionsText: TextView = view.findViewById(R.id.reactionsText)
+                val reactionsText: TextView = view.findViewById(R.id.reactionsText)
     }
 }
