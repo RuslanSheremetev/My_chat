@@ -300,6 +300,14 @@ class MessageAdapter(
             if (msg.reactions != reactions) {
                 items[index] = msg.copy(reactions = reactions)
                 notifyItemChanged(index)
+            // Сохраняем в Room
+            val json = org.json.JSONObject(newReactions as Map<*, *>).toString()
+            val ctx = appContext
+            if (ctx != null) {
+                thread {
+                    com.mychat.app.data.AppDatabase.getInstance(ctx).messageDao().updateReactions(msgId, json)
+                }
+            }
             }
         }
     }
@@ -331,6 +339,14 @@ class MessageAdapter(
             items[index] = msg.copy(reactions = newReactions)
             android.util.Log.d("Reaction", "After: reactions=${newReactions}, formatted=${formatReactions(newReactions)}")
             notifyItemChanged(index)
+            // Сохраняем в Room
+            val json = org.json.JSONObject(newReactions as Map<*, *>).toString()
+            val ctx = appContext
+            if (ctx != null) {
+                thread {
+                    com.mychat.app.data.AppDatabase.getInstance(ctx).messageDao().updateReactions(msgId, json)
+                }
+            }
             // Сохраняем в Room
             val ctx = appContext ?: return@addReaction
             val json = org.json.JSONObject(newReactions as Map<*, *>).toString()
