@@ -1888,7 +1888,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 put("to", msg.to)
                 put("msg_id", msg.id)
             }
-            log("WS send: block user"); ws?.send(json.toString())
+            log("WS send: delete msg"); ws?.send(json.toString())
             thread { db.messageDao().markDeleted(msg.id); log("Room: markDeleted ${msg.id}") }
         }
         
