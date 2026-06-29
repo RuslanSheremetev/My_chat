@@ -118,6 +118,12 @@ class MainActivity : AppCompatActivity() {
         logScroll = findViewById(R.id.logScroll)
         log("Log started")
         selectPanel = findViewById(R.id.selectPanel)
+        selectPanel.findViewById<TextView>(R.id.btnDeleteSelected).setOnClickListener {
+            deleteSelectedMessages()
+        }
+        selectPanel.findViewById<TextView>(R.id.btnForwardSelected).setOnClickListener {
+            t("Переслать: ${msgAdapter.selectedIds.size} сообщений")
+        }
         contextMenuBar = findViewById(R.id.contextMenuBar)
         contextMenuBar.visibility = View.GONE
         contextMenuBar.findViewById<ImageView>(R.id.btn_close).setOnClickListener { hideContextMenu() }
@@ -1662,6 +1668,29 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             .show()
     }
     
+
+    private fun deleteSelectedMessages() {
+        val ids = msgAdapter.selectedIds.toList()
+        if (ids.isEmpty()) {
+            t("Ничего не выбрано")
+            return
+        }
+        for (msgId in ids) {
+            val index = msgAdapter.getItems().indexOfFirst { it is ChatMessage && it.id == msgId }
+            if (index >= 0) {
+                val msg = msgAdapter.getItems()[index] as ChatMessage
+                deleteMessage(msg)
+            }
+        }
+        // Выходим из режима выбора
+        isSelectMode = false
+        msgAdapter.selectMode = false
+        msgAdapter.selectedIds.clear()
+        msgAdapter.notifyDataSetChanged()
+        selectPanel.visibility = android.view.View.GONE
+        t("Удалено: ${ids.size}")
+    }
+
     private fun deleteMessage(msg: ChatMessage) {
         if (msg.from != me) {
             t("Можно удалить только свои сообщения")

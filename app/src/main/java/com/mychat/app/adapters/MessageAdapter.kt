@@ -354,6 +354,8 @@ class MessageAdapter(
         }
     }
     
+    fun getItems(): List<Any> = items.toList()
+
     fun addMessage(msg: ChatMessage) {
         items.add(msg)
         notifyItemInserted(items.size - 1)
