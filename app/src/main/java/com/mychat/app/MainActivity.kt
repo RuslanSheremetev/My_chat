@@ -17,6 +17,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import android.content.ClipboardManager
@@ -1927,28 +1928,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         closeChat()
     }
     
-    private fun showSearchOverlay() {
-        val input = EditText(this).apply {
-            hint = "Поиск в чате..."
-            setTextColor(0xffffffff.toInt())
-            setHintTextColor(0xff636366.toInt())
-            setBackgroundResource(R.drawable.bg_input)
-            setPadding(30, 20, 30, 20)
-        }
-        AlertDialog.Builder(this)
-            .setTitle("Поиск по сообщениям")
-            .setView(input)
-            .setPositiveButton("Искать") { _, _ ->
-                val query = input.text.toString().trim()
-                if (query.isNotEmpty()) {
-                    searchInChat(query)
-                }
-            }
-            .setNegativeButton("Отмена", null)
-            .show()
-    }
-    
-    private fun searchInChat(query: String) {
+        private fun searchInChat(query: String) {
         thread {
             try {
                 val results = db.messageDao().searchMessages(selId, query)
