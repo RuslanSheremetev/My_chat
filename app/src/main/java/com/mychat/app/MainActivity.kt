@@ -747,7 +747,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         }
         view.findViewById<LinearLayout>(R.id.actionSelect)?.setOnClickListener {
             bottomSheet.dismiss()
-            isSelectMode = true
+            log("UI: select mode ON"); isSelectMode = true
             selectedMessages.clear()
             selectedMessages.add(msg)
             msgAdapter.selectMode = true
@@ -778,7 +778,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             deleteMessage(msg)
         }
         
-        bottomSheet.show()
+        log("UI: bottomSheet show"); bottomSheet.show()
     }
 
     private fun connectWS() {
@@ -1183,7 +1183,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             false
         }
         
-        bottomSheet.show()
+        log("UI: bottomSheet show"); bottomSheet.show()
     }
     
     private fun pickPhoto() {
@@ -1786,7 +1786,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         msgAdapter.selectMode = false
         msgAdapter.selectedIds.clear()
         msgAdapter.notifyDataSetChanged()
-        selectPanel.visibility = android.view.View.GONE
+        log("UI: select mode OFF"); selectPanel.visibility = android.view.View.GONE
     }
 
         private fun deleteSelectedMessages() {
