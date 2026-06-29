@@ -695,6 +695,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                             if (response.isSuccessful) {
                                 android.util.Log.d("REACTION", "Calling addReaction: msgId=${msg.id}, emoji=$emoji, phone=$currentUserPhone")
                                 log("addReaction: msgId=${msg.id}, emoji=$emoji, phone=$currentUserPhone")
+                                log("Reaction: $emoji on ${msg.id}")
                                 msgAdapter.addReaction(msg.id, emoji, currentUserPhone)
                                 // Сохраняем реакции в Room
                                 val reactionsMap = mapOf(emoji to listOf(currentUserPhone))
@@ -730,6 +731,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             msgAdapter.selectedIds.add(msg.id)
             msgAdapter.notifyDataSetChanged()
             selectPanel.visibility = android.view.View.VISIBLE
+            log("Select mode ON")
             t("Режим выбора. Нажмите на сообщения")
             t("Сообщение выбрано. Нажмите ещё для выбора нескольких")
         }
