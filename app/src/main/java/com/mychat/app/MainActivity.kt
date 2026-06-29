@@ -1526,10 +1526,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                             runOnUiThread {
                                 log("Reactions loaded for ${msg.id}: $reactions")
                                 msgAdapter.setReactions(msg.id, reactions)
-                            // Сохраняем в Room
-                            val json = org.json.JSONObject(reactions as Map<*, *>).toString()
-                            thread { db.messageDao().updateReactions(msg.id, json) }
-                            log("Saved to Room: ${msg.id.take(20)}... -> ${reactions}")
+                            // Сохраняем в Room только если есть реакции
+                            if (reactions.isNotEmpty()) {
+                                val json = org.json.JSONObject(reactions as Map<*, *>).toString()
+                                thread { db.messageDao().updateReactions(msg.id, json) }
+                            }
                             }
                         }
                     }
