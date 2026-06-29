@@ -1737,20 +1737,26 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             t("Ничего не выбрано")
             return
         }
-        // Копируем сообщения до удаления (индексы не сдвинутся)
-        val messagesToDelete = msgAdapter.getItems()
-            .filterIsInstance<ChatMessage>()
-            .filter { it.id in ids }
-        
-        for (msg in messagesToDelete) {
-            deleteMessage(msg)
+        // Удаляем каждое сообщение
+        for (msgId in ids) {
+            val msg = msgAdapter.getItems()
+                .filterIsInstance<ChatMessage>()
+                .find { it.id == msgId }
+            if (msg != null) {
+                val json = org.json.JSONObject().apply {
+                    put("type", "delete")
+                    put("to", msg.to)
+                    put("msg_id", msgId)
+                }
+                ws?.send(json.toString())
+                thread { db.messageDao().markDeleted(msgId) }
+            }
         }
-        // Выходим из режима выбора
-        isSelectMode = false
-        msgAdapter.selectMode = false
-        msgAdapter.selectedIds.clear()
-        msgAdapter.notifyDataSetChanged()
-        selectPanel.visibility = android.view.View.GONE
+        // Убираем из адаптера
+        for (msgId in ids) {
+            msgAdapter.markDeleted(msgId)
+        }
+        exitSelectMode()
         t("Удалено: ${ids.size}")
     }
 
