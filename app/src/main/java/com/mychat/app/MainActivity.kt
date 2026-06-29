@@ -618,7 +618,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             val messages = pendingForwardMessages!!
             for (msg in messages) {
                 val forwardText = "↪ ${msg.from}: ${msg.text}"
-                sendMessageTo(selId, forwardText)
+                sendMessageTo(id, forwardText)
             }
             pendingForwardMessages = null
             isForwardMode = false
