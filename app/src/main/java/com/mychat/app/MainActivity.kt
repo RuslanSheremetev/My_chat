@@ -1675,12 +1675,13 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             t("Ничего не выбрано")
             return
         }
-        for (msgId in ids) {
-            val index = msgAdapter.getItems().indexOfFirst { it is ChatMessage && it.id == msgId }
-            if (index >= 0) {
-                val msg = msgAdapter.getItems()[index] as ChatMessage
-                deleteMessage(msg)
-            }
+        // Копируем сообщения до удаления (индексы не сдвинутся)
+        val messagesToDelete = msgAdapter.getItems()
+            .filterIsInstance<ChatMessage>()
+            .filter { it.id in ids }
+        
+        for (msg in messagesToDelete) {
+            deleteMessage(msg)
         }
         // Выходим из режима выбора
         isSelectMode = false
