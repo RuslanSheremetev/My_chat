@@ -1006,8 +1006,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                                     reactionsJson = org.json.JSONObject(msg.reactions as Map<*, *>).toString()
                                 )
                             }
-                            db.messageDao().insertMessages(entities); log("Room: insertMessages ${entities.size}")
-                            db.messageDao().deleteOldMessages(selId); log("Room: deleteOldMessages $selId")
+                            // db.messageDao().insertMessages(entities)  // Отключено - вызывает прыжки
+                            // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
                     }
                     // Удаляем временные сообщения (отправленные локально)
@@ -1081,8 +1081,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                                     reactionsJson = org.json.JSONObject(msg.reactions as Map<*, *>).toString()
                                 )
                             }
-                            db.messageDao().insertMessages(entities); log("Room: insertMessages ${entities.size}")
-                            db.messageDao().deleteOldMessages(selId); log("Room: deleteOldMessages $selId")
+                            // db.messageDao().insertMessages(entities)  // Отключено - вызывает прыжки
+                            // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
                     }
                     // Удаляем временные сообщения (отправленные локально)
