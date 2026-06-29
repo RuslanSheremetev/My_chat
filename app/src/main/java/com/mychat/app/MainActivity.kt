@@ -221,7 +221,7 @@ class MainActivity : AppCompatActivity() {
                         put("type", "typing")
                         put("to", selId)
                     }
-                    ws?.send(json.toString())
+                    log("WS send: delete"); ws?.send(json.toString())
                 }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -405,7 +405,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         prefs.edit().putString("user_status", bio).apply()
         profileBio.text = bio
-        ws?.send(JSONObject().apply {
+        log("WS send: typing"); ws?.send(JSONObject().apply {
             put("type", "profile_updated")
             put("bio", bio)
             put("status_text", bio)
@@ -467,7 +467,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 val m = membIn.text.toString().split(",").map { it.trim() }.filter { it.isNotEmpty() }.toMutableList()
                 if (n.isNotEmpty() && m.isNotEmpty()) {
                     m.add(me)
-                    ws?.send(JSONObject().apply {
+                    log("WS send: reaction"); ws?.send(JSONObject().apply {
                         put("type", "create_group")
                         put("name", n)
                         put("members", JSONArray(m))
@@ -512,7 +512,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             .setPositiveButton("Создать") { _, _ ->
                 val n = nameIn.text.toString().trim()
                 if (n.isNotEmpty()) {
-                    ws?.send(JSONObject().apply {
+                    log("WS send: sticker"); ws?.send(JSONObject().apply {
                         put("type", "create_feed")
                         put("name", n)
                         put("description", descIn.text.toString().trim())
@@ -783,11 +783,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
 
     private fun connectWS() {
         try {
-            val wsUrl = "ws://${server.replace("http://", "")}/ws/$me?token=$token"
+            log("WS connecting..."); val wsUrl = "ws://${server.replace("http://", "")}/ws/$me?token=$token"
             ws = client.newWebSocket(
                 Request.Builder().url(wsUrl).build(),
                 object : WebSocketListener() {
-                    override fun onMessage(webSocket: WebSocket, text: String) {
+                    override fun onMessage(webSocket: WebSocket, text: String) { log("WS received: ${text.take(50)}...")
                         try {
                             val j = JSONObject(text)
                             if (j.optString("type") == "ping") return
@@ -1117,7 +1117,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             put("to", to)
             put("text", text)
         }
-        ws?.send(json.toString())
+        log("WS send: message"); ws?.send(json.toString())
         // Добавляем в локальный список
         val msg = ChatMessage(
             id = "sending_${System.currentTimeMillis()}",
@@ -1132,7 +1132,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     private fun sendMessage() {
         val t = msgInput.text.toString().trim()
         if (t.isEmpty() || selId.isEmpty()) return
-        ws?.send(
+        log("WS send: file"); ws?.send(
             JSONObject().apply {
                 put("type", "private")
                 put("to", selId)
@@ -1232,7 +1232,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 ).execute()
                 if (r.isSuccessful) {
                     val u = JSONObject(r.body!!.string()).optString("url", "")
-                    ws?.send(
+                    log("WS send: forward"); ws?.send(
                         JSONObject().apply {
                             put("type", "private")
                             put("to", selId)
@@ -1337,7 +1337,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 if (r.isSuccessful) {
                     val u = JSONObject(r.body!!.string()).optString("url", "")
                     val isImage = fn.endsWith(".jpg") || fn.endsWith(".jpeg") || fn.endsWith(".png") || fn.endsWith(".gif") || fn.endsWith(".webp")
-                    ws?.send(
+                    log("WS send: block"); ws?.send(
                         JSONObject().apply {
                             put("type", "private")
                             put("to", selId)
@@ -1674,7 +1674,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             put("to", selId)
             put("forward", forwardData)
         }
-        ws?.send(json.toString())
+        log("WS send: delete msg"); ws?.send(json.toString())
         t("Сообщение переслано!")
     }
     
@@ -1745,7 +1745,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                         put("msg_id", msg.id)
                         put("text", newText)
                     }
-                    ws?.send(json.toString())
+                    log("WS send: clear history"); ws?.send(json.toString())
                     t("Сообщение изменено")
                     // Обновляем через 500мс
                     handler.postDelayed({ refreshMessages() }, 500)
@@ -1809,7 +1809,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 put("to", msg.to)
                 put("msg_id", msg.id)
             }
-            ws?.send(json.toString())
+            log("WS send: block user"); ws?.send(json.toString())
             thread { db.messageDao().markDeleted(msg.id); log("Room: markDeleted ${msg.id}") }
         }
         
@@ -1833,7 +1833,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             put("to", msg.to)
             put("msg_id", msg.id)
         }
-        ws?.send(json.toString())
+        log("WS send: mute"); ws?.send(json.toString())
         thread { db.messageDao().markDeleted(msg.id); log("Room: markDeleted ${msg.id}") }
         msgAdapter.markDeleted(msg.id)
         // Меняем текст локально сразу
