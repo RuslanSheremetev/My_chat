@@ -784,7 +784,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             ws = client.newWebSocket(
                 Request.Builder().url(wsUrl).build(),
                 object : WebSocketListener() {
-                    override fun onMessage(webSocket: WebSocket, text: String) { if (text.contains("\"ping\"")) { webSocket.send("{\"type\":\"pong\"}"); return } log("WS received: ${text.take(50)}...")
+                    override fun onMessage(webSocket: WebSocket, text: String) {  log("WS received: ${text.take(50)}...")
                         try {
                             val j = JSONObject(text)
                             if (j.optString("type") == "ping") return
