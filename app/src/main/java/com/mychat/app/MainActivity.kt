@@ -638,6 +638,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         
         lastMessageCount = 0
         refreshMessages()
+        msgInput.requestFocus()
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         isMuted = prefs.getBoolean("mute_$id", false)
         // Восстанавливаем блокировку из Room
