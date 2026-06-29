@@ -219,7 +219,7 @@ class MessageAdapter(
                         }
                     }
                 }
-                holder.msgStatus.text = if (item.id.startsWith("sending_")) "🕒" else "✅✅"
+                // msgStatus removed
                 holder.time.text = timeFormat.format(
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.time) ?: Date()
                 )
