@@ -215,14 +215,7 @@ class MainActivity : AppCompatActivity() {
                         mic.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this@MainActivity, R.anim.icon_fade_in))
                     }
                 }
-                // Отправка typing
-                if (selId.isNotEmpty() && hasText) {
-                    val json = JSONObject().apply {
-                        put("type", "typing")
-                        put("to", selId)
-                    }
-                    log("WS send: delete"); ws?.send(json.toString())
-                }
+                // Typing отправляется раз в 3 секунды, не на каждый символ
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
