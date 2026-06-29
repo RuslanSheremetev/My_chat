@@ -1000,7 +1000,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                                     text = msg.text,
                                     time = msg.time,
                                     fileUrl = msg.file?.url ?: "",
-                                    fileName = msg.file?.name ?: ""
+                                    fileName = msg.file?.name ?: "",
+                                    reactionsJson = org.json.JSONObject(msg.reactions as Map<*, *>).toString()
                                 )
                             }
                             db.messageDao().insertMessages(entities); log("Room: insertMessages ${entities.size}")
@@ -1074,7 +1075,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                                     text = msg.text,
                                     time = msg.time,
                                     fileUrl = msg.file?.url ?: "",
-                                    fileName = msg.file?.name ?: ""
+                                    fileName = msg.file?.name ?: "",
+                                    reactionsJson = org.json.JSONObject(msg.reactions as Map<*, *>).toString()
                                 )
                             }
                             db.messageDao().insertMessages(entities); log("Room: insertMessages ${entities.size}")
