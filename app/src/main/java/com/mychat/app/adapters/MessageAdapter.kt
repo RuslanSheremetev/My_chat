@@ -16,6 +16,8 @@ import java.util.*
 import kotlin.concurrent.thread
 
 class MessageAdapter(
+    var selectMode: Boolean = false,
+    val selectedIds: MutableSet<String> = mutableSetOf(),
     private val me: String,
     private val onDownload: (String, String) -> Unit,
     private val onMessageLongClick: (ChatMessage) -> Unit = {},
@@ -103,7 +105,11 @@ class MessageAdapter(
                 holder.dateText.text = item
             }
             item is ChatMessage && holder is InViewHolder -> {
+                holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
+                holder.selectCheck.isChecked = selectedIds.contains(item.id)
                 holder.from.text = item.from
+                holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
+                holder.selectCheck.isChecked = selectedIds.contains(item.id)
                 holder.text.text = item.text
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
@@ -159,6 +165,8 @@ class MessageAdapter(
                 holder.reactionsText.visibility = if (reactionsStr.isNotEmpty()) View.VISIBLE else View.GONE
             }
             item is ChatMessage && holder is OutViewHolder -> {
+                holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
+                holder.selectCheck.isChecked = selectedIds.contains(item.id)
                 holder.text.text = item.text
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
@@ -363,6 +371,7 @@ class MessageAdapter(
     }
 
     class InViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val selectCheck: android.widget.CheckBox = view.findViewById(R.id.selectCheck)
         val from: TextView = view.findViewById(R.id.from)
         val text: TextView = view.findViewById(R.id.text)
         val time: TextView = view.findViewById(R.id.time)
@@ -371,6 +380,7 @@ class MessageAdapter(
     }
 
     class OutViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val selectCheck: android.widget.CheckBox = view.findViewById(R.id.selectCheck)
         val text: TextView = view.findViewById(R.id.text)
         val time: TextView = view.findViewById(R.id.time)
         val imageMsg: ImageView = view.findViewById(R.id.imageMsg)

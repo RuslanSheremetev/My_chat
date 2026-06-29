@@ -117,6 +117,7 @@ class MainActivity : AppCompatActivity() {
         logText = findViewById(R.id.logText)
         logScroll = findViewById(R.id.logScroll)
         log("Log started")
+        selectPanel = findViewById(R.id.selectPanel)
         contextMenuBar = findViewById(R.id.contextMenuBar)
         contextMenuBar.visibility = View.GONE
         contextMenuBar.findViewById<ImageView>(R.id.btn_close).setOnClickListener { hideContextMenu() }
@@ -649,6 +650,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     private var selectedMessage: ChatMessage? = null
     private var selectedMessages = mutableListOf<ChatMessage>()
     private var isSelectMode = false
+    private lateinit var selectPanel: android.view.View
     private var pendingForward: ChatMessage? = null
     
     private fun showMessageActions(msg: ChatMessage) {
@@ -723,6 +725,12 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             isSelectMode = true
             selectedMessages.clear()
             selectedMessages.add(msg)
+            msgAdapter.selectMode = true
+            msgAdapter.selectedIds.clear()
+            msgAdapter.selectedIds.add(msg.id)
+            msgAdapter.notifyDataSetChanged()
+            selectPanel.visibility = android.view.View.VISIBLE
+            t("Режим выбора. Нажмите на сообщения")
             t("Сообщение выбрано. Нажмите ещё для выбора нескольких")
         }
         view.findViewById<LinearLayout>(R.id.actionCopy)?.setOnClickListener {

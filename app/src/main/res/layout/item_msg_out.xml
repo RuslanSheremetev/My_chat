@@ -3,8 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:gravity="end"
+    android:gravity="end|center_vertical"
     android:padding="4dp">
+
+    <CheckBox
+        android:id="@+id/selectCheck"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:visibility="gone"
+        android:buttonTint="#ff3b7a"
+        android:layout_marginEnd="4dp" />
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

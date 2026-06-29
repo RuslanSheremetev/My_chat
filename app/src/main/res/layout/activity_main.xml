@@ -550,5 +550,7 @@
             android:typeface="monospace"
             android:text="Логи реакций:\n" />
     </ScrollView>
+
+    <include android:id="@+id/selectPanel" layout="@layout/select_panel" android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone" />
 </LinearLayout>
 
