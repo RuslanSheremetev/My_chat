@@ -468,7 +468,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                         put("private", false)
                     }.toString())
                     t("Группа создана!")
-                    handler.postDelayed({ loadUsers() }, 1000)
+                    // loadUsers removed - too many calls
                 }
             }
             .setNegativeButton("Отмена", null)
@@ -513,7 +513,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                         put("private", false)
                     }.toString())
                     t("Лента создана!")
-                    handler.postDelayed({ loadUsers() }, 1000)
+                    // loadUsers removed - too many calls
                 }
             }
             .setNegativeButton("Отмена", null)
@@ -604,7 +604,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         messagesList.adapter = msgAdapter
         
         connectWS()
-        loadUsers()
+        // loadUsers removed
         showTab(0)
     }
 
@@ -1140,7 +1140,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         )
         msgInput.text.clear()
         handler.postDelayed({ refreshMessages() }, 200)
-        handler.postDelayed({ loadUsers() }, 1000)
+        // loadUsers removed - too many calls
     }
 
     private fun showAttachmentMenu() {
