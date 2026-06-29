@@ -672,6 +672,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     private var selectedMessage: ChatMessage? = null
     private var selectedMessages = mutableListOf<ChatMessage>()
     private var isSelectMode = false
+    private val logBuffer = mutableListOf<org.json.JSONObject>()
     private lateinit var selectPanel: android.view.View
     private var pendingForward: ChatMessage? = null
     private var pendingForwardMessages: List<ChatMessage>? = null
@@ -1463,6 +1464,17 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     
 
     private fun log(msg: String) {
+        // Добавляем в буфер для отправки на сервер
+        val entry = org.json.JSONObject().apply {
+            put("timestamp", android.text.format.DateFormat.format("yyyy-MM-dd'T'HH:mm:ss", java.util.Date()))
+            put("message", msg)
+            put("level", "INFO")
+        }
+        logBuffer.add(entry)
+        // Отправляем если накопилось 10
+        if (logBuffer.size >= 10) {
+            flushLogs()
+        }
         runOnUiThread {
             val timestamp = android.text.format.DateFormat.format("HH:mm:ss", java.util.Date())
             logText.append("$timestamp $msg\n")
@@ -1575,6 +1587,25 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+    }
+
+
+    private fun flushLogs() {
+        if (logBuffer.isEmpty()) return
+        val logsCopy = logBuffer.toList()
+        logBuffer.clear()
+        val json = org.json.JSONObject().apply {
+            put("logs", org.json.JSONArray(logsCopy))
+        }
+        val body = json.toString().toRequestBody("application/json".toMediaType())
+        val request = okhttp3.Request.Builder()
+            .url("$server/api/logs?token=$token")
+            .post(body)
+            .build()
+        client.newCall(request).enqueue(object : okhttp3.Callback {
+            override fun onFailure(call: okhttp3.Call, e: java.io.IOException) {}
+            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {}
         })
     }
 
