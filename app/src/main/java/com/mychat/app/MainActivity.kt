@@ -1757,8 +1757,6 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             put("to", selId)
         }
         ws?.send(json.toString())
-        thread { db.messageDao().markDeleted(msg.id) }
-        msgAdapter.markDeleted(msg.id)
         // Сохраняем в Room
         thread {
             val settings = db.messageDao().getChatSettings(selId) ?: ChatSettings(selId)
