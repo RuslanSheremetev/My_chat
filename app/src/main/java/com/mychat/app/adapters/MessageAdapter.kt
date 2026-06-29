@@ -300,14 +300,7 @@ class MessageAdapter(
             if (msg.reactions != reactions) {
                 items[index] = msg.copy(reactions = reactions)
                 notifyItemChanged(index)
-            // Сохраняем в Room
-            val json = org.json.JSONObject(newReactions as Map<*, *>).toString()
-            val ctx = appContext
-            if (ctx != null) {
-                thread {
-                    com.mychat.app.data.AppDatabase.getInstance(ctx).messageDao().updateReactions(msgId, json)
-                }
-            }
+// Room save already done above
             }
         }
     }
