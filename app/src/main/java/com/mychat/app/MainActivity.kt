@@ -744,7 +744,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         }
         view.findViewById<LinearLayout>(R.id.actionSelect)?.setOnClickListener {
             bottomSheet.dismiss()
-            log("UI: select mode ON"); isSelectMode = true
+            log("UI: select mode ON"); log("UI: select mode ON - ${msg.id}")
+            isSelectMode = true
             selectedMessages.clear()
             selectedMessages.add(msg)
             msgAdapter.selectMode = true
@@ -1857,6 +1858,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
 
 
     private fun exitSelectMode() {
+        log("UI: exit select mode")
         isSelectMode = false
         msgAdapter.selectMode = false
         msgAdapter.selectedIds.clear()
