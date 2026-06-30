@@ -877,7 +877,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                                         val fileName = file.optString("name", "")
                                         if (fileName.contains(".jpg") || fileName.contains(".png") || fileName.contains(".jpeg")) {
                                             user.lastMsgType = "photo"
-                                            user.lastMsg = "Фото"
+                                            user.lastMsg = ""
                                         } else {
                                             user.lastMsgType = "file"
                                             user.lastMsg = "Файл: $fileName"
