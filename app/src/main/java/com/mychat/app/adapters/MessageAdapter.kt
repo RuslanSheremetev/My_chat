@@ -127,9 +127,10 @@ class MessageAdapter(
                     }
                 }
                 showReplyQuote(holder.itemView, item)
-                if (item.text.contains("🎤 Голосовое") || item.file?.url != null) {
+                if (item.text.contains("🎤 Голосовое")) {
                     showVoicePlayer(holder.itemView, item)
                     holder.text.visibility = View.GONE
+                    holder.text.text = ""
                 } else {
                     holder.text.text = item.text
                     holder.text.visibility = View.VISIBLE
@@ -199,9 +200,10 @@ class MessageAdapter(
                     }
                 }
                 showReplyQuote(holder.itemView, item)
-                if (item.text.contains("🎤 Голосовое") || item.file?.url != null) {
+                if (item.text.contains("🎤 Голосовое")) {
                     showVoicePlayer(holder.itemView, item)
                     holder.text.visibility = View.GONE
+                    holder.text.text = ""
                 } else {
                     holder.text.text = item.text
                     holder.text.visibility = View.VISIBLE
