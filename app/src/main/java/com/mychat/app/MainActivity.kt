@@ -614,6 +614,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
 
     private fun openChat(id: String) {
         if (selId == id && chatLayout.visibility == View.VISIBLE) return  // Уже открыт
+        if (selId == id && chatLayout.visibility == View.VISIBLE) return  // Уже открыт
         log("FORWARD: openChat id=$id, mode=$isForwardMode, msgs=${pendingForwardMessages?.size}")
         if (isForwardMode && pendingForwardMessages != null) {
             val messages = pendingForwardMessages!!
