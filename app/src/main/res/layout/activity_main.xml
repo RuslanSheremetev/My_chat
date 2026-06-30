@@ -501,8 +501,8 @@
                         android:src="@drawable/ic_sticker"
                         android:background="@drawable/bg_clear_btn"
                         android:padding="4dp"/>
+                    <include android:id="@+id/replyPreview" layout="@layout/reply_preview" />
                     <EditText
-                        <include android:id="@+id/replyPreview" layout="@layout/reply_preview" />
                         android:id="@+id/msgInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
