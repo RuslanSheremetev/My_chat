@@ -127,7 +127,7 @@ class MessageAdapter(
                     }
                 }
                 showReplyQuote(holder.itemView, item)
-                if (item.file?.url != null) {
+                if (item.text.contains("🎤 Голосовое") || item.file?.url != null) {
                     showVoicePlayer(holder.itemView, item)
                     holder.text.visibility = View.GONE
                 } else {
@@ -199,7 +199,7 @@ class MessageAdapter(
                     }
                 }
                 showReplyQuote(holder.itemView, item)
-                if (item.file?.url != null) {
+                if (item.text.contains("🎤 Голосовое") || item.file?.url != null) {
                     showVoicePlayer(holder.itemView, item)
                     holder.text.visibility = View.GONE
                 } else {
