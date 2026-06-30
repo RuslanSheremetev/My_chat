@@ -1769,7 +1769,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 val body = okhttp3.MultipartBody.Builder()
                     .setType(okhttp3.MultipartBody.FORM)
                     .addFormDataPart("file", "voice.m4a", 
-                        okhttp3.RequestBody.create(okhttp3.MediaType.parse("audio/mp4"), bytes))
+                        okhttp3.RequestBody.create(null, bytes))
                     .build()
                 val request = okhttp3.Request.Builder()
                     .url("$server/api/files/upload?token=$token")
