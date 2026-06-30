@@ -280,7 +280,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 android.view.MotionEvent.ACTION_UP -> {
-                    voiceRecorder?.apply { stop(); release() }; val voiceDuration = ((voiceFile?.length() ?: 0) / 16000).toInt(); log("VOICE: recording stopped, size=${voiceFile?.length() ?: 0}, dur=${voiceDuration}s")
+                    voiceRecorder?.apply { stop(); release() }; val voiceDuration = ((voiceFile?.length() ?: 0) / 800).toInt().coerceAtLeast(1); log("VOICE: recording stopped, size=${voiceFile?.length() ?: 0}, dur=${voiceDuration}s")
                     voiceRecorder = null
                     voiceFile?.let { file ->
                         if (file.length() > 0) sendVoiceFile(file)
@@ -1784,7 +1784,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 if (response.isSuccessful) {
                     val json = org.json.JSONObject(response.body!!.string())
                     val fileId = json.optString("file_id", json.optString("url", ""))
-                    val vd = voiceDuration
+                    val vd = ((voiceFile?.length() ?: 0) / 800).toInt().coerceAtLeast(1)
                     runOnUiThread {
                         val msg = org.json.JSONObject().apply {
                             put("type", "private")
