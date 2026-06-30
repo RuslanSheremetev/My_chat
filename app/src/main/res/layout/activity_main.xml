@@ -312,7 +312,6 @@
     <!-- Нижняя навигация -->
     <LinearLayout
         android:id="@+id/bottomNav"
-            android:background="#DD121212"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="#1c1c1e"
