@@ -119,6 +119,7 @@ class MainActivity : AppCompatActivity() {
         logScroll = findViewById(R.id.logScroll)
         logScroll.visibility = android.view.View.GONE  // Скрыто на главном экране
         log("Log started")
+        chatHeader = findViewById(R.id.chatHeader)
         selectPanel = findViewById(R.id.selectPanel)
         selectPanel.findViewById<LinearLayout>(R.id.btnDeleteSelected).setOnClickListener {
             deleteSelectedMessages()
@@ -698,6 +699,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     private var selectedMessages = mutableListOf<ChatMessage>()
     private var isSelectMode = false
     private val logBuffer = mutableListOf<org.json.JSONObject>()
+    private lateinit var chatHeader: android.view.View
     private lateinit var selectPanel: android.view.View
     private var pendingForward: ChatMessage? = null
     private var replyToMsg: ChatMessage? = null
@@ -784,6 +786,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             msgAdapter.selectMode = true
             msgAdapter.selectedIds.clear()
             msgAdapter.notifyDataSetChanged()
+            chatHeader.visibility = android.view.View.GONE
             selectPanel.visibility = android.view.View.VISIBLE
             log("Select mode ON")
             t("Режим выбора. Нажмите на сообщения")
@@ -1911,6 +1914,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         msgAdapter.selectedIds.clear()
         msgAdapter.notifyDataSetChanged()
         log("UI: select mode OFF"); selectPanel.visibility = android.view.View.GONE
+        chatHeader.visibility = android.view.View.VISIBLE
     }
 
         private fun deleteSelectedMessages() {
