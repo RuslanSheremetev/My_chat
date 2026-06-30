@@ -143,6 +143,24 @@ class MainActivity : AppCompatActivity() {
         chatsScreen = findViewById(R.id.chatsScreen)
         profileScreen = findViewById(R.id.profileScreen)
         chatLayout = findViewById(R.id.chatLayout)
+        
+        // Свайп справа-налево для выхода из чата
+        var startX = 0f
+        chatLayout.setOnTouchListener { _, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    startX = event.x
+                    false
+                }
+                android.view.MotionEvent.ACTION_UP -> {
+                    if (event.x - startX > 150 && startX < 100) {
+                        closeChat()
+                        true
+                    } else false
+                }
+                else -> false
+            }
+        }
         loginUser = findViewById(R.id.loginUser)
         loginPass = findViewById(R.id.loginPass)
         serverUrl = findViewById(R.id.serverUrl)
