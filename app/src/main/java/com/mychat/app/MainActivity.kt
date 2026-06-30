@@ -1784,7 +1784,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 if (response.isSuccessful) {
                     val json = org.json.JSONObject(response.body!!.string())
                     val fileId = json.optString("file_id", json.optString("url", ""))
-                    val vd = ((voiceFile?.length() ?: 0) / 800).toInt().coerceAtLeast(1)
+                    val vd = (bytes.size / 800).coerceAtLeast(1)
                     runOnUiThread {
                         val msg = org.json.JSONObject().apply {
                             put("type", "private")
