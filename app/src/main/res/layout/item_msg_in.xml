@@ -48,6 +48,7 @@
             android:textSize="10sp"
             android:textColor="#88ffffff"
             android:layout_gravity="end"/>
+    <include layout="@layout/item_youtube_preview" />
     </LinearLayout>
 
 </LinearLayout>

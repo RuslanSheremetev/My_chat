@@ -47,6 +47,7 @@
                 android:textSize="10sp"
                 android:textColor="#88ffffff"/>
         </LinearLayout>
+    <include layout="@layout/item_youtube_preview" />
     </LinearLayout>
 
 </LinearLayout>
