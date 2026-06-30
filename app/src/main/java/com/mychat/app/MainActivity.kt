@@ -240,44 +240,27 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
         
 findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") }
-        findViewById<ImageButton>(R.id.btnChatMenu)?.setOnClickListener { v ->
-            val popup = android.widget.PopupMenu(this, v)
-            val view = layoutInflater.inflate(R.layout.popup_chat_menu, null)
+        findViewById<ImageButton>(R.id.btnChatMenu)?.setOnClickListener { anchor ->
+            val view = layoutInflater.inflate(R.layout.dropdown_chat_menu, null)
+            val popup = android.widget.PopupWindow(view, 
+                (220 * resources.displayMetrics.density).toInt(),
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, true)
+            popup.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+            popup.elevation = 20f
             
-            // Проще — используем AlertDialog с кастомной разметкой
-            val dialog = AlertDialog.Builder(this).create()
-            dialog.setView(view)
-            dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-            
-            view.findViewById<LinearLayout>(R.id.menuInfo).setOnClickListener {
-                dialog.dismiss()
-                showUserInfo()
-            }
-            view.findViewById<LinearLayout>(R.id.menuMute).setOnClickListener {
-                dialog.dismiss()
-                toggleMute()
-            }
-            view.findViewById<LinearLayout>(R.id.menuSearch).setOnClickListener {
-                dialog.dismiss()
-                showSearchOverlay()
-            }
+            view.findViewById<LinearLayout>(R.id.menuInfo).setOnClickListener { popup.dismiss(); showUserInfo() }
+            view.findViewById<LinearLayout>(R.id.menuMute).setOnClickListener { popup.dismiss(); toggleMute() }
+            view.findViewById<LinearLayout>(R.id.menuSearch).setOnClickListener { popup.dismiss(); showSearchOverlay() }
             view.findViewById<LinearLayout>(R.id.menuClear).setOnClickListener {
-                dialog.dismiss()
-                AlertDialog.Builder(this)
-                    .setTitle("Очистить историю")
-                    .setMessage("Удалить все сообщения в этом чате?")
-                    .setPositiveButton("Очистить") { _, _ ->
-                        clearHistory()
-                    }
-                    .setNegativeButton("Отмена", null)
-                    .show()
+                popup.dismiss()
+                AlertDialog.Builder(this).setTitle("Очистить историю")
+                    .setMessage("Удалить все сообщения?")
+                    .setPositiveButton("Очистить") { _, _ -> clearHistory() }
+                    .setNegativeButton("Отмена", null).show()
             }
-            view.findViewById<LinearLayout>(R.id.menuBlock).setOnClickListener {
-                dialog.dismiss()
-                blockUser()
-            }
+            view.findViewById<LinearLayout>(R.id.menuBlock).setOnClickListener { popup.dismiss(); blockUser() }
             
-            dialog.show()
+            popup.showAsDropDown(anchor, -180.dpToPx(), 8.dpToPx())
         }
         findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
@@ -1674,6 +1657,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         replyPreview.visibility = android.view.View.GONE
     }
 
+
+    private fun Int.dpToPx(): Int = (this * resources.displayMetrics.density).toInt()
     private fun hideContextMenu() {
         selectedUserForDelete = null
         chatAdapter.selectedPosition = -1
