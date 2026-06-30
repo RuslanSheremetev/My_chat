@@ -790,7 +790,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                     override fun onMessage(webSocket: WebSocket, text: String) {  log("WS received: ${text.take(50)}...")
                         try {
                             val j = JSONObject(text)
-                            if (j.optString("type") == "ping") return
+                            if (j.optString("type") == "ping") { webSocket.send("{\"type\":\"pong\"}"); return }
                             if (isBlocked) return
                             if (selId.isNotEmpty()) {
                                 handler.post {
