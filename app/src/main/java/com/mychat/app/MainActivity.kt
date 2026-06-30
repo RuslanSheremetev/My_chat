@@ -145,6 +145,24 @@ class MainActivity : AppCompatActivity() {
         profileScreen = findViewById(R.id.profileScreen)
         chatLayout = findViewById(R.id.chatLayout)
         
+        // Свайп для выхода из чата
+        var swipeStartX = 0f
+        chatLayout.setOnTouchListener { _, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    swipeStartX = event.x
+                    false
+                }
+                android.view.MotionEvent.ACTION_UP -> {
+                    if (event.x - swipeStartX > 200 && swipeStartX < 80) {
+                        closeChat()
+                        true
+                    } else false
+                }
+                else -> false
+            }
+        }
+        
         // Свайп справа-налево для выхода из чата
         var startX = 0f
         chatLayout.setOnTouchListener { _, event ->
