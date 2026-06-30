@@ -127,7 +127,13 @@ class MessageAdapter(
                     }
                 }
                 showReplyQuote(holder.itemView, item)
-                holder.text.text = item.text
+                if (item.file?.url?.endsWith(".m4a") == true || item.text.contains("🎤 Голосовое")) {
+                    showVoicePlayer(holder.itemView, item)
+                    holder.text.visibility = View.GONE
+                } else {
+                    holder.text.text = item.text
+                    holder.text.visibility = View.VISIBLE
+                }
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
                     holder.text.isClickable = true
@@ -193,7 +199,13 @@ class MessageAdapter(
                     }
                 }
                 showReplyQuote(holder.itemView, item)
-                holder.text.text = item.text
+                if (item.file?.url?.endsWith(".m4a") == true || item.text.contains("🎤 Голосовое")) {
+                    showVoicePlayer(holder.itemView, item)
+                    holder.text.visibility = View.GONE
+                } else {
+                    holder.text.text = item.text
+                    holder.text.visibility = View.VISIBLE
+                }
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
                     holder.text.isClickable = true
@@ -417,6 +429,50 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
                 view.post { preview.visibility = View.GONE }
             }
         }
+    }
+
+
+    private fun showVoicePlayer(view: View, msg: ChatMessage) {
+        val player = view.findViewById<LinearLayout>(R.id.voicePlayer) ?: return
+        player.visibility = View.VISIBLE
+        
+        val playBtn = view.findViewById<ImageView>(R.id.btnPlayVoice)
+        val durationText = view.findViewById<TextView>(R.id.voiceDuration)
+        var isPlaying = false
+        var mediaPlayer: android.media.MediaPlayer? = null
+        
+        playBtn.setOnClickListener {
+            if (isPlaying) {
+                mediaPlayer?.pause()
+                playBtn.setImageResource(R.drawable.ic_play)
+            } else {
+                try {
+                    val url = msg.file?.url ?: return@setOnClickListener
+                    val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8000$url"
+                    mediaPlayer = android.media.MediaPlayer().apply {
+                        setDataSource(fullUrl)
+                        setOnPreparedListener { 
+                            it.start()
+                            durationText.text = formatDuration(it.duration)
+                        }
+                        setOnCompletionListener {
+                            playBtn.setImageResource(R.drawable.ic_play)
+                            isPlaying = false
+                        }
+                        prepareAsync()
+                    }
+                    playBtn.setImageResource(R.drawable.ic_pause)
+                } catch (e: Exception) {
+                    playBtn.setImageResource(R.drawable.ic_play)
+                }
+            }
+            isPlaying = !isPlaying
+        }
+    }
+    
+    private fun formatDuration(ms: Int): String {
+        val seconds = ms / 1000
+        return "${seconds / 60}:${(seconds % 60).toString().padStart(2, '0')}"
     }
 
     fun getItems(): List<Any> = items.toList()
