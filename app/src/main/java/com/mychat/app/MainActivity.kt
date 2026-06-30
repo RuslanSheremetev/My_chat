@@ -147,6 +147,25 @@ class MainActivity : AppCompatActivity() {
         loginPass = findViewById(R.id.loginPass)
         serverUrl = findViewById(R.id.serverUrl)
         searchInput = findViewById(R.id.searchInput)
+        
+        val btnSearchOpen = findViewById<android.widget.ImageButton>(R.id.btnSearchOpen)
+        val searchOverlayPanel = findViewById<android.widget.LinearLayout>(R.id.searchOverlayPanel)
+        val searchOverlayInput = searchOverlayPanel.findViewById<android.widget.EditText>(R.id.searchOverlayInput)
+        
+        btnSearchOpen.setOnClickListener {
+            searchOverlayPanel.visibility = android.view.View.VISIBLE
+            searchOverlayInput.requestFocus()
+        }
+        
+        searchOverlayPanel.findViewById<android.widget.ImageButton>(R.id.btnSearchBack).setOnClickListener {
+            searchOverlayPanel.visibility = android.view.View.GONE
+        }
+        
+        searchOverlayInput.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) { searchUsers(s?.toString() ?: "") }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
         chatList = findViewById(R.id.chatList)
         messagesList = findViewById(R.id.messagesList)
         replyPreview = findViewById(R.id.replyPreview)
