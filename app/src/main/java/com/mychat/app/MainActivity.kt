@@ -1782,7 +1782,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                     .build()
                 val response = client.newCall(request).execute()
                 if (response.isSuccessful) {
-                    val fileId = org.json.JSONObject(response.body!!.string()).optString("file_id")
+                    val json = org.json.JSONObject(response.body!!.string())
+                    val fileId = json.optString("file_id", json.optString("url", ""))
                     runOnUiThread {
                         val msg = org.json.JSONObject().apply {
                             put("type", "private")
