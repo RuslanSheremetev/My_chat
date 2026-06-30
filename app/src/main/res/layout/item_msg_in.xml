@@ -42,6 +42,8 @@
             android:layout_gravity="end"/>
     <include layout="@layout/reply_quote" />
     <include layout="@layout/item_youtube_preview" />
-    </LinearLayout>
+        <include layout="@layout/item_voice_message" />
+</LinearLayout>
 
+    <include layout="@layout/item_voice_message" />
 </LinearLayout>
