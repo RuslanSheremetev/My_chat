@@ -273,14 +273,14 @@ class MainActivity : AppCompatActivity() {
                             prepare()
                             start()
                         }
-                        t("🎤 Запись...")
+                        log("VOICE: recording started"); t("🎤 Запись...")
                     } catch (e: Exception) {
-                        t("Ошибка микрофона")
+                        log("VOICE: error - mic failed"); t("Ошибка микрофона")
                     }
                     true
                 }
                 android.view.MotionEvent.ACTION_UP -> {
-                    voiceRecorder?.apply { stop(); release() }
+                    voiceRecorder?.apply { stop(); release() }; log("VOICE: recording stopped, size=${voiceFile?.length() ?: 0}")
                     voiceRecorder = null
                     voiceFile?.let { file ->
                         if (file.length() > 0) sendVoiceFile(file)
@@ -1792,13 +1792,13 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                             put("file_type", "voice")
                         }
                         ws?.send(msg.toString())
-                        t("✅ Отправлено")
+                        log("VOICE: sent successfully"); t("✅ Отправлено")
                     }
                 } else {
-                    runOnUiThread { t("Ошибка отправки") }
+                    runOnUiThread { log("VOICE: upload failed"); t("Ошибка отправки") }
                 }
             } catch (e: Exception) {
-                runOnUiThread { t("Ошибка: ${e.message}") }
+                runOnUiThread { log("VOICE: error - ${e.message}"); t("Ошибка: ${e.message}") }
             }
         }
     }
