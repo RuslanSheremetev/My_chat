@@ -134,6 +134,8 @@ class MessageAdapter(
                 } else {
                     holder.text.text = item.text
                     holder.text.visibility = View.VISIBLE
+                    val vp = holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)
+                    if (vp != null) vp.visibility = View.GONE
                 }
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
@@ -207,6 +209,8 @@ class MessageAdapter(
                 } else {
                     holder.text.text = item.text
                     holder.text.visibility = View.VISIBLE
+                    val vp = holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)
+                    if (vp != null) vp.visibility = View.GONE
                 }
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
