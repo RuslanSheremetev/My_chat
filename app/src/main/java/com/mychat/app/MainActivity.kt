@@ -1666,6 +1666,12 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
         })
     }
 
+
+    private fun cancelReply() {
+        replyToMsg = null
+        replyPreview.visibility = android.view.View.GONE
+    }
+
     private fun hideContextMenu() {
         selectedUserForDelete = null
         chatAdapter.selectedPosition = -1
