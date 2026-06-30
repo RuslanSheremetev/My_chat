@@ -433,6 +433,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
 
 
     private fun showVoicePlayer(view: View, msg: ChatMessage) {
+        android.util.Log.d("VOICE", "showVoicePlayer: url=${msg.file?.url}, text=${msg.text.take(30)}")
         val player = view.findViewById<LinearLayout>(R.id.voicePlayer) ?: return
         player.visibility = View.VISIBLE
         
