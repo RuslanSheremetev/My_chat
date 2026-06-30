@@ -258,6 +258,11 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnMic).setOnTouchListener { _, event ->
             when (event.action) {
                 android.view.MotionEvent.ACTION_DOWN -> {
+                    if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions(arrayOf(android.Manifest.permission.RECORD_AUDIO), 200)
+                        t("Разрешите доступ к микрофону")
+                        return@setOnTouchListener false
+                    }
                     try {
                         voiceFile = java.io.File.createTempFile("voice_", ".m4a", cacheDir)
                         voiceRecorder = android.media.MediaRecorder().apply {
