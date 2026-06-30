@@ -280,7 +280,8 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 android.view.MotionEvent.ACTION_UP -> {
-                    voiceRecorder?.apply { stop(); release() }; log("VOICE: recording stopped, size=${voiceFile?.length() ?: 0}")
+                    var voiceDuration = 0
+                    voiceRecorder?.apply { voiceDuration = duration / 1000; stop(); release() }; log("VOICE: recording stopped, size=${voiceFile?.length() ?: 0}")
                     voiceRecorder = null
                     voiceFile?.let { file ->
                         if (file.length() > 0) sendVoiceFile(file)
