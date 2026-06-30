@@ -970,6 +970,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                                 val s = db.messageDao().getChatSettings(u.username)
                                 if (s != null) { u.isMuted = s.isMuted; log("Mute loaded: ${u.username} = ${u.isMuted}") }
                             }
+                            // Загружаем isMuted для каждого пользователя
+                            for (u in res) {
+                                val s = db.messageDao().getChatSettings(u.username)
+                                if (s != null) { u.isMuted = s.isMuted }
+                            }
                             handler.post { chatAdapter.update(res) }
                 }
             } catch (e: Exception) {
