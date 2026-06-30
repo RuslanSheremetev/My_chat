@@ -126,6 +126,7 @@ class MessageAdapter(
                         holder.selectCheck.isChecked = !holder.selectCheck.isChecked
                     }
                 }
+                showReplyQuote(holder.itemView, item)
                 holder.text.text = item.text
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
@@ -191,6 +192,7 @@ class MessageAdapter(
                         holder.selectCheck.isChecked = !holder.selectCheck.isChecked
                     }
                 }
+                showReplyQuote(holder.itemView, item)
                 holder.text.text = item.text
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
@@ -377,6 +379,19 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         }
     }
     
+
+    private fun showReplyQuote(view: View, msg: ChatMessage) {
+        val quoteView = view.findViewById<LinearLayout>(R.id.replyQuote) ?: return
+        if (msg.text.startsWith("↪ ")) {
+            quoteView.visibility = View.VISIBLE
+            val parts = msg.text.removePrefix("↪ ").split(": ", limit = 2)
+            view.findViewById<TextView>(R.id.quoteAuthor)?.text = parts.getOrElse(0) { "" }
+            view.findViewById<TextView>(R.id.quoteText)?.text = parts.getOrElse(1) { "" }.take(100)
+        } else {
+            quoteView.visibility = View.GONE
+        }
+    }
+
     fun getItems(): List<Any> = items.toList()
 
     fun addMessage(msg: ChatMessage) {
