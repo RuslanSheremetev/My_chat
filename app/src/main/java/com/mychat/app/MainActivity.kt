@@ -149,6 +149,10 @@ class MainActivity : AppCompatActivity() {
         searchInput = findViewById(R.id.searchInput)
         chatList = findViewById(R.id.chatList)
         messagesList = findViewById(R.id.messagesList)
+        replyPreview = findViewById(R.id.replyPreview)
+        previewAuthor = replyPreview.findViewById(R.id.previewAuthor)
+        previewText = replyPreview.findViewById(R.id.previewText)
+        replyPreview.findViewById<android.widget.ImageButton>(R.id.btnCloseReply).setOnClickListener { cancelReply() }
         msgInput = findViewById(R.id.msgInput)
         chatTitle = findViewById(R.id.chatTitle)
         chatAvatar = findViewById(R.id.chatAvatar)
@@ -674,6 +678,10 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     private val logBuffer = mutableListOf<org.json.JSONObject>()
     private lateinit var selectPanel: android.view.View
     private var pendingForward: ChatMessage? = null
+    private var replyToMsg: ChatMessage? = null
+    private lateinit var replyPreview: android.view.View
+    private lateinit var previewAuthor: android.widget.TextView
+    private lateinit var previewText: android.widget.TextView
     private var pendingForwardMessages: List<ChatMessage>? = null
     private var isForwardMode = false
     
@@ -1140,9 +1148,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 put("type", "private")
                 put("to", selId)
                 put("text", t)
+                replyToMsg?.let { put("reply_to_msg_id", it.id) }
             }.toString()
         )
         msgInput.text.clear()
+        cancelReply()
         handler.postDelayed({ refreshMessages() }, 200)
         // loadUsers removed - too many calls
     }
