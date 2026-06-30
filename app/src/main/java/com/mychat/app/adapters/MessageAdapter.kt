@@ -381,7 +381,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
     
 
     private fun showReplyQuote(view: View, msg: ChatMessage) {
-        val quoteView = view.findViewById<LinearLayout>(R.id.replyQuote) ?: return
+        val quoteView = view.findViewById<android.widget.LinearLayout>(R.id.replyQuote) ?: return
         if (msg.text.startsWith("↪ ")) {
             quoteView.visibility = View.VISIBLE
             val parts = msg.text.removePrefix("↪ ").split(": ", limit = 2)
