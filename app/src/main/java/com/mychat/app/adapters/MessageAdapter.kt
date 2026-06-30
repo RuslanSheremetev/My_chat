@@ -128,7 +128,6 @@ class MessageAdapter(
                     }
                 }
                 showReplyQuote(holder.itemView, item)
-                showYoutubePreview(holder.itemView, item.text)
                 holder.text.text = item.text
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
@@ -195,7 +194,6 @@ class MessageAdapter(
                     }
                 }
                 showReplyQuote(holder.itemView, item)
-                showYoutubePreview(holder.itemView, item.text)
                 holder.text.text = item.text
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
