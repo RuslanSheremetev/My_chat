@@ -190,10 +190,12 @@
                 android:paddingBottom="8dp">
 
                 <RelativeLayout
+                    android:id="@+id/searchContainer"
                     android:layout_width="0dp"
                     android:layout_height="44dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_input">
+                    android:background="@drawable/bg_input"
+                    android:visibility="gone">
 
                     <EditText
                         android:id="@+id/searchInput"

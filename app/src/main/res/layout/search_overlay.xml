@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/searchOverlayPanel"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="#121212"
+    android:paddingHorizontal="16dp"
+    android:elevation="16dp"
+    android:visibility="gone">
+
+    <ImageButton
+        android:id="@+id/btnSearchBack"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_back"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:tint="#fff"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_weight="1"
+        android:background="@drawable/bg_search_field"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="12dp"
+        android:layout_marginStart="12dp">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/ic_search"
+            android:tint="#6b6b6b"/>
+
+        <EditText
+            android:id="@+id/searchOverlayInput"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:textColor="#fff"
+            android:textSize="16sp"
+            android:hint="Поиск..."
+            android:textColorHint="#6b6b6b"
+            android:singleLine="true"
+            android:layout_marginStart="12dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>
