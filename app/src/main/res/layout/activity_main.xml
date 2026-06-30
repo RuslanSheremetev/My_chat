@@ -154,10 +154,12 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:src="@drawable/ic_chat_bubble"
                         android:tint="#8e8e93"
+                        android:background="@drawable/bg_circle_icon"
+                        android:padding="8dp"
                         android:layout_marginEnd="10dp"/>
                     <TextView
                         android:layout_width="wrap_content"
