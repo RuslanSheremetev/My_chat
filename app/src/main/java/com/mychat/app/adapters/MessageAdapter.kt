@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.LinearLayout
 import android.widget.ImageView
 import android.graphics.BitmapFactory
 import androidx.recyclerview.widget.RecyclerView
@@ -127,6 +128,7 @@ class MessageAdapter(
                     }
                 }
                 showReplyQuote(holder.itemView, item)
+                showYoutubePreview(holder.itemView, item.text)
                 holder.text.text = item.text
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
@@ -193,6 +195,7 @@ class MessageAdapter(
                     }
                 }
                 showReplyQuote(holder.itemView, item)
+                showYoutubePreview(holder.itemView, item.text)
                 holder.text.text = item.text
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
@@ -389,6 +392,33 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
             view.findViewById<TextView>(R.id.quoteText)?.text = parts.getOrElse(1) { "" }.take(100)
         } else {
             quoteView.visibility = View.GONE
+        }
+    }
+
+
+    private fun showYoutubePreview(view: View, text: String) {
+        val regex = Regex("(?:youtube\\.com/watch\\?v=|youtu\\.be/)([\\w-]+)")
+        val match = regex.find(text) ?: return
+        val videoId = match.groupValues[1]
+        val preview = view.findViewById<LinearLayout>(R.id.ytPreview) ?: return
+        preview.visibility = View.VISIBLE
+        view.findViewById<TextView>(R.id.ytTitle)?.text = "Загрузка..."
+        thread {
+            try {
+                val json = org.json.JSONObject(java.net.URL("https://www.youtube.com/oembed?url=https://youtube.com/watch?v=$videoId&format=json").readText())
+                val title = json.optString("title", "YouTube")
+                val bytes = java.net.URL("https://img.youtube.com/vi/$videoId/0.jpg").readBytes()
+                val bmp = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                view.post {
+                    view.findViewById<ImageView>(R.id.ytThumbnail)?.setImageBitmap(bmp)
+                    view.findViewById<TextView>(R.id.ytTitle)?.text = title
+                    preview.setOnClickListener {
+                        view.context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(match.value)))
+                    }
+                }
+            } catch (e: Exception) {
+                view.post { preview.visibility = View.GONE }
+            }
         }
     }
 
