@@ -67,6 +67,7 @@ class ChatAdapter(
         private val lastTime: TextView = itemView.findViewById(R.id.lastTime)
         private val onlineDot: View = itemView.findViewById(R.id.onlineDot)
         private val msgStatusIcon: ImageView = itemView.findViewById(R.id.msgStatusIcon)
+          private val muteIcon: ImageView = itemView.findViewById(R.id.muteIcon)
 
         fun bind(user: User) {
             val displayName = if (user.name.isNotEmpty()) user.name else user.username
@@ -112,6 +113,7 @@ class ChatAdapter(
             }
 
             onlineDot.visibility = if (user.online) View.VISIBLE else View.GONE
+              muteIcon.visibility = if (user.isMuted) View.VISIBLE else View.GONE
 
             itemView.setOnClickListener {
                 itemView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
