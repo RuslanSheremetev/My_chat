@@ -4,6 +4,7 @@ data class User(
     val username: String,
     val avatarColor: String = "#2AABEE",
     val online: Boolean = false,
+    val isMuted: Boolean = false,
     val lastSeen: String = "",
     val bio: String = "",
     val avatarUrl: String = "",
