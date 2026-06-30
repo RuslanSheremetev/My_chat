@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/replyPreview"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="#16171A"
+    android:paddingVertical="10dp"
+    android:paddingHorizontal="16dp"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/previewAuthor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#ff3b7a"
+            android:fontWeight="bold"/>
+
+        <TextView
+            android:id="@+id/previewText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:textColor="#9ca3af"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btnCloseReply"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_close_white"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:tint="#9ca3af"
+        android:scaleType="centerInside"/>
+
+</LinearLayout>
