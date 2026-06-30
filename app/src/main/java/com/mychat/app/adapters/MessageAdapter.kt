@@ -116,7 +116,6 @@ class MessageAdapter(
                         holder.selectCheck.isChecked = !holder.selectCheck.isChecked
                     }
                 }
-                holder.from.text = item.from
                 holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
                 holder.selectCheck.isChecked = selectedIds.contains(item.id)
                 holder.selectCheck.setOnCheckedChangeListener { _, checked ->
@@ -440,7 +439,6 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
 
     class InViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val selectCheck: android.widget.CheckBox = view.findViewById(R.id.selectCheck)
-        val from: TextView = view.findViewById(R.id.from)
         val text: TextView = view.findViewById(R.id.text)
         val time: TextView = view.findViewById(R.id.time)
         val imageMsg: ImageView = view.findViewById(R.id.imageMsg)
