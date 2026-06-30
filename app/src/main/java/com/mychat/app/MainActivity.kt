@@ -2082,6 +2082,9 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
     
     private fun toggleMute() {
         isMuted = !isMuted
+        // Обновляем иконку в списке
+        users.find { it.username == selId }?.isMuted = isMuted
+        chatAdapter.notifyDataSetChanged()
         // Сохраняем в Room
         thread {
             val settings = db.messageDao().getChatSettings(selId) ?: ChatSettings(selId)
