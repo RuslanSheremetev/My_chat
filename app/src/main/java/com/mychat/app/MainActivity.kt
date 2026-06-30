@@ -261,7 +261,7 @@ class MainActivity : AppCompatActivity() {
                     if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
                         requestPermissions(arrayOf(android.Manifest.permission.RECORD_AUDIO), 200)
                         t("Разрешите доступ к микрофону")
-                        return@setOnTouchListener false
+                        true  // Не вылетаем
                     }
                     try {
                         voiceFile = java.io.File.createTempFile("voice_", ".m4a", cacheDir)
@@ -1791,6 +1791,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                             put("text", "🎤 Голосовое")
                             put("file_id", fileId)
                             put("file_type", "voice")
+                        put("file_name", "Голосовое ${voiceDuration}с")
                         }
                         ws?.send(msg.toString())
                         log("VOICE: sent successfully"); t("✅ Отправлено")
