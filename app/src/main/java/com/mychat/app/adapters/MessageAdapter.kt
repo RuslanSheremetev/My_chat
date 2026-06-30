@@ -110,11 +110,21 @@ class MessageAdapter(
                 holder.selectCheck.setOnCheckedChangeListener { _, checked ->
                     if (checked) selectedIds.add(item.id) else selectedIds.remove(item.id)
                 }
+                holder.itemView.setOnClickListener {
+                    if (selectMode) {
+                        holder.selectCheck.isChecked = !holder.selectCheck.isChecked
+                    }
+                }
                 holder.from.text = item.from
                 holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
                 holder.selectCheck.isChecked = selectedIds.contains(item.id)
                 holder.selectCheck.setOnCheckedChangeListener { _, checked ->
                     if (checked) selectedIds.add(item.id) else selectedIds.remove(item.id)
+                }
+                holder.itemView.setOnClickListener {
+                    if (selectMode) {
+                        holder.selectCheck.isChecked = !holder.selectCheck.isChecked
+                    }
                 }
                 holder.text.text = item.text
                 // Если это файл — делаем кликабельным
@@ -175,6 +185,11 @@ class MessageAdapter(
                 holder.selectCheck.isChecked = selectedIds.contains(item.id)
                 holder.selectCheck.setOnCheckedChangeListener { _, checked ->
                     if (checked) selectedIds.add(item.id) else selectedIds.remove(item.id)
+                }
+                holder.itemView.setOnClickListener {
+                    if (selectMode) {
+                        holder.selectCheck.isChecked = !holder.selectCheck.isChecked
+                    }
                 }
                 holder.text.text = item.text
                 // Если это файл — делаем кликабельным
