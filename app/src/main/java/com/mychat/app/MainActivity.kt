@@ -1784,6 +1784,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 if (response.isSuccessful) {
                     val json = org.json.JSONObject(response.body!!.string())
                     val fileId = json.optString("file_id", json.optString("url", ""))
+                    val vd = voiceDuration
                     runOnUiThread {
                         val msg = org.json.JSONObject().apply {
                             put("type", "private")
@@ -1791,7 +1792,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                             put("text", "🎤 Голосовое")
                             put("file_id", fileId)
                             put("file_type", "voice")
-                        put("file_name", "Голосовое ${voiceDuration}с")
+                        put("file_name", "Голосовое ${vd}с")
                         }
                         ws?.send(msg.toString())
                         log("VOICE: sent successfully"); t("✅ Отправлено")
