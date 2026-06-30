@@ -137,7 +137,10 @@
             android:orientation="vertical"
             android:visibility="visible">
 
+            <include layout="@layout/search_overlay" />
+
             <LinearLayout
+                android:id="@+id/mainHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
