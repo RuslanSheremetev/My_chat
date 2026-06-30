@@ -925,7 +925,12 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                             )
                         }
                     }
-                    handler.post { chatAdapter.update(res) }
+                    // Загружаем isMuted из Room
+                            for (u in res) {
+                                val s = db.messageDao().getChatSettings(u.username)
+                                if (s != null) u.isMuted = s.isMuted
+                            }
+                            handler.post { chatAdapter.update(res) }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
