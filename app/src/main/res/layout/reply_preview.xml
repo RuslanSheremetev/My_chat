@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:textSize="12sp"
             android:textColor="#ff3b7a"
-            android:fontWeight="bold"/>
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/previewText"
