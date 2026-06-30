@@ -120,10 +120,10 @@ class MainActivity : AppCompatActivity() {
         logScroll.visibility = android.view.View.GONE  // Скрыто на главном экране
         log("Log started")
         selectPanel = findViewById(R.id.selectPanel)
-        selectPanel.findViewById<TextView>(R.id.btnDeleteSelected).setOnClickListener {
+        selectPanel.findViewById<LinearLayout>(R.id.btnDeleteSelected).setOnClickListener {
             deleteSelectedMessages()
         }
-        selectPanel.findViewById<TextView>(R.id.btnForwardSelected).setOnClickListener {
+        selectPanel.findViewById<LinearLayout>(R.id.btnForwardSelected).setOnClickListener {
             forwardSelectedMessages()
         }
         contextMenuBar = findViewById(R.id.contextMenuBar)

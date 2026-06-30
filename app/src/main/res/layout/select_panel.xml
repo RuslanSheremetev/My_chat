@@ -1,37 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="64dp"
     android:orientation="horizontal"
     android:gravity="center"
-    android:background="#1a1a1a"
+    android:background="#E616171A"
     android:paddingHorizontal="16dp">
 
-    <TextView
+    <LinearLayout
         android:id="@+id/btnDeleteSelected"
-        android:layout_width="wrap_content"
-        android:layout_height="44dp"
-        android:text="🗑 Удалить"
-        android:textSize="14sp"
-        android:textColor="#ff453a"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
         android:gravity="center"
-        android:paddingHorizontal="24dp"
-        android:background="@drawable/bg_oval_button"
+        android:background="@drawable/bg_select_action"
         android:clickable="true"
         android:focusable="true"
-        android:layout_marginEnd="16dp"/>
+        android:layout_marginEnd="8dp">
 
-    <TextView
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_trash"
+            android:tint="#ff453a"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Удалить"
+            android:textSize="14sp"
+            android:textColor="#ff453a"
+            android:fontWeight="500"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/btnForwardSelected"
-        android:layout_width="wrap_content"
-        android:layout_height="44dp"
-        android:text="➡️ Переслать"
-        android:textSize="14sp"
-        android:textColor="#fff"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
         android:gravity="center"
-        android:paddingHorizontal="24dp"
-        android:background="@drawable/bg_oval_button"
+        android:background="@drawable/bg_select_action"
         android:clickable="true"
-        android:focusable="true"/>
+        android:focusable="true">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_forward"
+            android:tint="#9ca3af"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Переслать"
+            android:textSize="14sp"
+            android:textColor="#fff"
+            android:fontWeight="500"/>
+
+    </LinearLayout>
 
 </LinearLayout>
