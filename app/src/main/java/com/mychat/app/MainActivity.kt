@@ -252,8 +252,38 @@ class MainActivity : AppCompatActivity() {
         
         findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
         findViewById<Button>(R.id.btnRegister).setOnClickListener { register() }
-        findViewById<ImageButton>(R.id.btnMic).setOnClickListener {
-            t("Аудио будет позже")
+        var voiceRecorder: android.media.MediaRecorder? = null
+        var voiceFile: java.io.File? = null
+        
+        findViewById<ImageButton>(R.id.btnMic).setOnTouchListener { _, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    try {
+                        voiceFile = java.io.File.createTempFile("voice_", ".m4a", cacheDir)
+                        voiceRecorder = android.media.MediaRecorder().apply {
+                            setAudioSource(android.media.MediaRecorder.AudioSource.MIC)
+                            setOutputFormat(android.media.MediaRecorder.OutputFormat.MPEG_4)
+                            setAudioEncoder(android.media.MediaRecorder.AudioEncoder.AAC)
+                            setOutputFile(voiceFile!!.absolutePath)
+                            prepare()
+                            start()
+                        }
+                        t("🎤 Запись...")
+                    } catch (e: Exception) {
+                        t("Ошибка микрофона")
+                    }
+                    true
+                }
+                android.view.MotionEvent.ACTION_UP -> {
+                    voiceRecorder?.apply { stop(); release() }
+                    voiceRecorder = null
+                    voiceFile?.let { file ->
+                        if (file.length() > 0) sendVoiceFile(file)
+                    }
+                    true
+                }
+                else -> false
+            }
         }
         msgInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -1731,6 +1761,43 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
 
 
     private fun Int.dpToPx(): Int = (this * resources.displayMetrics.density).toInt()
+
+    private fun sendVoiceFile(file: java.io.File) {
+        thread {
+            try {
+                val bytes = file.readBytes()
+                val body = okhttp3.MultipartBody.Builder()
+                    .setType(okhttp3.MultipartBody.FORM)
+                    .addFormDataPart("file", "voice.m4a", 
+                        okhttp3.RequestBody.create(okhttp3.MediaType.parse("audio/mp4"), bytes))
+                    .build()
+                val request = okhttp3.Request.Builder()
+                    .url("$server/api/files/upload?token=$token")
+                    .post(body)
+                    .build()
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    val fileId = org.json.JSONObject(response.body!!.string()).optString("file_id")
+                    runOnUiThread {
+                        val msg = org.json.JSONObject().apply {
+                            put("type", "private")
+                            put("to", selId)
+                            put("text", "🎤 Голосовое")
+                            put("file_id", fileId)
+                            put("file_type", "voice")
+                        }
+                        ws?.send(msg.toString())
+                        t("✅ Отправлено")
+                    }
+                } else {
+                    runOnUiThread { t("Ошибка отправки") }
+                }
+            } catch (e: Exception) {
+                runOnUiThread { t("Ошибка: ${e.message}") }
+            }
+        }
+    }
+
     private fun hideContextMenu() {
         selectedUserForDelete = null
         chatAdapter.selectedPosition = -1
