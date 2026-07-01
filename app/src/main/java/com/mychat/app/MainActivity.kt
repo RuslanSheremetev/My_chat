@@ -153,7 +153,7 @@ class MainActivity : AppCompatActivity() {
                     swipeStartX = event.x
                     false
                 }
-                android.view.MotionEvent.ACTION_UP -> {
+                android.view.MotionEvent.ACTION_CANCEL, android.view.MotionEvent.ACTION_UP -> {
                     if (event.x - swipeStartX > 200 && swipeStartX < 80) {
                         closeChat()
                         true
@@ -171,7 +171,7 @@ class MainActivity : AppCompatActivity() {
                     startX = event.x
                     false
                 }
-                android.view.MotionEvent.ACTION_UP -> {
+                android.view.MotionEvent.ACTION_CANCEL, android.view.MotionEvent.ACTION_UP -> {
                     if (event.x - startX > 150 && startX < 100) {
                         closeChat()
                         true
@@ -279,7 +279,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     true
                 }
-                android.view.MotionEvent.ACTION_UP -> {
+                android.view.MotionEvent.ACTION_CANCEL, android.view.MotionEvent.ACTION_UP -> {
                     voiceRecorder?.apply { stop(); release() }; val voiceDuration = ((voiceFile?.length() ?: 0) / 800).toInt().coerceAtLeast(1); log("VOICE: recording stopped, size=${voiceFile?.length() ?: 0}, dur=${voiceDuration}s")
                     voiceRecorder = null
                     voiceFile?.let { file ->
