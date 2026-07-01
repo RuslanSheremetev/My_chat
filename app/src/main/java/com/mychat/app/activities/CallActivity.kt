@@ -56,7 +56,10 @@ class CallActivity : AppCompatActivity() {
             val options = PeerConnectionFactory.Options()
             factory = PeerConnectionFactory.builder()
                 .setOptions(options)
+                .setAudioDeviceModule(JavaAudioDeviceModule.builder(this).createAudioDeviceModule())
                 .createPeerConnectionFactory()
+            
+            val audioSource = factory?.createAudioSource(MediaConstraints())
             
             val iceServers = listOf(
                 PeerConnection.IceServer.builder("stun:stun.l.google.com:19302").createIceServer()
@@ -66,7 +69,11 @@ class CallActivity : AppCompatActivity() {
                 sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
             }
             
+            val audioTrack = factory?.createAudioTrack("audio", audioSource)
             peerConnection = factory?.createPeerConnection(rtcConfig, object : PeerConnection.Observer {
+                init {
+                    audioTrack?.let { peerConnection?.addTrack(it) }
+                }
                 override fun onIceCandidate(candidate: IceCandidate?) {}
                 override fun onAddStream(stream: MediaStream?) {}
                 override fun onIceConnectionChange(state: PeerConnection.IceConnectionState?) {
