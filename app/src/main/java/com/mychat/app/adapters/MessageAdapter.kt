@@ -440,7 +440,8 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
 
 
     private fun showVoicePlayer(view: View, msg: ChatMessage) {
-        val player = view.findViewById<LinearLayout>(R.id.voicePlayer) ?: return
+        val player = view.findViewById<LinearLayout>(R.id.voicePlayer)
+        if (player == null) { onLog?.invoke("VOICE: player view not found!"); return }
         player.visibility = View.VISIBLE
         val url = msg.file?.url ?: return
         val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8000$url"
