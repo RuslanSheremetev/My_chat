@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         var mainWs: okhttp3.WebSocket? = null
         fun sendCallSignal(msg: String) {
+            log("CALL: sending $msg")
             mainWs?.send(msg)
         }
     }
