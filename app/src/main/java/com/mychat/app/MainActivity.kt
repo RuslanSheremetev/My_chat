@@ -191,11 +191,18 @@ class MainActivity : AppCompatActivity() {
         
         btnSearchOpen.setOnClickListener {
             searchOverlayPanel.visibility = android.view.View.VISIBLE
+            searchOverlayPanel.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.search_slide_down))
             searchOverlayInput.requestFocus()
         }
         
         searchOverlayPanel.findViewById<android.widget.ImageButton>(R.id.btnSearchBack).setOnClickListener {
-            searchOverlayPanel.visibility = android.view.View.GONE
+            val anim = android.view.animation.AnimationUtils.loadAnimation(this, R.anim.search_slide_up)
+            anim.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
+                override fun onAnimationEnd(a: android.view.animation.Animation?) { searchOverlayPanel.visibility = android.view.View.GONE }
+                override fun onAnimationStart(a: android.view.animation.Animation?) {}
+                override fun onAnimationRepeat(a: android.view.animation.Animation?) {}
+            })
+            searchOverlayPanel.startAnimation(anim)
         }
         
         searchOverlayInput.addTextChangedListener(object : android.text.TextWatcher {
