@@ -144,12 +144,14 @@ class CallActivity : AppCompatActivity() {
     }
     
     private fun acceptCall() {
+        try {
         logToServer("accepted")
         incomingActions?.visibility = android.view.View.GONE
         callStatus?.text = "Соединение..."
         initWebRTC()
         // Отправляем answer (после того как создан peerConnection)
         handler.postDelayed({
+            try {
             peerConnection?.createAnswer(object : SdpObserver {
                 override fun onCreateSuccess(sdp: SessionDescription?) {
                 logToServer("offer created")
@@ -167,7 +169,9 @@ class CallActivity : AppCompatActivity() {
                 override fun onCreateFailure(error: String?) { t("Answer: $error") }
                 override fun onSetFailure(error: String?) {}
             }, MediaConstraints())
+            } catch (e: Exception) { logToServer("answer error: ${e.message}") }
         }, 500)
+        } catch (e: Exception) { logToServer("accept error: ${e.message}") }
     }
     
     private fun playRingtone(isOutgoing: Boolean) {
