@@ -1923,12 +1923,17 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                         val messages = mutableListOf<ChatMessage>()
                         for (i in 0 until json.length()) {
                             val obj = json.getJSONObject(i)
+                            val fileId = obj.optString("file_id", "")
+                            val fileType = obj.optString("file_type", "")
+                            val fileName = obj.optString("file_name", "")
+                            val file = if (fileId.isNotEmpty()) FileInfo(fileName, fileId) else null
                             messages.add(ChatMessage(
                                 id = obj.optString("id"),
                                 from = obj.optString("from"),
                                 to = obj.optString("to"),
                                 text = obj.optString("text"),
-                                time = obj.optString("time")
+                                time = obj.optString("time"),
+                                file = file
                             ))
                         }
                         runOnUiThread {
