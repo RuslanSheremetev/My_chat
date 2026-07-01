@@ -56,6 +56,7 @@ class CallActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.callAvatar).text = name.take(1).uppercase()
         isCaller = intent.getBooleanExtra("caller", true)
         
+        connectSignaling()
         initWebRTC()
         
         incomingActions = findViewById(R.id.incomingActions)
