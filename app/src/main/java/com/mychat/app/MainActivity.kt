@@ -337,7 +337,11 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { showAttachmentMenu() }
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
         
-findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") }
+findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
+            v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_scale))
+            v.postDelayed({ v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_release)) }, 150)
+            t("Звонок")
+        }
         findViewById<ImageButton>(R.id.btnChatMenu)?.setOnClickListener { anchor ->
             val view = layoutInflater.inflate(R.layout.dropdown_chat_menu, null)
             val popup = android.widget.PopupWindow(view, 
