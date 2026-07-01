@@ -924,6 +924,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     }
                     val jtype = j.optString("type")
                     if (jtype == "call_offer") {
+                        log("Incoming call from " + j.optString("from", ""))
                         val from = j.optString("from", "")
                         val intent = android.content.Intent(this@MainActivity, com.mychat.app.activities.CallActivity::class.java).apply {
                             putExtra("name", from)
@@ -937,6 +938,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         return
                     }
                     if (jtype == "call_offer") {
+                        log("Incoming call from " + j.optString("from", ""))
                         val from = j.optString("from", "")
                         if (from.isNotEmpty() && from != me) {
                             val intent = android.content.Intent(this@MainActivity, com.mychat.app.activities.CallActivity::class.java).apply {
