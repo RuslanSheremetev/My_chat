@@ -440,20 +440,44 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
 
 
     private fun showVoicePlayer(view: View, msg: ChatMessage) {
-        val player = view.findViewById<LinearLayout>(R.id.voicePlayer)
-        if (player == null) { onLog?.invoke("VOICE: player view not found!"); return }
+        val player = view.findViewById<LinearLayout>(R.id.voicePlayer) ?: return
         player.visibility = View.VISIBLE
-        onLog?.invoke("VOICE: file.url=${msg.file?.url}, file=${msg.file}"); val url = msg.file?.url ?: msg.text.removePrefix("🎤 Голосовое ").trim()
+        val url = msg.file?.url ?: msg.text.removePrefix("🎤 Голосовое ").trim()
+        if (url.isEmpty() || url == "🎤 Голосовое") return
         val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8000$url"
         val playBtn = view.findViewById<ImageView>(R.id.btnPlayVoice)
-        onLog?.invoke("VOICE: play url=$fullUrl")
+        val durationText = view.findViewById<TextView>(R.id.voiceDuration)
+        var mediaPlayer: android.media.MediaPlayer? = null
+        var isPlaying = false
+        
         playBtn.setOnClickListener {
-            try {
-                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW)
-                intent.setDataAndType(android.net.Uri.parse(fullUrl), "audio/*")
-                view.context.startActivity(intent)
-            } catch (e: Exception) {
-                onLog?.invoke("VOICE: error=${e.message}")
+            if (isPlaying) {
+                mediaPlayer?.pause()
+                playBtn.setImageResource(R.drawable.ic_play)
+                isPlaying = false
+            } else {
+                try {
+                    if (mediaPlayer == null) {
+                        mediaPlayer = android.media.MediaPlayer().apply {
+                            setDataSource(fullUrl)
+                            setOnPreparedListener { mp ->
+                                durationText.text = formatDuration(mp.duration)
+                                mp.start()
+                            }
+                            setOnCompletionListener {
+                                playBtn.setImageResource(R.drawable.ic_play)
+                                isPlaying = false
+                            }
+                            prepareAsync()
+                        }
+                    } else {
+                        mediaPlayer?.start()
+                    }
+                    playBtn.setImageResource(R.drawable.ic_pause)
+                    isPlaying = true
+                } catch (e: Exception) {
+                    onLog?.invoke("VOICE: play error=${e.message}")
+                }
             }
         }
     }
