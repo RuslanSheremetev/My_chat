@@ -31,5 +31,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
             <activity android:name=".activities.GalleryActivity" android:exported="false" />
+            <activity android:name=".activities.CallActivity" android:theme="@style/Theme.AppCompat.NoActionBar" />
     </application>
 </manifest>
