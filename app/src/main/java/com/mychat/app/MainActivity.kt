@@ -340,7 +340,12 @@ class MainActivity : AppCompatActivity() {
 findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_scale))
             v.postDelayed({ v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_release)) }, 150)
-            t("Звонок")
+            val intent = android.content.Intent(this, com.mychat.app.activities.CallActivity::class.java).apply {
+                putExtra("name", chatTitle.text.toString())
+                putExtra("avatar", chatTitle.text.toString().take(1))
+                putExtra("incoming", false)
+            }
+            startActivity(intent)
         }
         findViewById<ImageButton>(R.id.btnChatMenu)?.setOnClickListener { anchor ->
             val view = layoutInflater.inflate(R.layout.dropdown_chat_menu, null)
