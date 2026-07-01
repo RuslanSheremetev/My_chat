@@ -101,6 +101,7 @@ class CallActivity : AppCompatActivity() {
                     candidate?.let {
                         ws?.send(JSONObject().apply {
                             put("type", "ice_candidate")
+                            put("from", me)
                             put("candidate", JSONObject().apply {
                                 put("sdp", it.sdp)
                                 put("sdpMid", it.sdpMid)
@@ -158,6 +159,7 @@ class CallActivity : AppCompatActivity() {
                     peerConnection?.setLocalDescription(this, sdp)
                     ws?.send(JSONObject().apply {
                         put("type", "call_answer")
+                        put("from", me)
                         put("to", intent.getStringExtra("name"))
                         put("sdp", JSONObject().apply {
                             put("type", sdp?.type?.canonicalForm())
@@ -224,6 +226,7 @@ class CallActivity : AppCompatActivity() {
                 peerConnection?.setLocalDescription(this, sdp)
                 ws?.send(JSONObject().apply {
                     put("type", "call_offer")
+                    put("from", me)
                     put("to", intent.getStringExtra("name"))
                     put("sdp", JSONObject().apply {
                         put("type", sdp?.type?.canonicalForm())
@@ -278,7 +281,7 @@ class CallActivity : AppCompatActivity() {
         logToServer("ending")
         stopRingtone()
         isRunning = false
-        ws?.send(JSONObject().apply { put("type", "call_end") }.toString())
+        ws?.send(JSONObject().apply { put("type", "call_end"); put("from", me) }.toString())
         peerConnection?.close()
         factory?.dispose()
         finish()
