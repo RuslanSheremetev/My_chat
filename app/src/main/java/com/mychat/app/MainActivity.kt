@@ -678,6 +678,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                     db.messageDao().updateReactions(msgId, json)
                 }
             },
+            appContext = applicationContext,
             onLog = { msg -> log(msg) }
         )
         messagesList.adapter = msgAdapter
@@ -1940,6 +1941,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                                         db.messageDao().updateReactions(msgId, json)
                                     }
                                 },
+                                appContext = applicationContext,
                                 onLog = { msg -> log(msg) }
                             )
                             messagesList.adapter = msgAdapter
