@@ -704,6 +704,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         messagesList.adapter = msgAdapter
         
         connectWS()
+        connectCallSocket()
         // loadUsers removed
         showTab(0)
     }
@@ -1835,6 +1836,27 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         }
     }
 
+    private fun connectCallSocket() {
+        val callClient = OkHttpClient()
+        val callRequest = Request.Builder().url("ws://2.26.71.102:8000/ws/call").build()
+        callClient.newWebSocket(callRequest, object : WebSocketListener() {
+            override fun onMessage(webSocket: WebSocket, text: String) {
+                val msg = org.json.JSONObject(text)
+                if (msg.optString("type") == "call_offer") {
+                    val from = msg.optString("from")
+                    runOnUiThread {
+                        val intent = android.content.Intent(this@MainActivity, com.mychat.app.activities.CallActivity::class.java).apply {
+                            putExtra("name", from)
+                            putExtra("avatar", from.take(1))
+                            putExtra("caller", false)
+                        }
+                        startActivity(intent)
+                    }
+                }
+            }
+        })
+    }
+    
     private fun hideContextMenu() {
         selectedUserForDelete = null
         chatAdapter.selectedPosition = -1
