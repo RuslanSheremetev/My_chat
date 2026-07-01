@@ -443,7 +443,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         val player = view.findViewById<LinearLayout>(R.id.voicePlayer)
         if (player == null) { onLog?.invoke("VOICE: player view not found!"); return }
         player.visibility = View.VISIBLE
-        onLog?.invoke("VOICE: file.url=${msg.file?.url}, file=${msg.file}"); val url = msg.file?.url ?: return
+        onLog?.invoke("VOICE: file.url=${msg.file?.url}, file=${msg.file}"); val url = msg.file?.url ?: msg.text.removePrefix("🎤 Голосовое ").trim()
         val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8000$url"
         val playBtn = view.findViewById<ImageView>(R.id.btnPlayVoice)
         onLog?.invoke("VOICE: play url=$fullUrl")

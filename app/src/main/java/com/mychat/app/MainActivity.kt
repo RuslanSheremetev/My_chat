@@ -1791,7 +1791,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                         val msg = org.json.JSONObject().apply {
                             put("type", "private")
                             put("to", selId)
-                            put("text", "🎤 Голосовое")
+                            put("text", "🎤 Голосовое $fileId")
                             put("file_id", fileId)
                             put("file_type", "voice")
                         put("file_name", "Голосовое ${vd}с")
