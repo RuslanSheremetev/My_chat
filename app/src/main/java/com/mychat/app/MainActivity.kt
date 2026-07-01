@@ -353,12 +353,12 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             
             popup.showAsDropDown(anchor, -180.dpToPx(), 8.dpToPx())
         }
-        findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { showCreateMenu() }
+        findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { t("Создание групп и лент будет позже") }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
         
         navChats.setOnClickListener { showTab(0) }
         navFavorites.setOnClickListener { openFavorites() }
-        navProfile.setOnClickListener { openProfile() }
+        navProfile.setOnClickListener { t("Профиль будет позже") }
         
         searchInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
