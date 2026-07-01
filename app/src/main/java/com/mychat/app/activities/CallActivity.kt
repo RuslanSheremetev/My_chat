@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.mychat.app.R
 import org.webrtc.*
+import org.webrtc.audio.JavaAudioDeviceModule
 
 class CallActivity : AppCompatActivity() {
     private var seconds = 0
@@ -56,6 +57,7 @@ class CallActivity : AppCompatActivity() {
             val options = PeerConnectionFactory.Options()
             factory = PeerConnectionFactory.builder()
                 .setOptions(options)
+                .setAudioDeviceModule(JavaAudioDeviceModule.builder(this).createAudioDeviceModule())
                 .createPeerConnectionFactory()
             
             val iceServers = listOf(
