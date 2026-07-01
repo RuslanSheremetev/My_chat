@@ -87,6 +87,7 @@ class CallActivity : AppCompatActivity() {
                 override fun onDataChannel(channel: DataChannel?) {}
                 override fun onRenegotiationNeeded() {}
                 override fun onIceCandidatesRemoved(candidates: Array<out IceCandidate>?) {}
+                override fun onIceConnectionReceivingChange(receiving: Boolean) {}
                 override fun onRemoveStream(stream: MediaStream?) {}
             })
             
