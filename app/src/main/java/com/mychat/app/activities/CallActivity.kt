@@ -193,7 +193,7 @@ class CallActivity : AppCompatActivity() {
     private fun connectSignaling() {
         logToServer("connecting")
         val client = OkHttpClient()
-        val prefs = getSharedPreferences("mychat_prefs", MODE_PRIVATE)
+        val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
         val token = prefs.getString("token", "") ?: ""
         val me = prefs.getString("username", "") ?: ""
         val request = Request.Builder().url("ws://2.26.71.102:8000/ws/$me?token=$token").build()
@@ -298,7 +298,7 @@ class CallActivity : AppCompatActivity() {
                         })
                     })
                 }
-                val prefs = getSharedPreferences("mychat_prefs", MODE_PRIVATE)
+                val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
                 val token = prefs.getString("token", "") ?: ""
                 val body = json.toString().toRequestBody("application/json".toMediaType())
                 val request = Request.Builder().url("http://2.26.71.102:8000/api/logs?token=$token").post(body).build()
