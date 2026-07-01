@@ -138,6 +138,7 @@ class CallActivity : AppCompatActivity() {
             }
             
         } catch (e: Exception) {
+            logToServer("WebRTC error: ${e.message}")
             t("WebRTC: ${e.message}")
         }
     }
