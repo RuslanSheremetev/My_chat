@@ -50,7 +50,6 @@ class CallActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.callAvatar).text = name.take(1).uppercase()
         isCaller = intent.getBooleanExtra("caller", true)
         
-        connectSignaling()
         initWebRTC()
         
         incomingActions = findViewById(R.id.incomingActions)
@@ -70,21 +69,7 @@ class CallActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnEndCall).setOnClickListener { endCall() }
     }
     
-    private fun connectSignaling() {
-        val client = OkHttpClient()
-        val request = Request.Builder().url("ws://2.26.71.102:8000/ws/call").build()
-        ws = client.newWebSocket(request, object : WebSocketListener() {
-            override fun onMessage(webSocket: WebSocket, text: String) {
-                val msg = JSONObject(text)
-                when (msg.optString("type")) {
-                    "call_answer" -> onAnswerReceived(msg.optJSONObject("sdp"))
-                    "ice_candidate" -> onIceCandidate(msg.optJSONObject("candidate"))
-                    "call_end" -> runOnUiThread { endCall() }
-                }
-            }
-        })
-    }
-    
+        
     private fun initWebRTC() {
         try {
             PeerConnectionFactory.initialize(

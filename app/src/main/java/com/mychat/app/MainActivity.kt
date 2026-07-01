@@ -704,7 +704,6 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         messagesList.adapter = msgAdapter
         
         connectWS()
-        connectCallSocket()
         // loadUsers removed
         showTab(0)
     }
@@ -899,7 +898,16 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     override fun onMessage(webSocket: WebSocket, text: String) {  log("WS received: ${text.take(50)}...")
                         try {
                             val j = JSONObject(text)
-                            if (j.optString("type") == "ping") { webSocket.send("{\"type\":\"pong\"}"); return }
+                            if (j.optString("type") == "call_offer") {
+                        val from = j.optString("from", j.optString("username", ""))
+                        val intent = android.content.Intent(this@MainActivity, com.mychat.app.activities.CallActivity::class.java).apply {
+                            putExtra("name", from)
+                            putExtra("caller", false)
+                        }
+                        startActivity(intent)
+                        return
+                    }
+                    if (j.optString("type") == "ping") { webSocket.send("{\"type\":\"pong\"}"); return }
                             if (isBlocked) return
                             if (selId.isNotEmpty()) {
                                 handler.post {
