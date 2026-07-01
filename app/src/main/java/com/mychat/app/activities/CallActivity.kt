@@ -22,6 +22,12 @@ class CallActivity : AppCompatActivity() {
     private var factory: PeerConnectionFactory? = null
     private var ws: WebSocket? = null
     private var isCaller = false
+    private var incomingActions: android.view.View? = null
+    private var btnAccept: ImageButton? = null
+    private var btnDecline: ImageButton? = null
+    private var callTimer: TextView? = null
+    private var callStatus: TextView? = null
+    private var ongoingActions: android.view.View? = null
     
     private val timerRunnable = object : Runnable {
         override fun run() {
@@ -46,6 +52,21 @@ class CallActivity : AppCompatActivity() {
         
         connectSignaling()
         initWebRTC()
+        
+        incomingActions = findViewById(R.id.incomingActions)
+        btnAccept = findViewById(R.id.btnAccept)
+        btnDecline = findViewById(R.id.btnDecline)
+        callTimer = findViewById(R.id.callTimer)
+        callStatus = findViewById(R.id.callStatus)
+        ongoingActions = findViewById(R.id.btnEndCall).parent
+        
+        if (!isCaller) {
+            // Входящий звонок
+            callStatus?.text = "Входящий звонок..."
+            incomingActions?.visibility = android.view.View.VISIBLE
+            btnAccept?.setOnClickListener { acceptCall() }
+            btnDecline?.setOnClickListener { endCall() }
+        }
         
         findViewById<ImageButton>(R.id.btnEndCall).setOnClickListener { endCall() }
     }
@@ -121,6 +142,12 @@ class CallActivity : AppCompatActivity() {
         } catch (e: Exception) {
             t("WebRTC: ${e.message}")
         }
+    }
+    
+    private fun acceptCall() {
+        incomingActions?.visibility = android.view.View.GONE
+        callStatus?.text = "Соединение..."
+        initWebRTC()
     }
     
     private fun createOffer() {

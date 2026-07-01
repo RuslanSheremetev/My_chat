@@ -70,6 +70,33 @@
             android:background="@drawable/bg_call_btn"
             android:layout_marginEnd="20dp"/>
 
+        <LinearLayout
+            android:id="@+id/incomingActions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageButton
+                android:id="@+id/btnDecline"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@drawable/ic_call_end"
+                android:tint="#fff"
+                android:background="@drawable/bg_call_end"
+                android:layout_marginEnd="40dp"/>
+
+            <ImageButton
+                android:id="@+id/btnAccept"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@drawable/ic_call_end"
+                android:tint="#fff"
+                android:background="@drawable/bg_call_accept"
+                android:rotation="135"/>
+
+        </LinearLayout>
+
         <ImageButton
             android:id="@+id/btnEndCall"
             android:layout_width="60dp"
