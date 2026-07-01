@@ -61,6 +61,12 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        var mainWs: okhttp3.WebSocket? = null
+        fun sendCallSignal(msg: String) {
+            mainWs?.send(msg)
+        }
+    }
     private lateinit var loginLayout: LinearLayout
     private lateinit var mainContainer: LinearLayout
     private lateinit var bottomNav: LinearLayout
@@ -892,6 +898,14 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
     private fun connectWS() {
         try {
             log("WS connecting..."); val wsUrl = "ws://${server.replace("http://", "")}/ws/$me?token=$token"
+            mainWs = client.newWebSocket(
+                Request.Builder().url(wsUrl).build(),
+                object : WebSocketListener() {
+                    override fun onMessage(webSocket: WebSocket, text: String) {
+                        com.mychat.app.activities.CallActivity.onSignalingMessage?.invoke(text)
+                    }
+                }
+            )
             ws = client.newWebSocket(
                 Request.Builder().url(wsUrl).build(),
                 object : WebSocketListener() {
@@ -907,7 +921,21 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         startActivity(intent)
                         return
                     }
-                    if (j.optString("type") == "ping") { webSocket.send("{\"type\":\"pong\"}"); return }
+                    val jtype = j.optString("type")
+                    if (jtype == "call_offer") {
+                        val from = j.optString("from", "")
+                        val intent = android.content.Intent(this@MainActivity, com.mychat.app.activities.CallActivity::class.java).apply {
+                            putExtra("name", from)
+                            putExtra("caller", false)
+                        }
+                        startActivity(intent)
+                        return
+                    }
+                    if (jtype in listOf("call_answer", "ice_candidate", "call_end")) {
+                        com.mychat.app.activities.CallActivity.onSignalingMessage?.invoke(text)
+                        return
+                    }
+                    if (jtype == "ping") { webSocket.send("{\"type\":\"pong\"}"); return }
                             if (isBlocked) return
                             if (selId.isNotEmpty()) {
                                 handler.post {
