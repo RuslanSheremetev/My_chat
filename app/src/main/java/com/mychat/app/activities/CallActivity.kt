@@ -8,6 +8,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.mychat.app.R
+import okhttp3.*
+import org.json.JSONObject
 import org.webrtc.*
 import org.webrtc.audio.JavaAudioDeviceModule
 
@@ -18,6 +20,8 @@ class CallActivity : AppCompatActivity() {
     
     private var peerConnection: PeerConnection? = null
     private var factory: PeerConnectionFactory? = null
+    private var ws: WebSocket? = null
+    private var isCaller = false
     
     private val timerRunnable = object : Runnable {
         override fun run() {
@@ -38,74 +42,131 @@ class CallActivity : AppCompatActivity() {
         val name = intent.getStringExtra("name") ?: "Пользователь"
         findViewById<TextView>(R.id.callName).text = name
         findViewById<TextView>(R.id.callAvatar).text = name.take(1).uppercase()
+        isCaller = intent.getBooleanExtra("caller", true)
         
+        connectSignaling()
         initWebRTC()
         
         findViewById<ImageButton>(R.id.btnEndCall).setOnClickListener { endCall() }
-        findViewById<ImageButton>(R.id.btnSpeaker).setOnClickListener { t("Динамик") }
-        findViewById<ImageButton>(R.id.btnMic).setOnClickListener { t("Микрофон") }
+    }
+    
+    private fun connectSignaling() {
+        val client = OkHttpClient()
+        val request = Request.Builder().url("ws://2.26.71.102:8000/ws/call").build()
+        ws = client.newWebSocket(request, object : WebSocketListener() {
+            override fun onMessage(webSocket: WebSocket, text: String) {
+                val msg = JSONObject(text)
+                when (msg.optString("type")) {
+                    "call_answer" -> onAnswerReceived(msg.optJSONObject("sdp"))
+                    "ice_candidate" -> onIceCandidate(msg.optJSONObject("candidate"))
+                    "call_end" -> runOnUiThread { endCall() }
+                }
+            }
+        })
     }
     
     private fun initWebRTC() {
         try {
             PeerConnectionFactory.initialize(
-                PeerConnectionFactory.InitializationOptions.builder(this)
-                    .setFieldTrials("")
-                    .createInitializationOptions()
+                PeerConnectionFactory.InitializationOptions.builder(this).createInitializationOptions()
             )
             
-            val options = PeerConnectionFactory.Options()
             factory = PeerConnectionFactory.builder()
-                .setOptions(options)
                 .setAudioDeviceModule(JavaAudioDeviceModule.builder(this).createAudioDeviceModule())
                 .createPeerConnectionFactory()
             
             val iceServers = listOf(
-                PeerConnection.IceServer.builder("stun:stun.l.google.com:19302").createIceServer()
+                PeerConnection.IceServer.builder("stun:stun.l.google.com:19302").createIceServer(),
+                PeerConnection.IceServer.builder("turn:2.26.71.102:3478")
+                    .setUsername("user").setPassword("password").createIceServer()
             )
             
-            val rtcConfig = PeerConnection.RTCConfiguration(iceServers).apply {
-                sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
-            }
+            val rtcConfig = PeerConnection.RTCConfiguration(iceServers)
             
             peerConnection = factory?.createPeerConnection(rtcConfig, object : PeerConnection.Observer {
-                override fun onIceCandidate(candidate: IceCandidate?) {}
-                override fun onAddStream(stream: MediaStream?) {}
+                override fun onIceCandidate(candidate: IceCandidate?) {
+                    candidate?.let {
+                        ws?.send(JSONObject().apply {
+                            put("type", "ice_candidate")
+                            put("candidate", JSONObject().apply {
+                                put("sdp", it.sdp)
+                                put("sdpMid", it.sdpMid)
+                                put("sdpMLineIndex", it.sdpMLineIndex)
+                            })
+                        }.toString())
+                    }
+                }
                 override fun onIceConnectionChange(state: PeerConnection.IceConnectionState?) {
                     if (state == PeerConnection.IceConnectionState.CONNECTED) {
                         runOnUiThread {
-                            findViewById<TextView>(R.id.callStatus).text = "Соединено"
-                            handler.postDelayed({
-                                findViewById<TextView>(R.id.callStatus).visibility = android.view.View.GONE
-                                findViewById<TextView>(R.id.callTimer).visibility = android.view.View.VISIBLE
-                                isRunning = true
-                                handler.post(timerRunnable)
-                            }, 500)
+                            findViewById<TextView>(R.id.callStatus).visibility = android.view.View.GONE
+                            findViewById<TextView>(R.id.callTimer).visibility = android.view.View.VISIBLE
+                            isRunning = true
+                            handler.post(timerRunnable)
                         }
                     }
                 }
+                override fun onIceConnectionReceivingChange(receiving: Boolean) {}
                 override fun onIceGatheringChange(state: PeerConnection.IceGatheringState?) {}
                 override fun onSignalingChange(state: PeerConnection.SignalingState?) {}
                 override fun onDataChannel(channel: DataChannel?) {}
                 override fun onRenegotiationNeeded() {}
                 override fun onIceCandidatesRemoved(candidates: Array<out IceCandidate>?) {}
-                override fun onIceConnectionReceivingChange(receiving: Boolean) {}
+                override fun onAddStream(stream: MediaStream?) {}
                 override fun onRemoveStream(stream: MediaStream?) {}
             })
             
-            startCall()
+            if (isCaller) createOffer()
+            
         } catch (e: Exception) {
             t("WebRTC: ${e.message}")
         }
     }
     
-    private fun startCall() {
-        findViewById<TextView>(R.id.callStatus).text = "Соединение..."
-        findViewById<TextView>(R.id.callStatus).visibility = android.view.View.VISIBLE
+    private fun createOffer() {
+        peerConnection?.createOffer(object : SdpObserver {
+            override fun onCreateSuccess(sdp: SessionDescription?) {
+                peerConnection?.setLocalDescription(this, sdp)
+                ws?.send(JSONObject().apply {
+                    put("type", "call_offer")
+                    put("to", intent.getStringExtra("name"))
+                    put("sdp", JSONObject().apply {
+                        put("type", sdp?.type?.canonicalForm)
+                        put("description", sdp?.description)
+                    })
+                }.toString())
+            }
+            override fun onSetSuccess() {}
+            override fun onCreateFailure(error: String?) { t("Offer: $error") }
+            override fun onSetFailure(error: String?) {}
+        }, MediaConstraints())
+    }
+    
+    private fun onAnswerReceived(sdp: JSONObject?) {
+        sdp ?: return
+        peerConnection?.setRemoteDescription(object : SdpObserver {
+            override fun onCreateSuccess(p0: SessionDescription?) {}
+            override fun onSetSuccess() {}
+            override fun onCreateFailure(error: String?) {}
+            override fun onSetFailure(error: String?) {}
+        }, SessionDescription(
+            SessionDescription.Type.fromCanonicalForm(sdp.optString("type")),
+            sdp.optString("description")
+        ))
+    }
+    
+    private fun onIceCandidate(candidate: JSONObject?) {
+        candidate ?: return
+        peerConnection?.addIceCandidate(IceCandidate(
+            candidate.optString("sdpMid"),
+            candidate.optInt("sdpMLineIndex"),
+            candidate.optString("sdp")
+        ))
     }
     
     private fun endCall() {
         isRunning = false
+        ws?.send(JSONObject().apply { put("type", "call_end") }.toString())
         peerConnection?.close()
         factory?.dispose()
         finish()
@@ -114,12 +175,11 @@ class CallActivity : AppCompatActivity() {
     override fun onDestroy() {
         isRunning = false
         handler.removeCallbacks(timerRunnable)
+        ws?.close(1000, "End")
         peerConnection?.close()
         factory?.dispose()
         super.onDestroy()
     }
     
-    private fun t(msg: String) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-    }
+    private fun t(msg: String) { Toast.makeText(this, msg, Toast.LENGTH_SHORT).show() }
 }
