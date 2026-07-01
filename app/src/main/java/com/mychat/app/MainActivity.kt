@@ -677,7 +677,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                 kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
                     db.messageDao().updateReactions(msgId, json)
                 }
-            }
+            },
+            onLog = { msg -> log(msg) }
         )
         messagesList.adapter = msgAdapter
         
@@ -1938,7 +1939,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
                                     kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
                                         db.messageDao().updateReactions(msgId, json)
                                     }
-                                }
+                                },
+                                onLog = { msg -> log(msg) }
                             )
                             messagesList.adapter = msgAdapter
                             messagesList.scrollToPosition(msgAdapter.itemCount - 1)

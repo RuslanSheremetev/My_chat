@@ -23,7 +23,8 @@ class MessageAdapter(
     private val onDownload: (String, String) -> Unit,
     private val onMessageLongClick: (ChatMessage) -> Unit = {},
     private val onSaveReaction: ((String, String) -> Unit)? = null,
-    private val appContext: android.content.Context? = null
+    private val appContext: android.content.Context? = null,
+    private val onLog: ((String) -> Unit)? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val items = mutableListOf<Any>()
@@ -439,42 +440,20 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
 
 
     private fun showVoicePlayer(view: View, msg: ChatMessage) {
-        android.util.Log.d("VOICE", "showVoicePlayer: url=${msg.file?.url}, text=${msg.text.take(30)}")
         val player = view.findViewById<LinearLayout>(R.id.voicePlayer) ?: return
         player.visibility = View.VISIBLE
-        
+        val url = msg.file?.url ?: return
+        val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8000$url"
         val playBtn = view.findViewById<ImageView>(R.id.btnPlayVoice)
-        val durationText = view.findViewById<TextView>(R.id.voiceDuration)
-        var isPlaying = false
-        var mediaPlayer: android.media.MediaPlayer? = null
-        
+        onLog?.invoke("VOICE: play url=$fullUrl")
         playBtn.setOnClickListener {
-            if (isPlaying) {
-                mediaPlayer?.pause()
-                playBtn.setImageResource(R.drawable.ic_play)
-            } else {
-                try {
-                    val url = msg.file?.url ?: return@setOnClickListener
-                    val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8000$url"
-                    mediaPlayer = android.media.MediaPlayer().apply {
-                        setDataSource(fullUrl)
-                        setOnPreparedListener { 
-                            it.start()
-                            durationText.text = formatDuration(it.duration)
-                        }
-                        setOnCompletionListener {
-                            playBtn.setImageResource(R.drawable.ic_play)
-                            isPlaying = false
-                        }
-                        prepareAsync()
-                    }
-                    playBtn.setImageResource(R.drawable.ic_pause)
-                } catch (e: Exception) {
-                    android.util.Log.e("VOICE", "Play error: ${e.message}")
-                    playBtn.setImageResource(R.drawable.ic_play)
-                }
+            try {
+                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW)
+                intent.setDataAndType(android.net.Uri.parse(fullUrl), "audio/*")
+                view.context.startActivity(intent)
+            } catch (e: Exception) {
+                onLog?.invoke("VOICE: error=${e.message}")
             }
-            isPlaying = !isPlaying
         }
     }
     
