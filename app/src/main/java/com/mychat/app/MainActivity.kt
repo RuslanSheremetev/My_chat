@@ -936,6 +936,17 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         com.mychat.app.activities.CallActivity.onSignalingMessage?.invoke(text)
                         return
                     }
+                    if (jtype == "call_offer") {
+                        val from = j.optString("from", "")
+                        if (from.isNotEmpty() && from != me) {
+                            val intent = android.content.Intent(this@MainActivity, com.mychat.app.activities.CallActivity::class.java).apply {
+                                putExtra("name", from)
+                                putExtra("caller", false)
+                            }
+                            startActivity(intent)
+                        }
+                        return
+                    }
                     if (jtype == "ping") { webSocket.send("{\"type\":\"pong\"}"); return }
                             if (isBlocked) return
                             if (selId.isNotEmpty()) {
