@@ -14,6 +14,9 @@ import org.webrtc.*
 import org.webrtc.audio.JavaAudioDeviceModule
 
 class CallActivity : AppCompatActivity() {
+    companion object {
+        var onSignalingMessage: ((String) -> Unit)? = null
+    }
     private var seconds = 0
     private val handler = Handler(Looper.getMainLooper())
     private var isRunning = false
@@ -91,7 +94,7 @@ class CallActivity : AppCompatActivity() {
             peerConnection = factory?.createPeerConnection(rtcConfig, object : PeerConnection.Observer {
                 override fun onIceCandidate(candidate: IceCandidate?) {
                     candidate?.let {
-                        ws?.send(JSONObject().apply {
+                        com.mychat.app.MainActivity.sendCallSignal(JSONObject().apply {
                             put("type", "ice_candidate")
                             put("candidate", JSONObject().apply {
                                 put("sdp", it.sdp)
@@ -164,7 +167,7 @@ class CallActivity : AppCompatActivity() {
         peerConnection?.createOffer(object : SdpObserver {
             override fun onCreateSuccess(sdp: SessionDescription?) {
                 peerConnection?.setLocalDescription(this, sdp)
-                ws?.send(JSONObject().apply {
+                com.mychat.app.MainActivity.sendCallSignal(JSONObject().apply {
                     put("type", "call_offer")
                     put("to", intent.getStringExtra("name"))
                     put("sdp", JSONObject().apply {
@@ -204,7 +207,7 @@ class CallActivity : AppCompatActivity() {
     private fun endCall() {
         stopRingtone()
         isRunning = false
-        ws?.send(JSONObject().apply { put("type", "call_end") }.toString())
+        com.mychat.app.MainActivity.sendCallSignal(JSONObject().apply { put("type", "call_end") }.toString())
         peerConnection?.close()
         factory?.dispose()
         finish()
