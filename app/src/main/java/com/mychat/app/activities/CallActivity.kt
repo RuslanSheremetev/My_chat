@@ -228,9 +228,7 @@ class CallActivity : AppCompatActivity() {
     override fun onDestroy() {
         isRunning = false
         handler.removeCallbacks(timerRunnable)
-        ws?.close(1000, "End")
-        peerConnection?.close()
-        factory?.dispose()
+        stopRingtone()
         super.onDestroy()
     }
     
