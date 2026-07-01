@@ -84,6 +84,9 @@ class ChatAdapter(
             val lastMsg = user.lastMsg
             if (lastMsg.isNotEmpty()) {
                 lastMessage.text = lastMsg
+                if (user.lastMsgType == "call") {
+                    lastMessage.setTextColor(if (lastMsg.contains("Пропущенный")) 0xffff453a.toInt() else 0xff8e8e93.toInt())
+                }
                 lastMessage.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
             } else {
                 lastMessage.text = user.bio

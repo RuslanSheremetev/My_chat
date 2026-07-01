@@ -977,8 +977,12 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                             user.lastMsgType = "photo"
                                             user.lastMsg = ""
                                         } else {
-                                            user.lastMsgType = "file"
-                                            user.lastMsg = "Файл: $fileName"
+                                            user.lastMsgType = if (last.optString("type") == "call") "call" else "file"
+                                            user.lastMsg = when {
+                                                last.optString("type") == "call" -> if (last.optBoolean("missed", false)) "🔴 Пропущенный звонок" else "📞 Звонок ${last.optString("duration", "")}"
+                                                last.optString("file_type") == "voice" -> "🎤 ${last.optString("file_name", "Голосовое")}"
+                                                else -> "Файл: $fileName"
+                                            }
                                         }
                                     } else {
                                         user.lastMsgType = "text"
