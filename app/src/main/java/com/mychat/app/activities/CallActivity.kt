@@ -29,6 +29,7 @@ class CallActivity : AppCompatActivity() {
     private var ws: WebSocket? = null
     private var ringtonePlayer: android.media.MediaPlayer? = null
     private var isCaller = false
+    private var me = ""
     private var incomingActions: android.view.View? = null
     private var btnAccept: ImageButton? = null
     private var btnDecline: ImageButton? = null
@@ -202,7 +203,7 @@ class CallActivity : AppCompatActivity() {
         val client = OkHttpClient()
         val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
         val token = prefs.getString("token", "") ?: ""
-        val me = prefs.getString("username", "") ?: ""
+        me = prefs.getString("username", "") ?: ""
         val request = Request.Builder().url("ws://2.26.71.102:8000/ws/$me?token=$token").build()
         ws = client.newWebSocket(request, object : WebSocketListener() {
             override fun onMessage(webSocket: WebSocket, text: String) {
