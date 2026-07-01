@@ -360,7 +360,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { t("Звонок") 
             
             popup.showAsDropDown(anchor, -180.dpToPx(), 8.dpToPx())
         }
-        findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { t("Создание групп и лент будет позже") }
+        findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { v ->
+            v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_scale))
+            v.postDelayed({ v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_release)) }, 150)
+            t("Создание групп и лент будет позже")
+        }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
         
         navChats.setOnClickListener { showTab(0) }
