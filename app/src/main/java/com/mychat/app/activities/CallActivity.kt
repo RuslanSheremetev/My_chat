@@ -141,6 +141,25 @@ class CallActivity : AppCompatActivity() {
         incomingActions?.visibility = android.view.View.GONE
         callStatus?.text = "Соединение..."
         initWebRTC()
+        // Отправляем answer (после того как создан peerConnection)
+        handler.postDelayed({
+            peerConnection?.createAnswer(object : SdpObserver {
+                override fun onCreateSuccess(sdp: SessionDescription?) {
+                    peerConnection?.setLocalDescription(this, sdp)
+                    com.mychat.app.MainActivity.sendCallSignal(JSONObject().apply {
+                        put("type", "call_answer")
+                        put("to", intent.getStringExtra("name"))
+                        put("sdp", JSONObject().apply {
+                            put("type", sdp?.type?.canonicalForm())
+                            put("description", sdp?.description)
+                        })
+                    }.toString())
+                }
+                override fun onSetSuccess() {}
+                override fun onCreateFailure(error: String?) { t("Answer: $error") }
+                override fun onSetFailure(error: String?) {}
+            }, MediaConstraints())
+        }, 500)
     }
     
     private fun playRingtone(isOutgoing: Boolean) {
@@ -183,6 +202,21 @@ class CallActivity : AppCompatActivity() {
     }
     
     private fun onAnswerReceived(sdp: JSONObject?) {
+        sdp ?: return
+        peerConnection?.setRemoteDescription(object : SdpObserver {
+            override fun onCreateSuccess(p0: SessionDescription?) {}
+            override fun onSetSuccess() {
+                runOnUiThread { callStatus?.text = "Соединение..." }
+            }
+            override fun onCreateFailure(error: String?) {}
+            override fun onSetFailure(error: String?) {}
+        }, SessionDescription(
+            SessionDescription.Type.fromCanonicalForm(sdp.optString("type")),
+            sdp.optString("description")
+        ))
+    }
+    
+    private fun onAnswerReceivedOLD(sdp: JSONObject?) {
         sdp ?: return
         peerConnection?.setRemoteDescription(object : SdpObserver {
             override fun onCreateSuccess(p0: SessionDescription?) {}
