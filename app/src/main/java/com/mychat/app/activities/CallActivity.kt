@@ -157,11 +157,7 @@ class CallActivity : AppCompatActivity() {
     
     private fun playRingtone(isOutgoing: Boolean) {
         try {
-            val resId = if (isOutgoing) {
-                android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_DIAL)
-            } else {
-                android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_RINGTONE)
-            }
+            val resId = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_RINGTONE)
             ringtonePlayer = android.media.MediaPlayer().apply {
                 setDataSource(this@CallActivity, resId)
                 isLooping = true
