@@ -275,5 +275,26 @@ class CallActivity : AppCompatActivity() {
         super.onDestroy()
     }
     
+    private fun logToServer(msg: String) {
+        thread {
+            try {
+                val json = JSONObject().apply {
+                    put("logs", org.json.JSONArray().apply {
+                        put(JSONObject().apply {
+                            put("timestamp", java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date()))
+                            put("message", "CALL: $msg")
+                            put("level", "INFO")
+                        })
+                    })
+                }
+                val prefs = getSharedPreferences("mychat_prefs", MODE_PRIVATE)
+                val token = prefs.getString("token", "") ?: ""
+                val body = json.toString().toRequestBody("application/json".toMediaType())
+                val request = Request.Builder().url("http://2.26.71.102:8000/api/logs?token=$token").post(body).build()
+                OkHttpClient().newCall(request).execute()
+            } catch (e: Exception) {}
+        }
+    }
+    
     private fun t(msg: String) { Toast.makeText(this, msg, Toast.LENGTH_SHORT).show() }
 }
