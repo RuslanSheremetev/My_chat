@@ -711,7 +711,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         messagesList.adapter = msgAdapter
         
         connectWS()
-        // loadUsers removed
+        loadUsers()
         showTab(0)
     }
 
