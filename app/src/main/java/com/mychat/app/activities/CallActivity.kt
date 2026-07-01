@@ -202,6 +202,26 @@ class CallActivity : AppCompatActivity() {
         })
     }
     
+    private fun connectSignaling() {
+        val client = OkHttpClient()
+        val prefs = getSharedPreferences("mychat_prefs", MODE_PRIVATE)
+        val token = prefs.getString("token", "") ?: ""
+        val me = prefs.getString("username", "") ?: ""
+        val request = Request.Builder().url("ws://2.26.71.102:8000/ws/$me?token=$token").build()
+        ws = client.newWebSocket(request, object : WebSocketListener() {
+            override fun onMessage(webSocket: WebSocket, text: String) {
+                val msg = JSONObject(text)
+                runOnUiThread {
+                    when (msg.optString("type")) {
+                        "call_answer" -> onAnswerReceived(msg.optJSONObject("sdp"))
+                        "ice_candidate" -> onIceCandidate(msg.optJSONObject("candidate"))
+                        "call_end" -> endCall()
+                    }
+                }
+            }
+        })
+    }
+    
     private fun createOffer() {
         peerConnection?.createOffer(object : SdpObserver {
             override fun onCreateSuccess(sdp: SessionDescription?) {
