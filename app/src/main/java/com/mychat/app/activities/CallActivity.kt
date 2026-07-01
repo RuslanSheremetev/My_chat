@@ -27,7 +27,6 @@ class CallActivity : AppCompatActivity() {
     private var btnDecline: ImageButton? = null
     private var callTimer: TextView? = null
     private var callStatus: TextView? = null
-    private var ongoingActions: android.view.View? = null
     
     private val timerRunnable = object : Runnable {
         override fun run() {
@@ -58,7 +57,6 @@ class CallActivity : AppCompatActivity() {
         btnDecline = findViewById(R.id.btnDecline)
         callTimer = findViewById(R.id.callTimer)
         callStatus = findViewById(R.id.callStatus)
-        ongoingActions = findViewById(R.id.btnEndCall).parent
         
         if (!isCaller) {
             // Входящий звонок
