@@ -141,6 +141,7 @@ class CallActivity : AppCompatActivity() {
     }
     
     private fun acceptCall() {
+        logToServer("accepted")
         incomingActions?.visibility = android.view.View.GONE
         callStatus?.text = "Соединение..."
         initWebRTC()
@@ -148,6 +149,7 @@ class CallActivity : AppCompatActivity() {
         handler.postDelayed({
             peerConnection?.createAnswer(object : SdpObserver {
                 override fun onCreateSuccess(sdp: SessionDescription?) {
+                logToServer("offer created")
                     peerConnection?.setLocalDescription(this, sdp)
                     ws?.send(JSONObject().apply {
                         put("type", "call_answer")
@@ -187,6 +189,7 @@ class CallActivity : AppCompatActivity() {
     
         
     private fun connectSignaling() {
+        logToServer("connecting")
         val client = OkHttpClient()
         val prefs = getSharedPreferences("mychat_prefs", MODE_PRIVATE)
         val token = prefs.getString("token", "") ?: ""
@@ -207,8 +210,10 @@ class CallActivity : AppCompatActivity() {
     }
     
     private fun createOffer() {
+        logToServer("creating offer")
         peerConnection?.createOffer(object : SdpObserver {
             override fun onCreateSuccess(sdp: SessionDescription?) {
+                logToServer("offer created")
                 peerConnection?.setLocalDescription(this, sdp)
                 ws?.send(JSONObject().apply {
                     put("type", "call_offer")
@@ -263,6 +268,7 @@ class CallActivity : AppCompatActivity() {
     }
     
     private fun endCall() {
+        logToServer("ending")
         stopRingtone()
         isRunning = false
         ws?.send(JSONObject().apply { put("type", "call_end") }.toString())
