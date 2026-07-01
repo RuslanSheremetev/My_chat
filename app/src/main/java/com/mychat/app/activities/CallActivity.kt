@@ -49,6 +49,7 @@ class CallActivity : AppCompatActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        t("CallActivity started")
         setContentView(R.layout.activity_call)
         
         val name = intent.getStringExtra("name") ?: "Пользователь"
