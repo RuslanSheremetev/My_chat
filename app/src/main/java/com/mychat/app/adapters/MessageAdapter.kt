@@ -128,7 +128,7 @@ class MessageAdapter(
                     }
                 }
                 showReplyQuote(holder.itemView, item)
-                if (item.text.contains("🎤 Голосовое")) {
+                onLog?.invoke("VOICE: checking text=${item.text.take(50)}"); if (item.text.contains("🎤 Голосовое")) {
                     showVoicePlayer(holder.itemView, item)
                     holder.text.visibility = View.GONE
                     holder.text.text = ""
@@ -203,7 +203,7 @@ class MessageAdapter(
                     }
                 }
                 showReplyQuote(holder.itemView, item)
-                if (item.text.contains("🎤 Голосовое")) {
+                onLog?.invoke("VOICE: checking text=${item.text.take(50)}"); if (item.text.contains("🎤 Голосовое")) {
                     showVoicePlayer(holder.itemView, item)
                     holder.text.visibility = View.GONE
                     holder.text.text = ""
