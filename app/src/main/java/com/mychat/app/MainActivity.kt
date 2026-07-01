@@ -899,44 +899,13 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
     private fun connectWS() {
         try {
             log("WS connecting..."); val wsUrl = "ws://${server.replace("http://", "")}/ws/$me?token=$token"
-            mainWs = client.newWebSocket(
-                Request.Builder().url(wsUrl).build(),
-                object : WebSocketListener() {
-                    override fun onMessage(webSocket: WebSocket, text: String) {
-                        com.mychat.app.activities.CallActivity.onSignalingMessage?.invoke(text)
-                    }
-                }
-            )
             ws = client.newWebSocket(
                 Request.Builder().url(wsUrl).build(),
                 object : WebSocketListener() {
                     override fun onMessage(webSocket: WebSocket, text: String) {  log("WS received: ${text.take(50)}...")
                         try {
                             val j = JSONObject(text)
-                            if (j.optString("type") == "call_offer") {
-                        val from = j.optString("from", j.optString("username", ""))
-                        val intent = android.content.Intent(this@MainActivity, com.mychat.app.activities.CallActivity::class.java).apply {
-                            putExtra("name", from)
-                            putExtra("caller", false)
-                        }
-                        startActivity(intent)
-                        return
-                    }
-                    val jtype = j.optString("type")
-                    if (jtype == "call_offer") {
-                        log("Incoming call from " + j.optString("from", ""))
-                        val from = j.optString("from", "")
-                        val intent = android.content.Intent(this@MainActivity, com.mychat.app.activities.CallActivity::class.java).apply {
-                            putExtra("name", from)
-                            putExtra("caller", false)
-                        }
-                        startActivity(intent)
-                        return
-                    }
-                    if (jtype in listOf("call_answer", "ice_candidate", "call_end")) {
-                        com.mychat.app.activities.CallActivity.onSignalingMessage?.invoke(text)
-                        return
-                    }
+                            val jtype = j.optString("type")
                     if (jtype == "call_offer") {
                         log("Incoming call from " + j.optString("from", ""))
                         val from = j.optString("from", "")
