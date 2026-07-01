@@ -21,6 +21,7 @@ class CallActivity : AppCompatActivity() {
     private var peerConnection: PeerConnection? = null
     private var factory: PeerConnectionFactory? = null
     private var ws: WebSocket? = null
+    private var ringtonePlayer: android.media.MediaPlayer? = null
     private var isCaller = false
     private var incomingActions: android.view.View? = null
     private var btnAccept: ImageButton? = null
@@ -117,6 +118,7 @@ class CallActivity : AppCompatActivity() {
                 }
                 override fun onIceConnectionChange(state: PeerConnection.IceConnectionState?) {
                     if (state == PeerConnection.IceConnectionState.CONNECTED) {
+                        stopRingtone()
                         runOnUiThread {
                             findViewById<TextView>(R.id.callStatus).visibility = android.view.View.GONE
                             findViewById<TextView>(R.id.callTimer).visibility = android.view.View.VISIBLE
@@ -135,7 +137,12 @@ class CallActivity : AppCompatActivity() {
                 override fun onRemoveStream(stream: MediaStream?) {}
             })
             
-            if (isCaller) createOffer()
+            if (isCaller) {
+                createOffer()
+                playRingtone(true)  // Гудки
+            } else {
+                playRingtone(false)  // Рингтон
+            }
             
         } catch (e: Exception) {
             t("WebRTC: ${e.message}")
@@ -146,6 +153,30 @@ class CallActivity : AppCompatActivity() {
         incomingActions?.visibility = android.view.View.GONE
         callStatus?.text = "Соединение..."
         initWebRTC()
+    }
+    
+    private fun playRingtone(isOutgoing: Boolean) {
+        try {
+            val resId = if (isOutgoing) {
+                android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_DIAL)
+            } else {
+                android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_RINGTONE)
+            }
+            ringtonePlayer = android.media.MediaPlayer().apply {
+                setDataSource(this@CallActivity, resId)
+                isLooping = true
+                prepare()
+                start()
+            }
+        } catch (e: Exception) {}
+    }
+    
+    private fun stopRingtone() {
+        ringtonePlayer?.apply {
+            stop()
+            release()
+        }
+        ringtonePlayer = null
     }
     
     private fun createOffer() {
@@ -190,6 +221,7 @@ class CallActivity : AppCompatActivity() {
     }
     
     private fun endCall() {
+        stopRingtone()
         isRunning = false
         ws?.send(JSONObject().apply { put("type", "call_end") }.toString())
         peerConnection?.close()
