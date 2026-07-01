@@ -131,7 +131,7 @@ class CallActivity : AppCompatActivity() {
                     put("type", "call_offer")
                     put("to", intent.getStringExtra("name"))
                     put("sdp", JSONObject().apply {
-                        put("type", sdp?.type?.canonicalForm)
+                        put("type", sdp?.type?.canonicalForm())
                         put("description", sdp?.description)
                     })
                 }.toString())
