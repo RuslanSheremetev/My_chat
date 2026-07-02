@@ -1,67 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="220dp"
+    android:layout_width="200dp"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/bg_dropdown_menu"
-    android:paddingVertical="6dp">
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:elevation="8dp">
 
-    <LinearLayout android:id="@+id/menuInfo" android:layout_width="match_parent"
-        android:layout_height="48dp" android:gravity="center_vertical"
-        android:paddingHorizontal="16dp" android:clickable="true"
-        android:background="?attr/selectableItemBackground">
-        <ImageView android:layout_width="18dp" android:layout_height="18dp"
-            android:src="@drawable/ic_chat_bubble" android:tint="#9ca3af"/>
+    <LinearLayout android:id="@+id/menuInfo"
+        android:layout_width="match_parent" android:layout_height="48dp"
+        android:gravity="center_vertical" android:paddingStart="18dp" android:paddingEnd="18dp"
+        android:orientation="horizontal" android:background="?attr/selectableItemBackground"
+        android:clickable="true" android:focusable="true">
+        <ImageView android:layout_width="22dp" android:layout_height="22dp"
+            android:src="@drawable/ic_info" android:tint="#b0b0b0"/>
         <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
-            android:text="Информация" android:textSize="14sp" android:textColor="#fff"
-            android:layout_marginStart="14dp"/>
+            android:text="Информация" android:textColor="#fff" android:textSize="15sp"
+            android:layout_marginStart="12dp"/>
     </LinearLayout>
 
-    <LinearLayout android:id="@+id/menuMute" android:layout_width="match_parent"
-        android:layout_height="48dp" android:gravity="center_vertical"
-        android:paddingHorizontal="16dp" android:clickable="true"
-        android:background="?attr/selectableItemBackground">
-        <ImageView android:layout_width="18dp" android:layout_height="18dp"
-            android:src="@drawable/ic_mic" android:tint="#fbbf24"/>
+    <LinearLayout android:id="@+id/menuMute"
+        android:layout_width="match_parent" android:layout_height="48dp"
+        android:gravity="center_vertical" android:paddingStart="18dp" android:paddingEnd="18dp"
+        android:orientation="horizontal" android:background="?attr/selectableItemBackground"
+        android:clickable="true" android:focusable="true">
+        <ImageView android:layout_width="22dp" android:layout_height="22dp"
+            android:src="@drawable/ic_mute" android:tint="#fbbf24"/>
         <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
-            android:text="Отключить звук" android:textSize="14sp" android:textColor="#fbbf24"
-            android:layout_marginStart="14dp"/>
+            android:text="Без звука" android:textColor="#fbbf24" android:textSize="15sp"
+            android:layout_marginStart="12dp"/>
     </LinearLayout>
 
-    <LinearLayout android:id="@+id/menuSearch" android:layout_width="match_parent"
-        android:layout_height="48dp" android:gravity="center_vertical"
-        android:paddingHorizontal="16dp" android:clickable="true"
-        android:background="?attr/selectableItemBackground">
-        <ImageView android:layout_width="18dp" android:layout_height="18dp"
-            android:src="@drawable/ic_search" android:tint="#9ca3af"/>
+    <LinearLayout android:id="@+id/menuSearch"
+        android:layout_width="match_parent" android:layout_height="48dp"
+        android:gravity="center_vertical" android:paddingStart="18dp" android:paddingEnd="18dp"
+        android:orientation="horizontal" android:background="?attr/selectableItemBackground"
+        android:clickable="true" android:focusable="true">
+        <ImageView android:layout_width="22dp" android:layout_height="22dp"
+            android:src="@drawable/ic_search" android:tint="#b0b0b0"/>
         <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
-            android:text="Поиск" android:textSize="14sp" android:textColor="#fff"
-            android:layout_marginStart="14dp"/>
+            android:text="Поиск" android:textColor="#fff" android:textSize="15sp"
+            android:layout_marginStart="12dp"/>
     </LinearLayout>
 
-    <LinearLayout android:id="@+id/menuClear" android:layout_width="match_parent"
-        android:layout_height="48dp" android:gravity="center_vertical"
-        android:paddingHorizontal="16dp" android:clickable="true"
-        android:background="?attr/selectableItemBackground">
-        <ImageView android:layout_width="18dp" android:layout_height="18dp"
-            android:src="@drawable/ic_trash" android:tint="#9ca3af"/>
+    <LinearLayout android:id="@+id/menuClear"
+        android:layout_width="match_parent" android:layout_height="48dp"
+        android:gravity="center_vertical" android:paddingStart="18dp" android:paddingEnd="18dp"
+        android:orientation="horizontal" android:background="?attr/selectableItemBackground"
+        android:clickable="true" android:focusable="true">
+        <ImageView android:layout_width="22dp" android:layout_height="22dp"
+            android:src="@drawable/ic_delete" android:tint="#b0b0b0"/>
         <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
-            android:text="Очистить историю" android:textSize="14sp" android:textColor="#fff"
-            android:layout_marginStart="14dp"/>
+            android:text="Очистить" android:textColor="#fff" android:textSize="15sp"
+            android:layout_marginStart="12dp"/>
     </LinearLayout>
 
-    <View android:layout_width="match_parent" android:layout_height="1dp"
-        android:background="#1fff" android:layout_marginHorizontal="12dp" android:layout_marginVertical="4dp"/>
-
-    <LinearLayout android:id="@+id/menuBlock" android:layout_width="match_parent"
-        android:layout_height="48dp" android:gravity="center_vertical"
-        android:paddingHorizontal="16dp" android:clickable="true"
-        android:background="?attr/selectableItemBackground">
-        <ImageView android:layout_width="18dp" android:layout_height="18dp"
-            android:src="@drawable/ic_close" android:tint="#ff453a"/>
+    <LinearLayout android:id="@+id/menuBlock"
+        android:layout_width="match_parent" android:layout_height="48dp"
+        android:gravity="center_vertical" android:paddingStart="18dp" android:paddingEnd="18dp"
+        android:orientation="horizontal" android:background="?attr/selectableItemBackground"
+        android:clickable="true" android:focusable="true">
+        <ImageView android:layout_width="22dp" android:layout_height="22dp"
+            android:src="@drawable/ic_block" android:tint="#ff453a"/>
         <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
-            android:text="Заблокировать" android:textSize="14sp" android:textColor="#ff453a"
-            android:layout_marginStart="14dp"/>
+            android:text="Заблокировать" android:textColor="#ff453a" android:textSize="15sp"
+            android:layout_marginStart="12dp"/>
     </LinearLayout>
 
 </LinearLayout>
