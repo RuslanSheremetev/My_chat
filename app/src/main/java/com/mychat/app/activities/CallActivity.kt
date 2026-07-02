@@ -188,6 +188,7 @@ class CallActivity : AppCompatActivity() {
     private fun acceptCall() {
         logToServer("accepted")
         incomingActions?.visibility = android.view.View.GONE
+        findViewById<ImageButton>(R.id.btnEndCall).visibility = android.view.View.VISIBLE
         callStatus?.text = "Соединение..."
         // Устанавливаем remote SDP из offer
         remoteSdp?.let { sdp ->
