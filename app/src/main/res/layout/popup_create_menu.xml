@@ -8,6 +8,7 @@
     android:paddingBottom="8dp"
     android:elevation="8dp">
 
+    <!-- Создать группу -->
     <LinearLayout
         android:id="@+id/menuCreateGroup"
         android:layout_width="match_parent"
@@ -21,8 +22,8 @@
         android:focusable="true">
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:src="@drawable/ic_group"
             android:tint="#b0b0b0" />
 
@@ -33,10 +34,10 @@
             android:layout_marginStart="12dp"
             android:text="Создать группу"
             android:textColor="#fff"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textSize="15sp" />
     </LinearLayout>
 
+    <!-- Создать ленту -->
     <LinearLayout
         android:id="@+id/menuCreateFeed"
         android:layout_width="match_parent"
@@ -50,8 +51,8 @@
         android:focusable="true">
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:src="@drawable/ic_feed"
             android:tint="#b0b0b0" />
 
@@ -62,8 +63,36 @@
             android:layout_marginStart="12dp"
             android:text="Создать ленту"
             android:textColor="#fff"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <!-- Создать бота -->
+    <LinearLayout
+        android:id="@+id/menuCreateBot"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:orientation="horizontal"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/ic_bot"
+            android:tint="#b0b0b0" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:text="Создать бота"
+            android:textColor="#fff"
+            android:textSize="15sp" />
     </LinearLayout>
 
 </LinearLayout>

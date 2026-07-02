@@ -394,6 +394,10 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                 popup.dismiss()
                 t("Создание ленты")
             }
+            view.findViewById<LinearLayout>(R.id.menuCreateBot).setOnClickListener {
+                popup.dismiss()
+                t("Создание бота")
+            }
             popup.showAsDropDown(anchor, 0, 8.dpToPx())
         }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
