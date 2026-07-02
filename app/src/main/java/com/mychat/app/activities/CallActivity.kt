@@ -299,8 +299,10 @@ class CallActivity : AppCompatActivity() {
         stopRingtone()
         isRunning = false
         ws?.send(JSONObject().apply { put("type", "call_end"); put("from", me) }.toString())
-        peerConnection?.close()
-        factory?.dispose()
+        handler.postDelayed({
+            peerConnection?.close()
+            factory?.dispose()
+        }, 500)
         finish()
     }
     
