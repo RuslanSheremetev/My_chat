@@ -987,13 +987,14 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     for (i in 0 until a.length()) {
                         val o = a.getJSONObject(i)
                         val username = o.optString("username")
-                        if (username == "MyChat") continue
+                        // MyChat теперь показывается
                         
                         val displayName = o.optString("name", "")
                         val finalName = if (displayName.isNotEmpty()) displayName else username
                         val bio = if (username == me) savedStatus else o.optString("bio", "")
                         val isGroup = o.optBoolean("is_group", false)
                         val isFeed = o.optBoolean("is_feed", false)
+                        val isBot = o.optBoolean("is_bot", false)
                         val online = o.optBoolean("online", false)
                         
                         if (!isGroup && !isFeed) {
@@ -1083,7 +1084,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         val o = a.getJSONObject(i)
                         val un = o.optString("username")
                         val nm = o.optString("name", "")
-                        if ((un.contains(q, true) || nm.contains(q, true)) && un != "MyChat") {
+                        if ((un.contains(q, true) || nm.contains(q, true)) ) {
                             val displayName = if (nm.isNotEmpty()) nm else un
                             res.add(
                                 User(
