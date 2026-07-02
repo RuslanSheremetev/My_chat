@@ -62,6 +62,14 @@
         android:layout_marginBottom="80dp">
 
         <ImageButton
+            android:id="@+id/btnMute"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_mic"
+            android:tint="#fff"
+            android:background="@drawable/bg_call_btn"
+            android:layout_marginEnd="20dp"/>
+        <ImageButton
             android:id="@+id/btnSpeaker"
             android:layout_width="60dp"
             android:layout_height="60dp"
