@@ -71,10 +71,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#1e1e1e"
+                android:background="@drawable/bg_card"
                 android:padding="14dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/bg_card">
+                android:layout_marginBottom="4dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -103,10 +102,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#1e1e1e"
+                android:background="@drawable/bg_card"
                 android:padding="14dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/bg_card">
+                android:layout_marginBottom="4dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -163,13 +161,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#1e1e1e"
+                android:background="@drawable/bg_card"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/bg_card">
+                android:layout_marginBottom="4dp">
 
                 <include layout="@layout/item_toggle" />
                 <include layout="@layout/item_toggle" />
@@ -193,13 +190,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#1e1e1e"
+                android:background="@drawable/bg_card"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/bg_card">
+                android:layout_marginBottom="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
