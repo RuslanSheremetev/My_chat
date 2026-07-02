@@ -377,10 +377,24 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             
             popup.showAsDropDown(anchor, -180.dpToPx(), 8.dpToPx())
         }
-        findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { v ->
-            v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_scale))
-            v.postDelayed({ v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_release)) }, 150)
-            t("Создание групп и лент будет позже")
+        findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { anchor ->
+            anchor.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_scale))
+            anchor.postDelayed({ anchor.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_release)) }, 150)
+            val view = layoutInflater.inflate(R.layout.popup_create_menu, null)
+            val popup = android.widget.PopupWindow(view,
+                (200 * resources.displayMetrics.density).toInt(),
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, true)
+            popup.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+            popup.elevation = 20f
+            view.findViewById<LinearLayout>(R.id.menuCreateGroup).setOnClickListener {
+                popup.dismiss()
+                t("Создание группы")
+            }
+            view.findViewById<LinearLayout>(R.id.menuCreateFeed).setOnClickListener {
+                popup.dismiss()
+                t("Создание ленты")
+            }
+            popup.showAsDropDown(anchor, 0, 8.dpToPx())
         }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
         
