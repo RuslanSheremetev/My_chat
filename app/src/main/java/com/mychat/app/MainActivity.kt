@@ -768,6 +768,14 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         lastMessageCount = 0
         refreshMessages()
         msgInput.requestFocus()
+        // Скрываем поле ввода для системного чата
+        if (selId == "MyChat") {
+            msgInput.visibility = View.GONE
+            findViewById<View>(R.id.sendBtn)?.visibility = View.GONE
+        } else {
+            msgInput.visibility = View.VISIBLE
+            findViewById<View>(R.id.sendBtn)?.visibility = View.VISIBLE
+        }
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         isMuted = prefs.getBoolean("mute_$id", false)
         // Восстанавливаем блокировку из Room
