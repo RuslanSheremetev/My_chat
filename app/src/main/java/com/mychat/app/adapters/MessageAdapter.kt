@@ -133,7 +133,11 @@ class MessageAdapter(
                     holder.text.visibility = View.GONE
                     holder.text.text = ""
                 } else {
-                    holder.text.text = item.text
+                    val sp = android.text.SpannableString(item.text)
+        "@(\\w+)".toRegex().findAll(item.text).forEach { m ->
+            sp.setSpan(android.text.style.ForegroundColorSpan(0xFFFF5E8E.toInt()), m.range.first, m.range.last + 1, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+        holder.text.text = sp
                     holder.text.visibility = View.VISIBLE
                     val vp = holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)
                     if (vp != null) vp.visibility = View.GONE
@@ -208,7 +212,11 @@ class MessageAdapter(
                     holder.text.visibility = View.GONE
                     holder.text.text = ""
                 } else {
-                    holder.text.text = item.text
+                    val sp = android.text.SpannableString(item.text)
+        "@(\\w+)".toRegex().findAll(item.text).forEach { m ->
+            sp.setSpan(android.text.style.ForegroundColorSpan(0xFFFF5E8E.toInt()), m.range.first, m.range.last + 1, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+        holder.text.text = sp
                     holder.text.visibility = View.VISIBLE
                     val vp = holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)
                     if (vp != null) vp.visibility = View.GONE
