@@ -29,6 +29,7 @@ class CallActivity : AppCompatActivity() {
     private var ws: WebSocket? = null
     private var ringtonePlayer: android.media.MediaPlayer? = null
     private var isCaller = false
+    private var callEnded = false
     private var isMuted = false
     private var isSpeakerOn = false
     private var me = ""
@@ -338,13 +339,15 @@ class CallActivity : AppCompatActivity() {
     }
     
     private fun endCall() {
+        if (callEnded) return
+        callEnded = true
         logToServer("ending")
         stopRingtone()
         isRunning = false
         com.mychat.app.MainActivity.sendCallSignal(JSONObject().apply { put("type", "call_end"); put("from", me); put("to", intent.getStringExtra("name")) }.toString())
         handler.postDelayed({
-            peerConnection?.close()
-            factory?.dispose()
+            try { peerConnection?.close() } catch (_: Exception) {}
+            try { factory?.dispose() } catch (_: Exception) {}
         }, 500)
         finish()
     }
