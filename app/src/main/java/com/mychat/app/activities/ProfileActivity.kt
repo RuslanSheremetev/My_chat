@@ -60,18 +60,18 @@ class ProfileActivity : AppCompatActivity() {
             pickImage()
         }
 
-        onlineIndicator = findViewById(R.id.onlineIndicator)
-        onlineText = findViewById(R.id.onlineText)
-        onlineIndicator.setBackgroundResource(R.drawable.bg_online_dot)
-        onlineText.text = "Онлайн"
+        // TODO: update for new layout // onlineIndicator = findViewById(R.id.onlineIndicator)
+        // TODO: update for new layout // onlineText = findViewById(R.id.onlineText)
+        // TODO: update for new layout // onlineIndicator.setBackgroundResource(R.drawable.bg_online_dot)
+        // TODO: update for new layout // onlineText.text = "Онлайн"
 
         profileStatus = findViewById(R.id.profileStatus)
-        statusInput = findViewById(R.id.statusInput)
-        editStatusSection = findViewById(R.id.editStatusSection)
+        // TODO: update for new layout // statusInput = findViewById(R.id.statusInput)
+        // TODO: update for new layout // editStatusSection = findViewById(R.id.editStatusSection)
 
         profileBio = findViewById(R.id.profileBio)
-        bioInput = findViewById(R.id.bioInput)
-        editBioSection = findViewById(R.id.editBioSection)
+        // TODO: update for new layout // bioInput = findViewById(R.id.bioInput)
+        // TODO: update for new layout // editBioSection = findViewById(R.id.editBioSection)
 
         val savedStatus = prefs.getString("user_status", "Живу в облаках ☁️") ?: "Живу в облаках ☁️"
         profileStatus.text = savedStatus
@@ -94,7 +94,7 @@ class ProfileActivity : AppCompatActivity() {
             toggleEditSection(editBioSection, bioInput, profileBio.text.toString())
         }
 
-        findViewById<Button>(R.id.saveStatusBtn).setOnClickListener {
+        findViewById<Button>(R.id.// TODO: update for new layout // saveStatusBtn).setOnClickListener {
             val newStatus = statusInput.text.toString().trim()
             if (newStatus.isNotEmpty()) {
                 saveStatus(newStatus)
@@ -103,7 +103,7 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
-        findViewById<Button>(R.id.saveBioBtn).setOnClickListener {
+        findViewById<Button>(R.id.// TODO: update for new layout // saveBioBtn).setOnClickListener {
             val newBio = bioInput.text.toString().trim()
             if (newBio.isNotEmpty()) {
                 saveBio(newBio)
@@ -112,7 +112,7 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
-        findViewById<Button>(R.id.logoutBtn).setOnClickListener {
+        findViewById<Button>(R.id.// TODO: update for new layout // logoutBtn).setOnClickListener {
             showLogoutDialog()
         }
     }
@@ -172,8 +172,8 @@ class ProfileActivity : AppCompatActivity() {
                                         profileAvatar.text = username.take(1).uppercase()
                                     }
                                     if (isOnline) {
-                                        onlineIndicator.setBackgroundResource(R.drawable.bg_online_dot)
-                                        onlineText.text = "Онлайн"
+                                        // TODO: update for new layout // onlineIndicator.setBackgroundResource(R.drawable.bg_online_dot)
+                                        // TODO: update for new layout // onlineText.text = "Онлайн"
                                     } else {
                                         onlineIndicator.setBackgroundResource(R.drawable.bg_offline_dot)
                                         onlineText.text = "Офлайн"
