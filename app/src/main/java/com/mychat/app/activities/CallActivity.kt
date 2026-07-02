@@ -296,7 +296,7 @@ class CallActivity : AppCompatActivity() {
         logToServer("ending")
         stopRingtone()
         isRunning = false
-        com.mychat.app.MainActivity.sendCallSignal(JSONObject().apply { put("type", "call_end"); put("from", me) }.toString())
+        com.mychat.app.MainActivity.sendCallSignal(JSONObject().apply { put("type", "call_end"); put("from", me); put("to", intent.getStringExtra("name")) }.toString())
         handler.postDelayed({
             peerConnection?.close()
             factory?.dispose()
