@@ -99,7 +99,7 @@ class CallActivity : AppCompatActivity() {
                 audioManager.mode = android.media.AudioManager.MODE_IN_COMMUNICATION
                 audioManager.isMicrophoneMute = isMuted
                 // Визуальная обратная связь
-                btn.setColorFilter(if (isMuted) 0xFFFF0000.toInt() else 0xFFFFFFFF.toInt())
+                btn.setBackgroundColor(if (isMuted) 0xFFFF0000.toInt() else 0x00000000.toInt())
                 logToServer("mic muted=$isMuted")
             } catch (e: Exception) {
                 logToServer("mute error: ${e.message}")
@@ -111,7 +111,7 @@ class CallActivity : AppCompatActivity() {
                 val audioManager = getSystemService(android.content.Context.AUDIO_SERVICE) as android.media.AudioManager
                 audioManager.mode = android.media.AudioManager.MODE_IN_COMMUNICATION
                 audioManager.isSpeakerphoneOn = isSpeakerOn
-                btn.setColorFilter(if (isSpeakerOn) 0xFF00FF00.toInt() else 0xFFFFFFFF.toInt())
+                btn.setBackgroundColor(if (isSpeakerOn) 0xFF00FF00.toInt() else 0x00000000.toInt())
                 logToServer("speaker on=$isSpeakerOn")
             } catch (e: Exception) {
                 logToServer("speaker error: ${e.message}")
