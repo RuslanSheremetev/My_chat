@@ -2,50 +2,119 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/searchOverlayPanel"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:background="#121212"
-    android:paddingHorizontal="16dp"
     android:elevation="16dp"
     android:visibility="gone">
 
-    <ImageButton
-        android:id="@+id/btnSearchBack"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/ic_back"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:tint="#fff"/>
-
+    <!-- Строка поиска -->
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_weight="1"
-        android:background="@drawable/bg_search_field"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="12dp"
-        android:layout_marginStart="12dp">
+        android:paddingHorizontal="16dp">
 
-        <ImageView
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:src="@drawable/ic_search"
-            android:tint="#6b6b6b"/>
+        <ImageButton
+            android:id="@+id/btnSearchBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="#fff" />
 
-        <EditText
-            android:id="@+id/searchOverlayInput"
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="40dp"
             android:layout_weight="1"
-            android:background="@null"
-            android:textColor="#fff"
-            android:textSize="16sp"
-            android:hint="Поиск..."
-            android:textColorHint="#6b6b6b"
-            android:singleLine="true"
-            android:layout_marginStart="12dp"/>
+            android:background="@drawable/bg_search_field"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="12dp"
+            android:layout_marginStart="12dp">
 
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_search"
+                android:tint="#6b6b6b" />
+
+            <EditText
+                android:id="@+id/searchOverlayInput"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:textColor="#fff"
+                android:textSize="16sp"
+                android:hint="Поиск..."
+                android:textColorHint="#6b6b6b"
+                android:singleLine="true"
+                android:layout_marginStart="12dp" />
+        </LinearLayout>
     </LinearLayout>
 
+    <!-- Лента историй -->
+    <HorizontalScrollView
+        android:id="@+id/storiesScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="12dp">
+
+        <LinearLayout
+            android:id="@+id/storiesContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Моя история -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginEnd="16dp"
+                android:clickable="true">
+
+                <FrameLayout
+                    android:layout_width="66dp"
+                    android:layout_height="66dp">
+                    <View
+                        android:layout_width="66dp"
+                        android:layout_height="66dp"
+                        android:background="@drawable/bg_story_ring_unseen" />
+                    <TextView
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="A"
+                        android:textColor="#fff"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/bg_avatar_circle_story" />
+                    <View
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="bottom|end"
+                        android:layout_marginBottom="-2dp"
+                        android:layout_marginEnd="-2dp"
+                        android:background="@drawable/bg_story_add" />
+                </FrameLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Моё"
+                    android:textColor="#fff"
+                    android:textSize="11sp"
+                    android:layout_marginTop="6dp" />
+            </LinearLayout>
+
+            <!-- Остальные истории добавляются программно -->
+        </LinearLayout>
+    </HorizontalScrollView>
 </LinearLayout>
