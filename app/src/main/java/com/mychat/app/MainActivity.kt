@@ -923,6 +923,10 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         }
                         return
                     }
+                    if (jtype in listOf("call_answer", "ice_candidate", "call_end")) {
+                        onSignalingMessage?.invoke(text)
+                        return
+                    }
                     if (jtype == "ping") { webSocket.send("{\"type\":\"pong\"}"); return }
                             if (isBlocked) return
                             if (selId.isNotEmpty()) {
