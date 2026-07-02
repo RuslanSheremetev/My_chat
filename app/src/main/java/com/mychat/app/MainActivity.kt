@@ -25,6 +25,7 @@ import android.content.ClipData
 import android.os.Vibrator
 import android.os.VibrationEffect
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.preference.PreferenceManager
@@ -280,7 +281,10 @@ class MainActivity : AppCompatActivity() {
                     }
                     try {
                         voiceFile = java.io.File.createTempFile("voice_", ".m4a", cacheDir)
-                        voiceRecorder = android.media.MediaRecorder().apply {
+                        val glow = findViewById<View>(R.id.glowView)
+                    glow.visibility = View.VISIBLE
+                    glow.startAnimation(AnimationUtils.loadAnimation(this@MainActivity, R.anim.pulse_glow))
+                    voiceRecorder = android.media.MediaRecorder().apply {
                             setAudioSource(android.media.MediaRecorder.AudioSource.MIC)
                             setOutputFormat(android.media.MediaRecorder.OutputFormat.MPEG_4)
                             setAudioEncoder(android.media.MediaRecorder.AudioEncoder.AAC)
@@ -295,6 +299,9 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 android.view.MotionEvent.ACTION_CANCEL, android.view.MotionEvent.ACTION_UP -> {
+                    val glow = findViewById<View>(R.id.glowView)
+                    glow.visibility = View.GONE
+                    glow.clearAnimation()
                     voiceRecorder?.apply { stop(); release() }; val voiceDuration = ((voiceFile?.length() ?: 0) / 800).toInt().coerceAtLeast(1); log("VOICE: recording stopped, size=${voiceFile?.length() ?: 0}, dur=${voiceDuration}s")
                     voiceRecorder = null
                     voiceFile?.let { file ->
