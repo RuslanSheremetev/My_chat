@@ -53,6 +53,11 @@ class CallActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         t("CallActivity started")
         setContentView(R.layout.activity_call)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(android.Manifest.permission.RECORD_AUDIO), 100)
+            }
+        }
         
         val name = intent.getStringExtra("name") ?: "Пользователь"
         val sdpStr = intent.getStringExtra("sdp")
