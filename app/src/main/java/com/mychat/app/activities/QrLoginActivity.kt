@@ -58,7 +58,7 @@ class QrLoginActivity : AppCompatActivity() {
         json.put("qr_token", qrToken)
         json.put("device_name", android.os.Build.MODEL)
         
-        val body = json.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
+        val body = RequestBody.create(MediaType.parse("application/json; charset=utf-8")!!, json.toString())
         val request = Request.Builder()
             .url("http://2.26.71.102:8000/api/qr/login")
             .post(body)
@@ -96,6 +96,4 @@ class QrLoginActivity : AppCompatActivity() {
     }
 }
 
-// Расширение для OkHttp
-fun String.toMediaType(): MediaType = MediaType.get(this)
-fun String.toRequestBody(contentType: MediaType): RequestBody = RequestBody.create(contentType, this)
+
