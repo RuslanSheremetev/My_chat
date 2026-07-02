@@ -138,6 +138,7 @@ class CallActivity : AppCompatActivity() {
                         com.mychat.app.MainActivity.sendCallSignal(JSONObject().apply {
                             put("type", "ice_candidate")
                             put("from", me)
+                            put("to", intent.getStringExtra("name"))
                             put("candidate", JSONObject().apply {
                                 put("sdp", it.sdp)
                                 put("sdpMid", it.sdpMid)
