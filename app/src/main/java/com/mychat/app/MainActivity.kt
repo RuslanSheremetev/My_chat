@@ -63,6 +63,7 @@ import java.util.concurrent.TimeUnit
 class MainActivity : AppCompatActivity() {
     companion object {
         var mainWs: okhttp3.WebSocket? = null
+        var onSignalingMessage: ((String) -> Unit)? = null
         fun sendCallSignal(msg: String) {
             android.util.Log.d("CALL", "sending: $msg")
             mainWs?.send(msg)
