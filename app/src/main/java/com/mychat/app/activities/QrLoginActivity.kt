@@ -9,10 +9,8 @@ import com.google.zxing.integration.android.IntentResult
 import com.mychat.app.MainActivity
 import com.mychat.app.R
 import okhttp3.*
-
 import org.json.JSONObject
 import java.io.IOException
-
 
 class QrLoginActivity : AppCompatActivity() {
     private val client = OkHttpClient()
@@ -44,7 +42,6 @@ class QrLoginActivity : AppCompatActivity() {
         val result: IntentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null && result.contents != null) {
             val scannedData = result.contents
-            // Извлекаем токен из URL mychat://login?token=...
             val qrToken = if (scannedData.contains("token=")) {
                 scannedData.substringAfter("token=").substringBefore("&")
             } else {
@@ -57,11 +54,11 @@ class QrLoginActivity : AppCompatActivity() {
     }
 
     private fun loginWithQR(qrToken: String) {
-        val json = JSONObject().apply {
-            put("qr_token", qrToken)
-            put("device_name", android.os.Build.MODEL)
-        }
-        val body = okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/json"), json.toString())
+        val json = JSONObject()
+        json.put("qr_token", qrToken)
+        json.put("device_name", android.os.Build.MODEL)
+        
+        val body = json.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
         val request = Request.Builder()
             .url("http://2.26.71.102:8000/api/qr/login")
             .post(body)
@@ -75,16 +72,17 @@ class QrLoginActivity : AppCompatActivity() {
             }
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
-                    val respJson = JSONObject(response.body?.string() ?: "")
+                    val body = response.body?.string() ?: ""
+                    val respJson = JSONObject(body)
                     val accessToken = respJson.optString("access_token")
                     val username = respJson.optString("username")
-                    // Сохраняем токен и открываем чат
                     val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this@QrLoginActivity)
                     prefs.edit()
                         .putString("token", accessToken)
                         .putString("username", username)
                         .apply()
                     runOnUiThread {
+                        Toast.makeText(this@QrLoginActivity, "Вход выполнен!", Toast.LENGTH_SHORT).show()
                         startActivity(Intent(this@QrLoginActivity, MainActivity::class.java))
                         finish()
                     }
@@ -97,3 +95,7 @@ class QrLoginActivity : AppCompatActivity() {
         })
     }
 }
+
+// Расширение для OkHttp
+fun String.toMediaType(): MediaType = MediaType.get(this)
+fun String.toRequestBody(contentType: MediaType): RequestBody = RequestBody.create(contentType, this)
