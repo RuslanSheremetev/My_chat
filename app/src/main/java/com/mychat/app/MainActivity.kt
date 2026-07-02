@@ -935,11 +935,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     }
                     override fun onFailure(webSocket: WebSocket, t: Throwable, response: okhttp3.Response?) {
                         log("WS failure: ${t.message}, reconnecting in 3s")
-                        handler.postDelayed({ connectWs() }, 3000)
+                        handler.postDelayed({ connectWS() }, 3000)
                     }
                     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
                         log("WS closed: $code $reason, reconnecting in 3s")
-                        handler.postDelayed({ connectWs() }, 3000)
+                        handler.postDelayed({ connectWS() }, 3000)
                     }
                 }
             )
