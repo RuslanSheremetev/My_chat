@@ -110,14 +110,6 @@ class CallActivity : AppCompatActivity() {
             val rtcConfig = PeerConnection.RTCConfiguration(iceServers)
             
             peerConnection = factory?.createPeerConnection(rtcConfig, object : PeerConnection.Observer {
-                try {
-                    val audioSource = factory?.createAudioSource(MediaConstraints())
-                    val audioTrack = factory?.createAudioTrack("audio0", audioSource)
-                    peerConnection?.addTrack(audioTrack)
-                    logToServer("audio track added")
-                } catch (e: Exception) {
-                    logToServer("audio error: ${e.message}")
-                }
                 override fun onIceCandidate(candidate: IceCandidate?) {
                     candidate?.let {
                         com.mychat.app.MainActivity.sendCallSignal(JSONObject().apply {
