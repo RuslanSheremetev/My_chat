@@ -768,7 +768,16 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         lastMessageCount = 0
         refreshMessages()
         msgInput.requestFocus()
-        // Скрываем поле ввода для системного чата
+        // Скрываем поле ввода и звонок для системного чата
+        if (selId == "MyChat") {
+            msgInput.visibility = View.GONE
+            findViewById<View>(R.id.sendBtn)?.visibility = View.GONE
+            findViewById<View>(R.id.btnCall)?.visibility = View.GONE
+        } else {
+            msgInput.visibility = View.VISIBLE
+            findViewById<View>(R.id.sendBtn)?.visibility = View.VISIBLE
+            findViewById<View>(R.id.btnCall)?.visibility = View.VISIBLE
+        }
         if (selId == "MyChat") {
             msgInput.visibility = View.GONE
             findViewById<View>(R.id.btnCall)?.visibility = View.GONE
