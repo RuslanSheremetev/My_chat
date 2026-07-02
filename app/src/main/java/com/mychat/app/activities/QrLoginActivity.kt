@@ -9,10 +9,10 @@ import com.google.zxing.integration.android.IntentResult
 import com.mychat.app.MainActivity
 import com.mychat.app.R
 import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
+
 import org.json.JSONObject
 import java.io.IOException
-import okhttp3.MediaType.Companion.toMediaType
+
 
 class QrLoginActivity : AppCompatActivity() {
     private val client = OkHttpClient()
@@ -61,7 +61,7 @@ class QrLoginActivity : AppCompatActivity() {
             put("qr_token", qrToken)
             put("device_name", android.os.Build.MODEL)
         }
-        val body = json.toString().toRequestBody(okhttp3.MediaType.Companion.toMediaType("application/json"))
+        val body = okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/json"), json.toString())
         val request = Request.Builder()
             .url("http://2.26.71.102:8000/api/qr/login")
             .post(body)
