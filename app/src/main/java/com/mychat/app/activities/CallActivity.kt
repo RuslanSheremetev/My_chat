@@ -92,22 +92,27 @@ class CallActivity : AppCompatActivity() {
         }
         
         findViewById<ImageButton>(R.id.btnEndCall).setOnClickListener { endCall() }
-        findViewById<ImageButton>(R.id.btnMute)?.setOnClickListener {
+        findViewById<ImageButton>(R.id.btnMute)?.setOnClickListener { btn ->
             isMuted = !isMuted
             try {
                 val audioManager = getSystemService(android.content.Context.AUDIO_SERVICE) as android.media.AudioManager
                 audioManager.mode = android.media.AudioManager.MODE_IN_COMMUNICATION
                 audioManager.isMicrophoneMute = isMuted
+                // Визуальная обратная связь
+                btn.setColorFilter(if (isMuted) 0xFFFF0000.toInt() else 0xFFFFFFFF.toInt())
+                logToServer("mic muted=$isMuted")
             } catch (e: Exception) {
                 logToServer("mute error: ${e.message}")
             }
         }
-        findViewById<ImageButton>(R.id.btnSpeaker)?.setOnClickListener {
+        findViewById<ImageButton>(R.id.btnSpeaker)?.setOnClickListener { btn ->
             isSpeakerOn = !isSpeakerOn
             try {
                 val audioManager = getSystemService(android.content.Context.AUDIO_SERVICE) as android.media.AudioManager
                 audioManager.mode = android.media.AudioManager.MODE_IN_COMMUNICATION
                 audioManager.isSpeakerphoneOn = isSpeakerOn
+                btn.setColorFilter(if (isSpeakerOn) 0xFF00FF00.toInt() else 0xFFFFFFFF.toInt())
+                logToServer("speaker on=$isSpeakerOn")
             } catch (e: Exception) {
                 logToServer("speaker error: ${e.message}")
             }
