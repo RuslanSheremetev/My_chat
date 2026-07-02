@@ -39,7 +39,7 @@ class QrLoginActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val result: IntentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null && result.contents != null) {
             val scannedData = result.contents
             val qrToken = if (scannedData.contains("token=")) {
@@ -58,7 +58,7 @@ class QrLoginActivity : AppCompatActivity() {
         json.put("qr_token", qrToken)
         json.put("device_name", android.os.Build.MODEL)
         
-        val body = RequestBody.create(MediaType.parse("application/json; charset=utf-8")!!, json.toString())
+        val body = RequestBody.create(MediaType.parse("application/json"), json.toString())
         val request = Request.Builder()
             .url("http://2.26.71.102:8000/api/qr/login")
             .post(body)
@@ -72,8 +72,8 @@ class QrLoginActivity : AppCompatActivity() {
             }
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
-                    val body = response.body?.string() ?: ""
-                    val respJson = JSONObject(body)
+                    val respBody = response.body()?.string() ?: ""
+                    val respJson = JSONObject(respBody)
                     val accessToken = respJson.optString("access_token")
                     val username = respJson.optString("username")
                     val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this@QrLoginActivity)
@@ -95,5 +95,3 @@ class QrLoginActivity : AppCompatActivity() {
         })
     }
 }
-
-
