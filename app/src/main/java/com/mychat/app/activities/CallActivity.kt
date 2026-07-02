@@ -85,6 +85,7 @@ class CallActivity : AppCompatActivity() {
             // Входящий звонок
             callStatus?.text = "Входящий звонок..."
             incomingActions?.visibility = android.view.View.VISIBLE
+            findViewById<ImageButton>(R.id.btnEndCall)?.visibility = android.view.View.GONE
             btnAccept?.setOnClickListener { acceptCall() }
             btnDecline?.setOnClickListener { endCall() }
         }
