@@ -771,10 +771,10 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         // Скрываем поле ввода для системного чата
         if (selId == "MyChat") {
             msgInput.visibility = View.GONE
-            findViewById<View>(R.id.sendBtn)?.visibility = View.GONE
+            findViewById<View>(R.id.btnCall)?.visibility = View.GONE
         } else {
             msgInput.visibility = View.VISIBLE
-            findViewById<View>(R.id.sendBtn)?.visibility = View.VISIBLE
+            findViewById<View>(R.id.btnCall)?.visibility = View.VISIBLE
         }
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         isMuted = prefs.getBoolean("mute_$id", false)
