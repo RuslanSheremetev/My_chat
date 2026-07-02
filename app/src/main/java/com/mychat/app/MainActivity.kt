@@ -424,11 +424,6 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
 
     override fun onResume() {
         super.onResume()
-        // Переподключаем WebSocket если был разорван
-        if (ws == null || ws?.send("{"type":"ping"}") == false) {
-            log("WS reconnect on resume")
-            connectWebSocket()
-        }
         // Принудительно восстанавливаем экран чатов
         chatsScreen.visibility = View.VISIBLE
         profileScreen.visibility = View.GONE
@@ -907,6 +902,9 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             ws = client.newWebSocket(
                 Request.Builder().url(wsUrl).build(),
                 object : WebSocketListener() {
+                    override fun onOpen(webSocket: WebSocket, response: okhttp3.Response) {
+                        mainWs = webSocket
+                    }
                     override fun onMessage(webSocket: WebSocket, text: String) {  log("WS received: ${text.take(50)}...")
                         try {
                             val j = JSONObject(text)

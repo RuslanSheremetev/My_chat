@@ -107,7 +107,7 @@ class CallActivity : AppCompatActivity() {
             peerConnection = factory?.createPeerConnection(rtcConfig, object : PeerConnection.Observer {
                 override fun onIceCandidate(candidate: IceCandidate?) {
                     candidate?.let {
-                        ws?.send(JSONObject().apply {
+                        com.mychat.app.MainActivity.sendCallSignal(JSONObject().apply {
                             put("type", "ice_candidate")
                             put("from", me)
                             put("candidate", JSONObject().apply {
@@ -168,7 +168,7 @@ class CallActivity : AppCompatActivity() {
                         override fun onCreateSuccess(sdp: SessionDescription?) {
                             logToServer("answer created")
                             peerConnection?.setLocalDescription(this, sdp)
-                            ws?.send(JSONObject().apply {
+                            com.mychat.app.MainActivity.sendCallSignal(JSONObject().apply {
                                 put("type", "call_answer")
                                 put("from", me)
                                 put("to", intent.getStringExtra("name"))
@@ -212,13 +212,11 @@ class CallActivity : AppCompatActivity() {
         
     private fun connectSignaling() {
         logToServer("connecting")
-        val client = OkHttpClient()
         val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
-        val token = prefs.getString("token", "") ?: ""
         me = prefs.getString("username", "") ?: ""
-        val request = Request.Builder().url("ws://2.26.71.102:8000/ws/$me?token=$token").build()
-        ws = client.newWebSocket(request, object : WebSocketListener() {
-            override fun onMessage(webSocket: WebSocket, text: String) {
+        ws = com.mychat.app.MainActivity.mainWs
+        com.mychat.app.MainActivity.onSignalingMessage = { text ->
+            try {
                 val msg = JSONObject(text)
                 runOnUiThread {
                     when (msg.optString("type")) {
@@ -231,8 +229,8 @@ class CallActivity : AppCompatActivity() {
                         "call_end" -> endCall()
                     }
                 }
-            }
-        })
+            } catch (_: Exception) {}
+        }
     }
     
     private fun createOffer() {
@@ -241,7 +239,7 @@ class CallActivity : AppCompatActivity() {
             override fun onCreateSuccess(sdp: SessionDescription?) {
                 logToServer("offer created")
                 peerConnection?.setLocalDescription(this, sdp)
-                ws?.send(JSONObject().apply {
+                com.mychat.app.MainActivity.sendCallSignal(JSONObject().apply {
                     put("type", "call_offer")
                     put("from", me)
                     put("to", intent.getStringExtra("name"))
@@ -298,7 +296,7 @@ class CallActivity : AppCompatActivity() {
         logToServer("ending")
         stopRingtone()
         isRunning = false
-        ws?.send(JSONObject().apply { put("type", "call_end"); put("from", me) }.toString())
+        com.mychat.app.MainActivity.sendCallSignal(JSONObject().apply { put("type", "call_end"); put("from", me) }.toString())
         handler.postDelayed({
             peerConnection?.close()
             factory?.dispose()
