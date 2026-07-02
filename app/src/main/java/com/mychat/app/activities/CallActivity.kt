@@ -30,6 +30,7 @@ class CallActivity : AppCompatActivity() {
     private var ringtonePlayer: android.media.MediaPlayer? = null
     private var isCaller = false
     private var me = ""
+    private var remoteSdp: JSONObject? = null
     private var incomingActions: android.view.View? = null
     private var btnAccept: ImageButton? = null
     private var btnDecline: ImageButton? = null
@@ -54,6 +55,12 @@ class CallActivity : AppCompatActivity() {
         setContentView(R.layout.activity_call)
         
         val name = intent.getStringExtra("name") ?: "Пользователь"
+        val sdpStr = intent.getStringExtra("sdp")
+        if (!sdpStr.isNullOrEmpty()) {
+            try {
+                remoteSdp = JSONObject(sdpStr)
+            } catch (_: Exception) {}
+        }
         findViewById<TextView>(R.id.callName).text = name
         findViewById<TextView>(R.id.callAvatar).text = name.take(1).uppercase()
         isCaller = intent.getBooleanExtra("caller", true)
@@ -146,35 +153,40 @@ class CallActivity : AppCompatActivity() {
     }
     
     private fun acceptCall() {
-        try {
         logToServer("accepted")
         incomingActions?.visibility = android.view.View.GONE
         callStatus?.text = "Соединение..."
-        initWebRTC()
-        // Отправляем answer (после того как создан peerConnection)
-        handler.postDelayed({
-            try {
-            peerConnection?.createAnswer(object : SdpObserver {
-                override fun onCreateSuccess(sdp: SessionDescription?) {
-                logToServer("offer created")
-                    peerConnection?.setLocalDescription(this, sdp)
-                    ws?.send(JSONObject().apply {
-                        put("type", "call_answer")
-                        put("from", me)
-                        put("to", intent.getStringExtra("name"))
-                        put("sdp", JSONObject().apply {
-                            put("type", sdp?.type?.canonicalForm())
-                            put("description", sdp?.description)
-                        })
-                    }.toString())
+        // Устанавливаем remote SDP из offer
+        remoteSdp?.let { sdp ->
+            val type = SessionDescription.Type.fromCanonicalForm(sdp.optString("type", "offer"))
+            val desc = sdp.optString("description", "")
+            peerConnection?.setRemoteDescription(object : SdpObserver {
+                override fun onCreateSuccess(p0: SessionDescription?) {}
+                override fun onSetSuccess() {
+                    logToServer("remote desc set, creating answer")
+                    peerConnection?.createAnswer(object : SdpObserver {
+                        override fun onCreateSuccess(sdp: SessionDescription?) {
+                            logToServer("answer created")
+                            peerConnection?.setLocalDescription(this, sdp)
+                            ws?.send(JSONObject().apply {
+                                put("type", "call_answer")
+                                put("from", me)
+                                put("to", intent.getStringExtra("name"))
+                                put("sdp", JSONObject().apply {
+                                    put("type", sdp?.type?.canonicalForm())
+                                    put("description", sdp?.description)
+                                })
+                            }.toString())
+                        }
+                        override fun onSetSuccess() {}
+                        override fun onCreateFailure(error: String?) { logToServer("Answer error: $error") }
+                        override fun onSetFailure(error: String?) {}
+                    }, MediaConstraints())
                 }
-                override fun onSetSuccess() {}
-                override fun onCreateFailure(error: String?) { t("Answer: $error") }
+                override fun onCreateFailure(error: String?) {}
                 override fun onSetFailure(error: String?) {}
-            }, MediaConstraints())
-            } catch (e: Exception) { logToServer("answer error: ${e.message}") }
-        }, 500)
-        } catch (e: Exception) { logToServer("accept error: ${e.message}") }
+            }, SessionDescription(type, desc))
+        }
     }
     
     private fun playRingtone(isOutgoing: Boolean) {
@@ -210,6 +222,10 @@ class CallActivity : AppCompatActivity() {
                 val msg = JSONObject(text)
                 runOnUiThread {
                     when (msg.optString("type")) {
+                        "call_offer" -> {
+                            remoteSdp = msg.optJSONObject("sdp")
+                            logToServer("got remote offer")
+                        }
                         "call_answer" -> onAnswerReceived(msg.optJSONObject("sdp"))
                         "ice_candidate" -> onIceCandidate(msg.optJSONObject("candidate"))
                         "call_end" -> endCall()

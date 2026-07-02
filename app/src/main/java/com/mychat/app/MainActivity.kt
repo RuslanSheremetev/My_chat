@@ -913,6 +913,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             val intent = android.content.Intent(this@MainActivity, com.mychat.app.activities.CallActivity::class.java).apply {
                                 putExtra("name", from)
                                 putExtra("caller", false)
+                                putExtra("sdp", j.optJSONObject("sdp")?.toString() ?: "")
                             }
                             startActivity(intent)
                         }
