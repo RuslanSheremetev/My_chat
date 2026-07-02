@@ -25,6 +25,11 @@ class QrLoginActivity : AppCompatActivity() {
     }
 
     private fun startQRScanner() {
+        val intent = Intent(this, QrScannerActivity::class.java)
+            startActivityForResult(intent, 100)
+            return
+        }
+        // Старый код (запасной)
         IntentIntegrator(this).apply {
             setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
             setPrompt("Наведите камеру на QR-код")

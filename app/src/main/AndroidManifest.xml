@@ -12,6 +12,7 @@
         android:theme="@style/T"
         android:usesCleartextTraffic="true">
         
+        <activity android:name=".activities.QrScannerActivity" android:screenOrientation="portrait" />
         <activity android:name=".activities.QrLoginActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
