@@ -166,6 +166,15 @@ class CallActivity : AppCompatActivity() {
                 override fun onAddStream(stream: MediaStream?) {}
                 override fun onRemoveStream(stream: MediaStream?) {}
             })
+            // Аудио-трек
+            try {
+                val audioSource = factory?.createAudioSource(MediaConstraints())
+                val audioTrack = factory?.createAudioTrack("audio0", audioSource)
+                peerConnection?.addTrack(audioTrack)
+                logToServer("audio track added")
+            } catch (e: Exception) {
+                logToServer("audio error: ${e.message}")
+            }
             
             if (isCaller) {
                 createOffer()
