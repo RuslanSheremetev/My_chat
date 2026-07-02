@@ -61,7 +61,7 @@ class QrLoginActivity : AppCompatActivity() {
             put("qr_token", qrToken)
             put("device_name", android.os.Build.MODEL)
         }
-        val body = json.toString().toRequestBody("application/json".toMediaType())
+        val body = json.toString().toRequestBody(okhttp3.MediaType.Companion.toMediaType("application/json"))
         val request = Request.Builder()
             .url("http://2.26.71.102:8000/api/qr/login")
             .post(body)
