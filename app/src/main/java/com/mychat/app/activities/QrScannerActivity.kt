@@ -6,8 +6,8 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.zxing.BarcodeFormat
-import com.google.zxing.Result
 import com.journeyapps.barcodescanner.BarcodeCallback
+import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.BarcodeView
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.mychat.app.R
@@ -22,7 +22,7 @@ class QrScannerActivity : AppCompatActivity() {
         barcodeView = findViewById(R.id.barcodeView)
         barcodeView.setDecoderFactory(DefaultDecoderFactory(listOf(BarcodeFormat.QR_CODE)))
         barcodeView.decodeContinuous(object : BarcodeCallback {
-            override fun barcodeResult(result: Result?) {
+            override fun barcodeResult(result: BarcodeResult?) {
                 result?.let {
                     val data = it.text
                     val token = if (data.contains("token=")) {
