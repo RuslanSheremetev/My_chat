@@ -138,6 +138,7 @@
             android:visibility="visible">
 
             <include layout="@layout/search_overlay" />
+    <include layout="@layout/search_stories_overlay" />
 
             <LinearLayout
                 android:id="@+id/mainHeader"
