@@ -8,13 +8,8 @@ import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import com.mychat.app.MainActivity
 import com.mychat.app.R
-import okhttp3.*
-import org.json.JSONObject
-import java.io.IOException
 
 class QrLoginActivity : AppCompatActivity() {
-    private val client = OkHttpClient()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qr_login)
@@ -42,56 +37,18 @@ class QrLoginActivity : AppCompatActivity() {
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null && result.contents != null) {
             val scannedData = result.contents
-            val qrToken = if (scannedData.contains("token=")) {
+            val token = if (scannedData.contains("token=")) {
                 scannedData.substringAfter("token=").substringBefore("&")
             } else {
                 scannedData
             }
-            loginWithQR(qrToken)
+            val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
+            prefs.edit().putString("token", token).apply()
+            Toast.makeText(this, "QR отсканирован! Токен сохранён", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
-    }
-
-    private fun loginWithQR(qrToken: String) {
-        val json = JSONObject()
-        json.put("qr_token", qrToken)
-        json.put("device_name", android.os.Build.MODEL)
-        
-        val body = RequestBody.create(MediaType.parse("application/json"), json.toString())
-        val request = Request.Builder()
-            .url("http://2.26.71.102:8000/api/qr/login")
-            .post(body)
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                runOnUiThread {
-                    Toast.makeText(this@QrLoginActivity, "Ошибка сети", Toast.LENGTH_SHORT).show()
-                }
-            }
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val respBody = response.body()?.string() ?: ""
-                    val respJson = JSONObject(respBody)
-                    val accessToken = respJson.optString("access_token")
-                    val username = respJson.optString("username")
-                    val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this@QrLoginActivity)
-                    prefs.edit()
-                        .putString("token", accessToken)
-                        .putString("username", username)
-                        .apply()
-                    runOnUiThread {
-                        Toast.makeText(this@QrLoginActivity, "Вход выполнен!", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this@QrLoginActivity, MainActivity::class.java))
-                        finish()
-                    }
-                } else {
-                    runOnUiThread {
-                        Toast.makeText(this@QrLoginActivity, "QR-код недействителен", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        })
     }
 }
