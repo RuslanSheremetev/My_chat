@@ -1351,7 +1351,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             bottomSheet.dismiss()
             pickPhoto()
         }
-        view.findViewById<LinearLayout>(R.id.attachFile).setOnClickListener {
+        view.findViewById<LinearLayout>(R.id.attachLocation).setOnClickListener {
+                bottomSheet.dismiss()
+                t("Геолокация будет позже")
+            }
+            view.findViewById<LinearLayout>(R.id.attachFile).setOnClickListener {
             bottomSheet.dismiss()
             pickFile()
         }

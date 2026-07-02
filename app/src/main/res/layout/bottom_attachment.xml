@@ -3,56 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="#1a1a1a"
-    android:paddingTop="20dp"
-    android:paddingBottom="30dp">
+    android:background="#1e1e1e"
+    android:paddingTop="16dp"
+    android:paddingBottom="24dp">
 
     <View
-        android:layout_width="40dp"
+        android:layout_width="36dp"
         android:layout_height="4dp"
-        android:background="#444444"
+        android:background="#444"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp">
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
 
-        <!-- Камера -->
-        <LinearLayout
-            android:id="@+id/attachCamera"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="10dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground">
-
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/ic_camera"
-                android:background="@drawable/bg_attach_icon"
-                android:padding="17dp"
-                android:tint="#ffffff"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Камера"
-                android:textSize="12sp"
-                android:textColor="#a0a0a0"
-                android:layout_marginTop="8dp"/>
-        </LinearLayout>
-
-        <!-- Галерея -->
+        <!-- Фото/Галерея -->
         <LinearLayout
             android:id="@+id/attachGallery"
             android:layout_width="0dp"
@@ -60,26 +30,24 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="8dp"
             android:clickable="true"
             android:focusable="true"
             android:background="?attr/selectableItemBackground">
-
             <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
                 android:src="@drawable/ic_gallery"
                 android:background="@drawable/bg_attach_icon"
-                android:padding="17dp"
-                android:tint="#ffffff"/>
-
+                android:padding="14dp"
+                android:tint="#2AABEE" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Галерея"
-                android:textSize="12sp"
-                android:textColor="#a0a0a0"
-                android:layout_marginTop="8dp"/>
+                android:textSize="11sp"
+                android:textColor="#888"
+                android:layout_marginTop="6dp" />
         </LinearLayout>
 
         <!-- Файл -->
@@ -90,26 +58,80 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="8dp"
             android:clickable="true"
             android:focusable="true"
             android:background="?attr/selectableItemBackground">
-
             <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/ic_paperclip"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:src="@drawable/ic_file"
                 android:background="@drawable/bg_attach_icon"
-                android:padding="17dp"
-                android:tint="#ffffff"/>
-
+                android:padding="14dp"
+                android:tint="#FF9500" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Файл"
-                android:textSize="12sp"
-                android:textColor="#a0a0a0"
-                android:layout_marginTop="8dp"/>
+                android:textSize="11sp"
+                android:textColor="#888"
+                android:layout_marginTop="6dp" />
+        </LinearLayout>
+
+        <!-- Геолокация -->
+        <LinearLayout
+            android:id="@+id/attachLocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+            <ImageView
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:src="@drawable/ic_location"
+                android:background="@drawable/bg_attach_icon"
+                android:padding="14dp"
+                android:tint="#34C759" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Место"
+                android:textSize="11sp"
+                android:textColor="#888"
+                android:layout_marginTop="6dp" />
+        </LinearLayout>
+
+        <!-- Камера -->
+        <LinearLayout
+            android:id="@+id/attachCamera"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+            <ImageView
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:src="@drawable/ic_camera"
+                android:background="@drawable/bg_attach_icon"
+                android:padding="14dp"
+                android:tint="#FF3B30" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Камера"
+                android:textSize="11sp"
+                android:textColor="#888"
+                android:layout_marginTop="6dp" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
