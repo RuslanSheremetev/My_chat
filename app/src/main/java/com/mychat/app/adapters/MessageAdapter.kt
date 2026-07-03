@@ -427,8 +427,6 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         val match = regex.find(text) ?: return
         val videoId = match.groupValues[1]
         val preview = view.findViewById<LinearLayout>(R.id.ytPreview) ?: return
-        preview.visibility = View.VISIBLE
-        view.findViewById<TextView>(R.id.ytTitle)?.text = "Загрузка..."
         thread {
             try {
                 val json = org.json.JSONObject(java.net.URL("https://www.youtube.com/oembed?url=https://youtube.com/watch?v=$videoId&format=json").readText())
@@ -436,6 +434,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
                 val bytes = java.net.URL("https://img.youtube.com/vi/$videoId/0.jpg").readBytes()
                 val bmp = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                 view.post {
+                    preview.visibility = View.VISIBLE
                     view.findViewById<ImageView>(R.id.ytThumbnail)?.setImageBitmap(bmp)
                     view.findViewById<TextView>(R.id.ytTitle)?.text = title
                     preview.setOnClickListener {
