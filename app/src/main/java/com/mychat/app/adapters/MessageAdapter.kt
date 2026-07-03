@@ -462,7 +462,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         
         thread {
             try {
-                val json = org.json.JSONObject(java.net.URL("http://2.26.71.102:8000/api/preview?url=$url&token=TEMP").readText())
+                val json = org.json.JSONObject(java.net.URL("http://2.26.71.102:8000/api/preview?url=$url&token=${me}").readText())
                 val title = json.optString("title", "")
                 val desc = json.optString("description", "")
                 val image = json.optString("image", "")
