@@ -40,10 +40,42 @@ class QrLoginActivity : AppCompatActivity() {
                     } else data
                     
                     val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this@QrLoginActivity)
-                    prefs.edit()
-                        .putString("token", token)
-                        .putString("username", "Ruslan")  // временно, потом сервер будет возвращать
-                        .apply()
+                    // Запрашиваем данные пользователя с сервера
+                    thread {
+                        try {
+                            val resp = okhttp3.OkHttpClient().newCall(
+                                okhttp3.Request.Builder().url("http://2.26.71.102:8000/api/qr/login")
+                                    .post(okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/json"), """{"qr_token":"$token"}"""))
+                                    .build()
+                            ).execute()
+                            if (resp.isSuccessful) {
+                                val json = org.json.JSONObject(resp.body()?.string() ?: "")
+                                val accessToken = json.optString("access_token")
+                                val username = json.optString("username")
+                                runOnUiThread {
+                                    prefs.edit()
+                                        .putString("token", accessToken.ifEmpty { token })
+                                        .putString("username", username.ifEmpty { "Ruslan" })
+                                        .apply()
+                                    Toast.makeText(this@QrLoginActivity, "Вход выполнен!", Toast.LENGTH_SHORT).show()
+                                    startActivity(Intent(this@QrLoginActivity, MainActivity::class.java))
+                                    finish()
+                                }
+                            } else {
+                                runOnUiThread {
+                                    prefs.edit().putString("token", token).putString("username", "Ruslan").apply()
+                                    startActivity(Intent(this@QrLoginActivity, MainActivity::class.java))
+                                    finish()
+                                }
+                            }
+                        } catch (e: Exception) {
+                            runOnUiThread {
+                                prefs.edit().putString("token", token).putString("username", "Ruslan").apply()
+                                startActivity(Intent(this@QrLoginActivity, MainActivity::class.java))
+                                finish()
+                            }
+                        }
+                    }
                     
                     runOnUiThread {
                         Toast.makeText(this@QrLoginActivity, "Вход выполнен!", Toast.LENGTH_SHORT).show()
