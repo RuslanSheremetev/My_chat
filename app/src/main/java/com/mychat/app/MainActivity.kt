@@ -1334,7 +1334,41 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
     }
 
 
-    private fun sendMessageTo(to: String, text: String) {
+    private fun showScheduleDialog() {
+        val text = msgInput.text.toString().trim()
+        if (text.isEmpty() || selId.isEmpty()) { t("Введите сообщение"); return }
+        val options = arrayOf("Через 1 час", "Через 3 часа", "Завтра 9:00", "Завтра 18:00")
+        AlertDialog.Builder(this)
+            .setTitle("⏰ Отправить позже")
+            .setItems(options) { _, which ->
+                val now = java.util.Calendar.getInstance()
+                when (which) {
+                    0 -> now.add(java.util.Calendar.HOUR_OF_DAY, 1)
+                    1 -> now.add(java.util.Calendar.HOUR_OF_DAY, 3)
+                    2 -> { now.add(java.util.Calendar.DAY_OF_MONTH, 1); now.set(java.util.Calendar.HOUR_OF_DAY, 9); now.set(java.util.Calendar.MINUTE, 0) }
+                    3 -> { now.add(java.util.Calendar.DAY_OF_MONTH, 1); now.set(java.util.Calendar.HOUR_OF_DAY, 18); now.set(java.util.Calendar.MINUTE, 0) }
+                }
+                val timeStr = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault()).format(now.time)
+                val json = org.json.JSONObject().apply {
+                    put("token", token)
+                    put("to", selId)
+                    put("text", text)
+                    put("scheduled_at", timeStr)
+                }
+                val body = okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/json"), json.toString())
+                val req = okhttp3.Request.Builder().url("$server/api/message/schedule").post(body).build()
+                client.newCall(req).enqueue(object : okhttp3.Callback {
+                    override fun onFailure(call: okhttp3.Call, e: java.io.IOException) {}
+                    override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                        runOnUiThread { t("✅ Отложено") }
+                    }
+                })
+                msgInput.text.clear()
+            }
+            .show()
+    }
+
+private fun sendMessageTo(to: String, text: String) {
         val json = JSONObject().apply {
             put("type", "private")
             put("to", to)
