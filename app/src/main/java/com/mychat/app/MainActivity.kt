@@ -1355,7 +1355,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     put("text", text)
                     put("scheduled_at", timeStr)
                 }
-                val body = okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/json"), json.toString())
+                val body = okhttp3.RequestBody.create("application/json".toMediaType(), json.toString())
                 val req = okhttp3.Request.Builder().url("$server/api/message/schedule").post(body).build()
                 client.newCall(req).enqueue(object : okhttp3.Callback {
                     override fun onFailure(call: okhttp3.Call, e: java.io.IOException) {}
