@@ -938,7 +938,15 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         }
         view.findViewById<LinearLayout>(R.id.actionDelete)?.setOnClickListener {
             bottomSheet.dismiss()
-            deleteMessage(msg)
+            AlertDialog.Builder(this)
+                    .setTitle("Удалить сообщение?")
+                    .setPositiveButton("У всех") { _, _ -> deleteMessage(msg) }
+                    .setNegativeButton("Только у меня") { _, _ ->
+                        thread { db.messageDao().markDeleted(msg.id) }
+                        msgAdapter.markDeleted(msg.id)
+                    }
+                    .setNeutralButton("Отмена", null)
+                    .show()
         }
         
         log("UI: bottomSheet show"); bottomSheet.show()
