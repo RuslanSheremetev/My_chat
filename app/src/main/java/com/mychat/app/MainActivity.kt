@@ -1035,8 +1035,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         val isBot = o.optBoolean("is_bot", false)
                         val online = o.optBoolean("online", false)
                         
-                        if (!isGroup && !isFeed) {
-                            userList.add(
+                        userList.add(
                                 User(
                                     username = username,
                                     avatarColor = o.optString("avatar_color", "#2AABEE"),
@@ -1049,7 +1048,6 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     name = finalName
                                 )
                             )
-                        }
                     }
                     
                     for (user in userList) {
