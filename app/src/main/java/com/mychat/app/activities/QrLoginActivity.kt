@@ -11,6 +11,8 @@ import com.journeyapps.barcodescanner.BarcodeView
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.mychat.app.MainActivity
 import com.mychat.app.R
+import kotlin.concurrent.thread
+import okhttp3.MediaType.Companion.toMediaType
 
 class QrLoginActivity : AppCompatActivity() {
     private lateinit var barcodeView: BarcodeView
@@ -45,11 +47,11 @@ class QrLoginActivity : AppCompatActivity() {
                         try {
                             val resp = okhttp3.OkHttpClient().newCall(
                                 okhttp3.Request.Builder().url("http://2.26.71.102:8000/api/qr/login")
-                                    .post(okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/json"), """{"qr_token":"$token"}"""))
+                                    .post(okhttp3.RequestBody.create("application/json".toMediaType(), """{"qr_token":"$token"}"""))
                                     .build()
                             ).execute()
                             if (resp.isSuccessful) {
-                                val json = org.json.JSONObject(resp.body()?.string() ?: "")
+                                val json = org.json.JSONObject(resp.body?.string() ?: "")
                                 val accessToken = json.optString("access_token")
                                 val username = json.optString("username")
                                 runOnUiThread {
