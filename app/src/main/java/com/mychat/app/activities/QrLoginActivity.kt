@@ -22,6 +22,16 @@ class QrLoginActivity : AppCompatActivity() {
     private val client = OkHttpClient()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Проверяем, авторизован ли уже пользователь
+        val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
+        val savedToken = prefs.getString("token", "") ?: ""
+        val savedUser = prefs.getString("username", "") ?: ""
+        if (savedToken.isNotEmpty() && savedUser.isNotEmpty()) {
+            // Уже авторизован - сразу в чат
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qr_login)
 
