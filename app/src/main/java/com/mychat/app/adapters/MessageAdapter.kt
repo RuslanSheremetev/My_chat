@@ -143,7 +143,6 @@ class MessageAdapter(
                     holder.itemView.findViewById<LinearLayout>(R.id.ytPreview)?.visibility = View.GONE
                     holder.text.visibility = View.VISIBLE
                 if (item.file?.url.isNullOrEmpty() == true) // Link preview disabled
-                    // YouTube disabled
                     val vp = holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)
                     if (vp != null) vp.visibility = View.GONE
                 }
@@ -228,7 +227,6 @@ class MessageAdapter(
                     holder.itemView.findViewById<LinearLayout>(R.id.ytPreview)?.visibility = View.GONE
                     holder.text.visibility = View.VISIBLE
                     if (item.file?.url.isNullOrEmpty() == true) // Link preview disabled
-                    // YouTube disabled
                     val vp = holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)
                     if (vp != null) vp.visibility = View.GONE
                 }
