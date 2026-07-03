@@ -30,6 +30,19 @@ class QrLoginActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        // Результат от QrScannerActivity
+        if (requestCode == 100 && resultCode == RESULT_OK) {
+            val token = data?.getStringExtra("qr_token") ?: ""
+            if (token.isNotEmpty()) {
+                val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
+                prefs.edit().putString("token", token).apply()
+                Toast.makeText(this, "Вход выполнен!", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+                return
+            }
+        }
+        // Старый результат от ZXing
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null && result.contents != null) {
             val scannedData = result.contents
@@ -40,7 +53,7 @@ class QrLoginActivity : AppCompatActivity() {
             }
             val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
             prefs.edit().putString("token", token).apply()
-            Toast.makeText(this, "QR отсканирован! Токен сохранён", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "QR отсканирован!", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         } else {
