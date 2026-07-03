@@ -456,7 +456,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
 
 
     private fun showLinkPreview(view: View, text: String) {
-        val regex = Regex("https?://[^\s]+")
+        val regex = Regex("https?://[\\w\\d./?=&#%:_-]+")
         val url = regex.find(text)?.value ?: return
         val preview = view.findViewById<LinearLayout>(R.id.linkPreview) ?: return
         
