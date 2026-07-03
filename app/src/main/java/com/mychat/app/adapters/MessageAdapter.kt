@@ -139,7 +139,7 @@ class MessageAdapter(
         }
         holder.text.text = sp
                     holder.text.visibility = View.VISIBLE
-                if (item.file == null) showYoutubePreview(holder.itemView, item.text)
+                if (item.file?.url.isNullOrEmpty() == true) showYoutubePreview(holder.itemView, item.text)
                     val vp = holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)
                     if (vp != null) vp.visibility = View.GONE
                 }
@@ -219,7 +219,7 @@ class MessageAdapter(
         }
         holder.text.text = sp
                     holder.text.visibility = View.VISIBLE
-                    if (item.file == null) showYoutubePreview(holder.itemView, item.text)
+                    if (item.file?.url.isNullOrEmpty() == true) showYoutubePreview(holder.itemView, item.text)
                     val vp = holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)
                     if (vp != null) vp.visibility = View.GONE
                 }
