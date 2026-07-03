@@ -138,6 +138,8 @@ class MessageAdapter(
             sp.setSpan(android.text.style.ForegroundColorSpan(0xFFFF5E8E.toInt()), m.range.first, m.range.last + 1, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
         holder.text.text = sp
+                    holder.text.autoLinkMask = android.text.util.Linkify.WEB_URLS
+                    holder.text.movementMethod = android.text.method.LinkMovementMethod.getInstance()
                     holder.itemView.findViewById<LinearLayout>(R.id.ytPreview)?.visibility = View.GONE
                     holder.text.visibility = View.VISIBLE
                 if (item.file?.url.isNullOrEmpty() == true) showYoutubePreview(holder.itemView, item.text)
@@ -219,6 +221,8 @@ class MessageAdapter(
             sp.setSpan(android.text.style.ForegroundColorSpan(0xFFFF5E8E.toInt()), m.range.first, m.range.last + 1, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
         holder.text.text = sp
+                    holder.text.autoLinkMask = android.text.util.Linkify.WEB_URLS
+                    holder.text.movementMethod = android.text.method.LinkMovementMethod.getInstance()
                     holder.itemView.findViewById<LinearLayout>(R.id.ytPreview)?.visibility = View.GONE
                     holder.itemView.findViewById<LinearLayout>(R.id.ytPreview)?.visibility = View.GONE
                     holder.text.visibility = View.VISIBLE
