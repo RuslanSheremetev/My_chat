@@ -221,6 +221,11 @@ class MainActivity : AppCompatActivity() {
         })
         chatList = findViewById(R.id.chatList)
         messagesList = findViewById(R.id.messagesList)
+        // Свайп вправо для возврата в список чатов
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            override fun onMove(r: RecyclerView, vh: RecyclerView.ViewHolder, t: RecyclerView.ViewHolder) = false
+            override fun onSwiped(vh: RecyclerView.ViewHolder, dir: Int) { closeChat() }
+        }).attachToRecyclerView(messagesList)
         replyPreview = findViewById(R.id.replyPreview)
         previewAuthor = replyPreview.findViewById(R.id.previewAuthor)
         previewText = replyPreview.findViewById(R.id.previewText)
