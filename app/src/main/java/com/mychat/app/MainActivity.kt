@@ -1713,7 +1713,7 @@ private fun sendMessageTo(to: String, text: String) {
             chatAdapter.selectedPosition = index
             chatAdapter.notifyDataSetChanged()
         // Сохраняем в SharedPreferences для быстрой загрузки
-        prefs.edit().putBoolean("mute_$selId", isMuted).apply()
+        val p = PreferenceManager.getDefaultSharedPreferences(this); p.edit().putBoolean("mute_$selId", isMuted).apply()
         }
         
         // Показываем меню с анимацией
