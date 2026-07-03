@@ -733,7 +733,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             onMessageLongClick = { msg -> showMessageActions(msg) },
             onSaveReaction = { msgId, json ->
                 kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
-                    db.messageDao().updateReactions(msgId, json)
+                    log("Saved to Room: $msgId")
+                            db.messageDao().updateReactions(msgId, json)
                 }
             },
             appContext = applicationContext,
@@ -1770,6 +1771,7 @@ private fun sendMessageTo(to: String, text: String) {
     private fun loadReactions(msgs: List<ChatMessage>) {
         if (msgs.isEmpty()) return
         log("loadReactions: ${msgs.size} messages (batch)")
+        android.util.Log.d("REACTION_ROOM", "loadReactions called with ${msgs.size} messages")
         
         val ids = org.json.JSONArray()
         msgs.forEach { ids.put(it.id) }
@@ -2127,7 +2129,8 @@ private fun sendMessageTo(to: String, text: String) {
                                 onMessageLongClick = { msg -> showMessageActions(msg) },
                                 onSaveReaction = { msgId, json ->
                                     kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
-                                        db.messageDao().updateReactions(msgId, json)
+                                        log("Saved to Room: $msgId")
+                            db.messageDao().updateReactions(msgId, json)
                                     }
                                 },
                                 appContext = applicationContext,
