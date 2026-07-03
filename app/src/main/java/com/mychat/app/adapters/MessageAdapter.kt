@@ -138,6 +138,7 @@ class MessageAdapter(
             sp.setSpan(android.text.style.ForegroundColorSpan(0xFFFF5E8E.toInt()), m.range.first, m.range.last + 1, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
         holder.text.text = sp
+                    holder.itemView.findViewById<LinearLayout>(R.id.ytPreview)?.visibility = View.GONE
                     holder.text.visibility = View.VISIBLE
                 if (item.file?.url.isNullOrEmpty() == true) showYoutubePreview(holder.itemView, item.text)
                     val vp = holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)
@@ -218,6 +219,8 @@ class MessageAdapter(
             sp.setSpan(android.text.style.ForegroundColorSpan(0xFFFF5E8E.toInt()), m.range.first, m.range.last + 1, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
         holder.text.text = sp
+                    holder.itemView.findViewById<LinearLayout>(R.id.ytPreview)?.visibility = View.GONE
+                    holder.itemView.findViewById<LinearLayout>(R.id.ytPreview)?.visibility = View.GONE
                     holder.text.visibility = View.VISIBLE
                     if (item.file?.url.isNullOrEmpty() == true) showYoutubePreview(holder.itemView, item.text)
                     val vp = holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)
