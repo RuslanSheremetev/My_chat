@@ -11,6 +11,7 @@ import com.journeyapps.barcodescanner.BarcodeView
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.mychat.app.MainActivity
 import com.mychat.app.R
+import kotlin.concurrent.thread
 
 class QrLoginActivity : AppCompatActivity() {
     private lateinit var barcodeView: BarcodeView
@@ -43,13 +44,48 @@ class QrLoginActivity : AppCompatActivity() {
                     } else "Ruslan"
                     
                     val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this@QrLoginActivity)
-                    prefs.edit()
-                        .putString("token", token)
-                        .putString("username", username)
-                        .apply()
-                    Toast.makeText(this@QrLoginActivity, "Вход выполнен!", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this@QrLoginActivity, MainActivity::class.java))
-                    finish()
+                    // Обмениваем qr_token на access_token
+                    thread {
+                        try {
+                            val client = okhttp3.OkHttpClient()
+                            val body = okhttp3.RequestBody.create(
+                                okhttp3.MediaType.parse("application/json"),
+                                """{"qr_token":"$token","device_name":"Android"}"""
+                            )
+                            val request = okhttp3.Request.Builder()
+                                .url("http://2.26.71.102:8000/api/qr/login")
+                                .post(body)
+                                .build()
+                            val response = client.newCall(request).execute()
+                            if (response.isSuccessful) {
+                                val respBody = response.body()?.string() ?: ""
+                                val json = org.json.JSONObject(respBody)
+                                val accessToken = json.optString("access_token")
+                                val user = json.optString("username", username)
+                                runOnUiThread {
+                                    prefs.edit()
+                                        .putString("token", accessToken.ifEmpty { token })
+                                        .putString("username", user)
+                                        .apply()
+                                    Toast.makeText(this@QrLoginActivity, "Вход выполнен!", Toast.LENGTH_SHORT).show()
+                                    startActivity(Intent(this@QrLoginActivity, MainActivity::class.java))
+                                    finish()
+                                }
+                            } else {
+                                runOnUiThread {
+                                    prefs.edit().putString("token", token).putString("username", username).apply()
+                                    startActivity(Intent(this@QrLoginActivity, MainActivity::class.java))
+                                    finish()
+                                }
+                            }
+                        } catch (e: Exception) {
+                            runOnUiThread {
+                                prefs.edit().putString("token", token).putString("username", username).apply()
+                                startActivity(Intent(this@QrLoginActivity, MainActivity::class.java))
+                                finish()
+                            }
+                        }
+                    }
                     
                     runOnUiThread {
                         Toast.makeText(this@QrLoginActivity, "Вход выполнен!", Toast.LENGTH_SHORT).show()
