@@ -44,6 +44,8 @@
     <include layout="@layout/item_youtube_preview" />
     <include layout="@layout/item_youtube_preview" />
         <include layout="@layout/item_voice_message" />
+    <include layout="@layout/item_link_preview" />
 </LinearLayout>
 
+    <include layout="@layout/item_link_preview" />
 </LinearLayout>

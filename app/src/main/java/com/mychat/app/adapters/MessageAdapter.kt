@@ -455,7 +455,42 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
     }
 
 
-    private fun showVoicePlayer(view: View, msg: ChatMessage) {
+    private fun showLinkPreview(view: View, text: String) {
+        val regex = Regex("https?://[^\s]+")
+        val url = regex.find(text)?.value ?: return
+        val preview = view.findViewById<LinearLayout>(R.id.linkPreview) ?: return
+        
+        thread {
+            try {
+                val json = org.json.JSONObject(java.net.URL("http://2.26.71.102:8000/api/preview?url=$url&token=TEMP").readText())
+                val title = json.optString("title", "")
+                val desc = json.optString("description", "")
+                val image = json.optString("image", "")
+                
+                if (title.isNotEmpty() || image.isNotEmpty()) {
+                    view.post {
+                        preview.visibility = View.VISIBLE
+                        view.findViewById<TextView>(R.id.previewTitle)?.text = title
+                        view.findViewById<TextView>(R.id.previewDesc)?.text = desc
+                        if (image.isNotEmpty()) {
+                            thread {
+                                try {
+                                    val bytes = java.net.URL(image).readBytes()
+                                    val bmp = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                                    view.post { view.findViewById<ImageView>(R.id.previewImage)?.setImageBitmap(bmp) }
+                                } catch (_: Exception) {}
+                            }
+                        }
+                        preview.setOnClickListener {
+                            view.context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url)))
+                        }
+                    }
+                }
+            } catch (_: Exception) {}
+        }
+    }
+
+private fun showVoicePlayer(view: View, msg: ChatMessage) {
         val player = view.findViewById<LinearLayout>(R.id.voicePlayer) ?: return
         player.visibility = View.VISIBLE
         val url = msg.file?.url ?: msg.text.removePrefix("🎤 Голосовое ").trim()
