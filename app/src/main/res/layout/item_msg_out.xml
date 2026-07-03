@@ -50,6 +50,7 @@
 </LinearLayout>
     <include layout="@layout/reply_quote" />
     <include layout="@layout/item_youtube_preview" />
+    <include layout="@layout/item_youtube_preview" />
 </LinearLayout>
 
 </LinearLayout>
