@@ -1527,6 +1527,10 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             scaleType = ImageView.ScaleType.CENTER
         }
         closeBtn.setOnClickListener { dialog.dismiss() }
+        sendBtn.setOnLongClickListener {
+            showScheduleDialog()
+            true
+        }
         sendBtn.setOnClickListener {
             val caption = captionInput.text.toString().trim()
             uploadFile(uri, caption)
