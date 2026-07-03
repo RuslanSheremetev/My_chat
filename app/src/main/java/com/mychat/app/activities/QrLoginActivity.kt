@@ -4,60 +4,67 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.zxing.integration.android.IntentIntegrator
-import com.google.zxing.integration.android.IntentResult
+import com.google.zxing.BarcodeFormat
+import com.journeyapps.barcodescanner.BarcodeCallback
+import com.journeyapps.barcodescanner.BarcodeResult
+import com.journeyapps.barcodescanner.BarcodeView
+import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.mychat.app.MainActivity
 import com.mychat.app.R
 
 class QrLoginActivity : AppCompatActivity() {
+    private lateinit var barcodeView: BarcodeView
+    private var scanned = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qr_login)
+
+        // Запрашиваем разрешение камеры
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            if (checkSelfPermission(android.Manifest.permission.CAMERA) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(android.Manifest.permission.CAMERA), 100)
+            }
+        }
+
+        barcodeView = findViewById(R.id.barcodeView)
+        barcodeView.setDecoderFactory(DefaultDecoderFactory(listOf(BarcodeFormat.QR_CODE)))
+        barcodeView.decodeContinuous(object : BarcodeCallback {
+            override fun barcodeResult(result: BarcodeResult?) {
+                if (scanned) return
+                result?.let {
+                    scanned = true
+                    val data = it.text
+                    val token = if (data.contains("token=")) {
+                        data.substringAfter("token=").substringBefore("&")
+                    } else data
+                    
+                    val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this@QrLoginActivity)
+                    prefs.edit().putString("token", token).apply()
+                    
+                    runOnUiThread {
+                        Toast.makeText(this@QrLoginActivity, "Вход выполнен!", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this@QrLoginActivity, MainActivity::class.java))
+                        finish()
+                    }
+                }
+            }
+            override fun possibleResultPoints(resultPoints: List<com.google.zxing.ResultPoint>?) {}
+        })
 
         findViewById<android.widget.TextView>(R.id.btnGoToLogin).setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
-
-        findViewById<android.widget.Button>(R.id.btnScanQr).setOnClickListener {
-            startQRScanner()
-        }
     }
 
-    private fun startQRScanner() {
-        val intent = Intent(this, QrScannerActivity::class.java)
-        startActivityForResult(intent, 100)
+    override fun onResume() {
+        super.onResume()
+        barcodeView.resume()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        // Результат от QrScannerActivity
-        if (requestCode == 100 && resultCode == RESULT_OK) {
-            val token = data?.getStringExtra("qr_token") ?: ""
-            if (token.isNotEmpty()) {
-                val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
-                prefs.edit().putString("token", token).apply()
-                Toast.makeText(this, "Вход выполнен!", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
-                return
-            }
-        }
-        // Старый результат от ZXing
-        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-        if (result != null && result.contents != null) {
-            val scannedData = result.contents
-            val token = if (scannedData.contains("token=")) {
-                scannedData.substringAfter("token=").substringBefore("&")
-            } else {
-                scannedData
-            }
-            val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
-            prefs.edit().putString("token", token).apply()
-            Toast.makeText(this, "QR отсканирован!", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
+    override fun onPause() {
+        super.onPause()
+        barcodeView.pause()
     }
 }
