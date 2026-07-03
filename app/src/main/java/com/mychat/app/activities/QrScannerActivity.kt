@@ -18,6 +18,13 @@ class QrScannerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qr_scanner)
+        
+        // Запрашиваем разрешение камеры
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            if (checkSelfPermission(android.Manifest.permission.CAMERA) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(android.Manifest.permission.CAMERA), 100)
+            }
+        }
 
         barcodeView = findViewById(R.id.barcodeView)
         barcodeView.setDecoderFactory(DefaultDecoderFactory(listOf(BarcodeFormat.QR_CODE)))
@@ -44,6 +51,13 @@ class QrScannerActivity : AppCompatActivity() {
 
         findViewById<ImageButton>(R.id.btnScannerBack).setOnClickListener {
             finish()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 100 && grantResults.isNotEmpty() && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            // Разрешение получено, камера заработает
         }
     }
 
