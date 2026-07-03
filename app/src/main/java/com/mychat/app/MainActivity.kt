@@ -1712,6 +1712,8 @@ private fun sendMessageTo(to: String, text: String) {
         if (index >= 0) {
             chatAdapter.selectedPosition = index
             chatAdapter.notifyDataSetChanged()
+        // Сохраняем в SharedPreferences для быстрой загрузки
+        prefs.edit().putBoolean("mute_$selId", isMuted).apply()
         }
         
         // Показываем меню с анимацией
