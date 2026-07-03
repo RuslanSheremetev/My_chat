@@ -40,7 +40,10 @@ class QrLoginActivity : AppCompatActivity() {
                     } else data
                     
                     val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this@QrLoginActivity)
-                    prefs.edit().putString("token", token).apply()
+                    prefs.edit()
+                        .putString("token", token)
+                        .putString("username", "Ruslan")  // временно, потом сервер будет возвращать
+                        .apply()
                     
                     runOnUiThread {
                         Toast.makeText(this@QrLoginActivity, "Вход выполнен!", Toast.LENGTH_SHORT).show()
