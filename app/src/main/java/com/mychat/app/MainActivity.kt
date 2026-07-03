@@ -1831,7 +1831,7 @@ private fun sendMessageTo(to: String, text: String) {
                         log("GET reactions response: ${body.take(100)}")
                         val json = JSONObject(body)
                         val reactionsJson = json.optJSONObject("reactions")
-                        if (reactionsJson != null) {
+                        if (reactionsJson != null && reactionsJson.length() > 0) {
                             val reactions = mutableMapOf<String, MutableList<String>>()
                             reactionsJson.keys().forEach { key ->
                                 val arr = reactionsJson.getJSONArray(key)
