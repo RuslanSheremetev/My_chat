@@ -99,9 +99,9 @@ class ChatAdapter(
             
             // Бейдж (Группа / Лента / Bot)
             when {
-                user.isBot -> { badge.visibility = View.VISIBLE; badge.text = "Bot"; badge.setTextColor(0xff34c759.toInt()); badge.background.setTint(0x1A34c759) }
-                user.isGroup -> { badge.visibility = View.VISIBLE; badge.text = "Группа"; badge.setTextColor(0xffff5e8e.toInt()); badge.background.setTint(0x1Aff5e8e) }
-                user.isFeed -> { badge.visibility = View.VISIBLE; badge.text = "Лента"; badge.setTextColor(0xff3ca0ff.toInt()); badge.background.setTint(0x1A3ca0ff) }
+                user.isBot -> { badge.visibility = View.VISIBLE; badge.text = "Bot"; badge.setTextColor(0xff34c759.toInt()); badge.setBackgroundColor(0x1A34c759) }
+                user.isGroup -> { badge.visibility = View.VISIBLE; badge.text = "Группа"; badge.setTextColor(0xffff5e8e.toInt()); badge.setBackgroundColor(0x1Aff5e8e) }
+                user.isFeed -> { badge.visibility = View.VISIBLE; badge.text = "Лента"; badge.setTextColor(0xff3ca0ff.toInt()); badge.setBackgroundColor(0x1A3ca0ff) }
                 else -> { badge.visibility = View.GONE }
             }
             

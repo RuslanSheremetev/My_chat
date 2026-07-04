@@ -1045,6 +1045,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     avatarUrl = o.optString("avatar_url", ""),
                                     isGroup = false,
                                     isFeed = false,
+                                    isBot = false,
                                     name = finalName
                                 )
                             )
