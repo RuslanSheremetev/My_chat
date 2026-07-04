@@ -578,15 +578,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         context.startActivity(intent)
     }
     
-    private fun formatFileSize(bytes: Long): String {
-        return when {
-            bytes < 1024 -> "$bytes B"
-            bytes < 1024 * 1024 -> "${bytes / 1024} KB"
-            bytes < 1024 * 1024 * 1024 -> "${"%.1f".format(bytes.toDouble() / (1024*1024))} MB"
-            else -> "${"%.1f".format(bytes.toDouble() / (1024*1024*1024))} GB"
-        }
-    }
-
+    
     private fun showVoicePlayer(view: View, msg: ChatMessage) {
         val player = view.findViewById<LinearLayout>(R.id.voicePlayer) ?: return
         player.visibility = View.VISIBLE
