@@ -990,6 +990,15 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         return
                     }
                     if (jtype == "ping") { webSocket.send("{\"type\":\"pong\"}"); return }
+                    if (jtype == "read") {
+                        val from = j.optString("from", "")
+                        val u = users.find { it.username == from }
+                        if (u != null) {
+                            u.lastMsgStatus = "read"
+                            runOnUiThread { chatAdapter.update(users) }
+                        }
+                        return
+                    }
                             if (isBlocked) return
                             if (selId.isNotEmpty()) {
                                 handler.post {
