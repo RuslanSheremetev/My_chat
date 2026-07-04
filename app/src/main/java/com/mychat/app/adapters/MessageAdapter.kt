@@ -598,8 +598,6 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
     private fun showVoicePlayer(view: View, msg: ChatMessage) {
         val player = view.findViewById<LinearLayout>(R.id.voicePlayer) ?: return
         player.visibility = View.VISIBLE
-        val waveform = view.findViewById<com.mychat.app.views.WaveformView>(R.id.waveformView)
-        waveform?.setWaveColor(0xff000000.toInt())  // чёрные палочки
         val url = msg.file?.url ?: msg.text.removePrefix("🎤 Голосовое ").trim()
         if (url.isEmpty() || url == "🎤 Голосовое") return
         val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8000$url"
