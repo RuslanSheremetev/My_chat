@@ -100,7 +100,7 @@ class ChatAdapter(
                 voiceDuration.text = String.format("%d:%02d", mins, secs)
                 voicePlayIcon.text = "▶"
                 voicePlayIcon.setOnClickListener {
-                    playVoice(user.lastFileUrl, waveformView)
+                    playVoice(voicePlayIcon, user.lastFileUrl, waveformView)
                 }
                 waveformView.postInvalidate()
             } else {
