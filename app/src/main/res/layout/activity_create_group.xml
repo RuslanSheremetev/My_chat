@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#121212">
+
+    <!-- Шапка -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="#1e1e1e"
+        android:paddingHorizontal="12dp">
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_arrow_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="#ff5e8e"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Новая группа"
+            android:textSize="18sp"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:layout_marginStart="4dp"/>
+        <Button
+            android:id="@+id/btnCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Создать"
+            android:textSize="14sp"
+            android:textColor="#fff"
+            android:background="@drawable/btn_pink_bg"
+            android:paddingHorizontal="18dp"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Аватарка -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="#1a2a3a"
+                android:paddingTop="28dp"
+                android:paddingBottom="20dp">
+                <TextView
+                    android:id="@+id/groupAvatar"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:gravity="center"
+                    android:text="G"
+                    android:textSize="40sp"
+                    android:textColor="#fff"
+                    android:textStyle="bold"
+                    android:background="@drawable/circle_pink_bg"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Нажмите, чтобы добавить фото"
+                    android:textSize="12sp"
+                    android:textColor="#777777"
+                    android:layout_marginTop="10dp"/>
+            </LinearLayout>
+
+            <!-- Название и описание -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+                <TextView
+                    android:text="ИНФОРМАЦИЯ"
+                    android:textSize="12sp"
+                    android:textColor="#777777"
+                    android:letterSpacing="0.08"
+                    android:layout_marginBottom="8dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="#1e1e1e"
+                    android:paddingHorizontal="16dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingVertical="14dp">
+                        <TextView android:text="НАЗВАНИЕ ГРУППЫ" android:textSize="11sp" android:textColor="#777777"/>
+                        <EditText
+                            android:id="@+id/groupName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Придумайте название"
+                            android:textSize="16sp"
+                            android:textColor="#fff"
+                            android:background="@null"
+                            android:singleLine="true"/>
+                    </LinearLayout>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#2c2c2c"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingVertical="14dp">
+                        <TextView android:text="ОПИСАНИЕ" android:textSize="11sp" android:textColor="#777777"/>
+                        <EditText
+                            android:id="@+id/groupDesc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="О чём эта группа?"
+                            android:textSize="16sp"
+                            android:textColor="#fff"
+                            android:background="@null"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Приватность -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp">
+                <TextView
+                    android:text="НАСТРОЙКИ"
+                    android:textSize="12sp"
+                    android:textColor="#777777"
+                    android:letterSpacing="0.08"
+                    android:layout_marginBottom="8dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="#1e1e1e"
+                    android:padding="16dp">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+                        <TextView android:text="Приватная группа" android:textSize="15sp" android:textColor="#fff"/>
+                        <TextView android:text="Вход только по приглашению" android:textSize="12sp" android:textColor="#777777"/>
+                    </LinearLayout>
+                    <Switch
+                        android:id="@+id/switchPrivate"
+                        android:layout_width="48dp"
+                        android:layout_height="28dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Участники -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+                <TextView
+                    android:text="УЧАСТНИКИ"
+                    android:textSize="12sp"
+                    android:textColor="#777777"
+                    android:letterSpacing="0.08"
+                    android:layout_marginBottom="8dp"/>
+                <LinearLayout
+                    android:id="@+id/membersContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    style="?android:attr/flowLayoutStyle">
+                    <Button
+                        android:id="@+id/btnAddMember"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="+ Добавить"
+                        android:textSize="13sp"
+                        android:textColor="#777777"
+                        android:background="@drawable/btn_dashed_bg"
+                        android:paddingHorizontal="12dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Вы можете добавить участников сейчас или позже через меню группы"
+                android:textSize="12sp"
+                android:textColor="#777777"
+                android:gravity="center"
+                android:padding="16dp"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

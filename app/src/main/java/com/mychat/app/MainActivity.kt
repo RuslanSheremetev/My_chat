@@ -416,7 +416,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         
         navChats.setOnClickListener { showTab(0) }
         navFavorites.setOnClickListener { openFavorites() }
-        navProfile.setOnClickListener { t("Профиль будет позже") }
+        navProfile.setOnClickListener { startActivity(android.content.Intent(this@MainActivity, com.mychat.app.activities.ProfileActivity::class.java)) }
         
         searchInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {

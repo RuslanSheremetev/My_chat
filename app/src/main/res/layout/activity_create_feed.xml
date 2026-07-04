@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#121212">
+
+    <!-- Шапка -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="#1e1e1e"
+        android:paddingHorizontal="12dp">
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_arrow_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="#FF9500"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Новая лента"
+            android:textSize="18sp"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:layout_marginStart="4dp"/>
+        <Button
+            android:id="@+id/btnCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Создать"
+            android:textSize="14sp"
+            android:textColor="#fff"
+            android:background="@drawable/btn_orange_bg"
+            android:paddingHorizontal="18dp"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Аватарка -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="#1a2a1a"
+                android:paddingTop="28dp"
+                android:paddingBottom="20dp">
+                <TextView
+                    android:id="@+id/feedAvatar"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:gravity="center"
+                    android:text="F"
+                    android:textSize="40sp"
+                    android:textColor="#fff"
+                    android:textStyle="bold"
+                    android:background="@drawable/circle_orange_bg"/>
+                <TextView
+                    android:text="Нажмите, чтобы добавить фото"
+                    android:textSize="12sp"
+                    android:textColor="#777777"
+                    android:layout_marginTop="10dp"/>
+            </LinearLayout>
+
+            <!-- Название и описание -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+                <TextView
+                    android:text="ИНФОРМАЦИЯ"
+                    android:textSize="12sp"
+                    android:textColor="#777777"
+                    android:letterSpacing="0.08"
+                    android:layout_marginBottom="8dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="#1e1e1e"
+                    android:paddingHorizontal="16dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingVertical="14dp">
+                        <TextView android:text="НАЗВАНИЕ ЛЕНТЫ" android:textSize="11sp" android:textColor="#777777"/>
+                        <EditText
+                            android:id="@+id/feedName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Придумайте название"
+                            android:textSize="16sp"
+                            android:textColor="#fff"
+                            android:background="@null"
+                            android:singleLine="true"/>
+                    </LinearLayout>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#2c2c2c"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingVertical="14dp">
+                        <TextView android:text="ОПИСАНИЕ" android:textSize="11sp" android:textColor="#777777"/>
+                        <EditText
+                            android:id="@+id/feedDesc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="О чём эта лента?"
+                            android:textSize="16sp"
+                            android:textColor="#fff"
+                            android:background="@null"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Тип ленты -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp">
+                <TextView
+                    android:text="ТИП ЛЕНТЫ"
+                    android:textSize="12sp"
+                    android:textColor="#777777"
+                    android:letterSpacing="0.08"
+                    android:layout_marginBottom="8dp"/>
+                <RadioGroup
+                    android:id="@+id/feedTypeGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#1e1e1e">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="14dp"
+                        android:background="?attr/selectableItemBackground">
+                        <RadioButton
+                            android:id="@+id/radioPublic"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Публичная лента"
+                            android:textSize="15sp"
+                            android:textColor="#fff"
+                            android:checked="true"/>
+                        <TextView
+                            android:text="Видна всем, любой может подписаться"
+                            android:textSize="12sp"
+                            android:textColor="#777777"/>
+                    </LinearLayout>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#2c2c2c"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="14dp"
+                        android:background="?attr/selectableItemBackground">
+                        <RadioButton
+                            android:id="@+id/radioPrivate"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Приватная лента"
+                            android:textSize="15sp"
+                            android:textColor="#fff"/>
+                        <TextView
+                            android:text="Только для приглашённых"
+                            android:textSize="12sp"
+                            android:textColor="#777777"/>
+                    </LinearLayout>
+                </RadioGroup>
+            </LinearLayout>
+
+            <!-- Подписчики -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+                <TextView
+                    android:text="ПОДПИСЧИКИ"
+                    android:textSize="12sp"
+                    android:textColor="#777777"
+                    android:letterSpacing="0.08"
+                    android:layout_marginBottom="8dp"/>
+                <LinearLayout
+                    android:id="@+id/subscribersContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/btnAddSubscriber"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="+ Добавить"
+                        android:textSize="13sp"
+                        android:textColor="#777777"
+                        android:background="@drawable/btn_dashed_bg"
+                        android:paddingHorizontal="12dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Вы можете публиковать посты, а подписчики будут их видеть в своих лентах"
+                android:textSize="12sp"
+                android:textColor="#777777"
+                android:gravity="center"
+                android:padding="16dp"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
