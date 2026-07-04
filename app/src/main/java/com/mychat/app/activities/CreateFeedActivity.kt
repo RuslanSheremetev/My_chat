@@ -2,6 +2,7 @@ package com.mychat.app.activities
 
 import android.os.Bundle
 import android.widget.*
+import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
 import com.mychat.app.R
 

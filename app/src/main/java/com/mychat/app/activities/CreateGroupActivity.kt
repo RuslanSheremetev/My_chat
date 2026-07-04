@@ -2,6 +2,7 @@ package com.mychat.app.activities
 
 import android.os.Bundle
 import android.widget.*
+import android.widget.Switch
 import androidx.appcompat.app.AppCompatActivity
 import com.mychat.app.R
 
