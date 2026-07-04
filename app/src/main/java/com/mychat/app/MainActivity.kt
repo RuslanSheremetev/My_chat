@@ -1070,14 +1070,14 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                             user.lastMsg = ""
                                         } else {
                                             user.lastMsgType = when {
-                                        last.optString("file_type") == "voice" -> "voice"
+                                        last.optJSONObject("file")?.optString("type") == "voice" -> "voice"
                                         last.optString("type") == "call" -> "call"
                                         else -> "file"
                                     }
                                             user.lastMsg = when {
                                                 last.optString("type") == "call_missed" -> "📞 Пропущенный звонок"
                                                 last.optString("type") == "call" -> if (last.optBoolean("missed", false)) "🔴 Пропущенный звонок" else "📞 Звонок ${last.optString("duration", "")}"
-                                                last.optString("file_type") == "voice" -> "🎤 ${last.optString("file_name", "Голосовое")}".also { user.lastMsgDuration = last.optInt("duration", 0) }
+                                                last.optJSONObject("file")?.optString("type") == "voice" -> "🎤 ${last.optJSONObject("file")?.optString("name", "Голосовое")}".also { user.lastMsgDuration = last.optJSONObject("file")?.optInt("duration", 0) ?: 0 }
                                                 else -> "Файл: $fileName"
                                             }
                                         }
