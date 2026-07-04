@@ -10,6 +10,7 @@ data class User(
     val avatarUrl: String = "",
     val isGroup: Boolean = false,
     val isFeed: Boolean = false,
+    val isBot: Boolean = false,
     val name: String = "",
     var lastMsg: String = "",
     var lastTime: String = "",

@@ -39,11 +39,24 @@
             android:paddingStart="12dp">
             <TextView
                 android:id="@+id/name"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
                 android:textColor="#fff"
                 android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:textColor="#ff5e8e"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.03"
+                android:layout_marginStart="8dp"
+                android:visibility="gone"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="1dp"
+                android:background="@drawable/badge_bg"/>
             <LinearLayout
                 android:id="@+id/voicePreview"
                 android:layout_width="match_parent"

@@ -82,6 +82,7 @@ class ChatAdapter(
         private val waveformView: WaveformView = itemView.findViewById(R.id.waveformView)
         private val voiceDuration: TextView = itemView.findViewById(R.id.voiceDuration)
         private val voicePlayIcon: TextView = itemView.findViewById(R.id.voicePlayIcon)
+        private val badge: TextView = itemView.findViewById(R.id.badge)
         private val filePreview: LinearLayout = itemView.findViewById(R.id.filePreview)
         private val chatFileIconBg: View = itemView.findViewById(R.id.chatFileIconBg)
         private val chatFileIconText: TextView = itemView.findViewById(R.id.chatFileIconText)
@@ -95,6 +96,14 @@ class ChatAdapter(
             val color = colors[if (colorIndex < 0) colorIndex * -1 else colorIndex]
             avatar.background = circleBg(color)
             name.text = displayName
+            
+            // Бейдж (Группа / Лента / Bot)
+            when {
+                user.isBot -> { badge.visibility = View.VISIBLE; badge.text = "Bot"; badge.setTextColor(0xff34c759.toInt()); badge.background.setTint(0x1A34c759) }
+                user.isGroup -> { badge.visibility = View.VISIBLE; badge.text = "Группа"; badge.setTextColor(0xffff5e8e.toInt()); badge.background.setTint(0x1Aff5e8e) }
+                user.isFeed -> { badge.visibility = View.VISIBLE; badge.text = "Лента"; badge.setTextColor(0xff3ca0ff.toInt()); badge.background.setTint(0x1A3ca0ff) }
+                else -> { badge.visibility = View.GONE }
+            }
             
             // Проверяем тип файла
             val fileExt = user.lastMsg.let { msg ->
