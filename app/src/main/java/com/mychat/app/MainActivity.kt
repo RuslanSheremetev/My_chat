@@ -1961,9 +1961,12 @@ private fun sendMessageTo(to: String, text: String) {
                             put("type", "private")
                             put("to", selId)
                             put("text", "🎤 Голосовое $fileId")
-                            put("file_id", fileId)
-                            put("file_type", "voice")
-                        put("file_name", "Голосовое ${vd}с")
+                            put("file", org.json.JSONObject().apply {
+                                put("url", fileId)
+                                put("type", "voice")
+                                put("name", "Голосовое ${vd}с")
+                                put("duration", vd)
+                            })
                         }
                         ws?.send(msg.toString())
                         log("VOICE: sent successfully"); t("✅ Отправлено")
