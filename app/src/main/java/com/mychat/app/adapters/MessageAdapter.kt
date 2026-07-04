@@ -601,15 +601,16 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         val url = msg.file?.url ?: msg.text.removePrefix("🎤 Голосовое ").trim()
         if (url.isEmpty() || url == "🎤 Голосовое") return
         val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8000$url"
-        val playBtn = view.findViewById<ImageView>(R.id.btnPlayVoice)
+        val playBtn = view.findViewById<TextView>(R.id.btnPlayVoice)
         val durationText = view.findViewById<TextView>(R.id.voiceDuration)
+        val waveform = view.findViewById<com.mychat.app.views.WaveformView>(R.id.waveformView)
         var mediaPlayer: android.media.MediaPlayer? = null
         var isPlaying = false
-        
         playBtn.setOnClickListener {
             if (isPlaying) {
                 mediaPlayer?.pause()
-                playBtn.setImageResource(R.drawable.ic_play)
+                playBtn.text = "▶"
+                waveform?.stopAnimation()
                 isPlaying = false
             } else {
                 try {
@@ -619,26 +620,26 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
                             setOnPreparedListener { mp ->
                                 durationText.text = formatDuration(mp.duration)
                                 mp.start()
+                                waveform?.startAnimation()
                             }
                             setOnCompletionListener {
-                                playBtn.setImageResource(R.drawable.ic_play)
+                                playBtn.text = "▶"
+                                waveform?.stopAnimation()
                                 isPlaying = false
                             }
                             prepareAsync()
                         }
                     } else {
                         mediaPlayer?.start()
+                        waveform?.startAnimation()
                     }
-                    playBtn.setImageResource(R.drawable.ic_pause)
+                    playBtn.text = "⏸"
                     isPlaying = true
-                } catch (e: Exception) {
-                    onLog?.invoke("VOICE: play error=${e.message}")
-                }
+                } catch (e: Exception) {}
             }
         }
     }
-    
-    private fun formatDuration(ms: Int): String {
+        private fun formatDuration(ms: Int): String {
         val seconds = ms / 1000
         return "${seconds / 60}:${(seconds % 60).toString().padStart(2, '0')}"
     }
