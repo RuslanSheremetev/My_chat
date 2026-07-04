@@ -8,7 +8,7 @@
     android:paddingVertical="6dp"
     android:paddingHorizontal="12dp"
     android:layout_marginTop="4dp"
-    android:background="#1AFFFFFF">
+    android:visibility="gone">
     <TextView
         android:id="@+id/btnPlayVoice"
         android:layout_width="24dp"
@@ -29,5 +29,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
-        android:textColor="#999999"/>
+        android:textColor="#999999"
+        android:visibility="gone"/>
 </LinearLayout>
