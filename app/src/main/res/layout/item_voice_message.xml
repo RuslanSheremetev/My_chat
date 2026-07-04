@@ -22,7 +22,6 @@
         android:id="@+id/waveformView"
         android:layout_width="100dp"
         android:layout_height="20dp"
-        android:background="#1Aff5e8e"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"/>
     <TextView

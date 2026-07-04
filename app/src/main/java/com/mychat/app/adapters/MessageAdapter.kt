@@ -604,6 +604,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         val playBtn = view.findViewById<TextView>(R.id.btnPlayVoice)
         val durationText = view.findViewById<TextView>(R.id.voiceDuration)
         val waveform = view.findViewById<com.mychat.app.views.WaveformView>(R.id.waveformView)
+        waveform?.setWaveColor(0xff000000.toInt())
         var mediaPlayer: android.media.MediaPlayer? = null
         var isPlaying = false
         playBtn.setOnClickListener {
