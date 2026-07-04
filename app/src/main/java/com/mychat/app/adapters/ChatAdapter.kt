@@ -166,7 +166,7 @@ class ChatAdapter(
                 // Розовая полоска слева через CompoundDrawables
                 val line = android.graphics.drawable.GradientDrawable()
                 line.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                line.setSize(4, 14 * resources.displayMetrics.density.toInt())
+                line.setSize(4, (14 * itemView.resources.displayMetrics.density).toInt())
                 line.setColor(0xffff5e8e.toInt())
                 line.setCornerRadius(2f)
                 lastMessage.setCompoundDrawablesWithIntrinsicBounds(line, null, null, null)
