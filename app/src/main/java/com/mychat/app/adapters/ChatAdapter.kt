@@ -82,6 +82,10 @@ class ChatAdapter(
         private val waveformView: WaveformView = itemView.findViewById(R.id.waveformView)
         private val voiceDuration: TextView = itemView.findViewById(R.id.voiceDuration)
         private val voicePlayIcon: TextView = itemView.findViewById(R.id.voicePlayIcon)
+        private val filePreview: LinearLayout = itemView.findViewById(R.id.filePreview)
+        private val chatFileIconBg: View = itemView.findViewById(R.id.chatFileIconBg)
+        private val chatFileIconText: TextView = itemView.findViewById(R.id.chatFileIconText)
+        private val chatFileName: TextView = itemView.findViewById(R.id.chatFileName)
         
         fun bind(user: User) {
             val displayName = if (user.name.isNotEmpty()) user.name else user.username
@@ -92,7 +96,39 @@ class ChatAdapter(
             avatar.background = circleBg(color)
             name.text = displayName
             
-            if (user.lastMsgType == "voice") {
+            // Проверяем тип файла
+            val fileExt = user.lastMsg.let { msg ->
+                when {
+                    msg.contains(".pdf", true) -> "PDF"
+                    msg.contains(".doc", true) -> "DOC"
+                    msg.contains(".xls", true) -> "XLS"
+                    msg.contains(".zip", true) || msg.contains(".rar", true) -> "ZIP"
+                    msg.contains(".jpg", true) || msg.contains(".png", true) || msg.contains(".gif", true) -> "IMG"
+                    msg.contains(".mp3", true) || msg.contains(".wav", true) -> "MP3"
+                    msg.contains(".mp4", true) || msg.contains(".avi", true) -> "VID"
+                    else -> null
+                }
+            }
+            
+            if (user.lastMsgType == "file" && fileExt != null) {
+                voicePreview.visibility = View.GONE
+                filePreview.visibility = View.VISIBLE
+                lastMessage.visibility = View.GONE
+                
+                val bgColor = when (fileExt) {
+                    "PDF" -> 0x1FFF3B30.toInt()
+                    "DOC" -> 0x1F2AABEE.toInt()
+                    "XLS" -> 0x1F34C759.toInt()
+                    "ZIP" -> 0x1FFF9500.toInt()
+                    "IMG" -> 0x1F9C6BFF.toInt()
+                    "MP3" -> 0x1FFF5E8E.toInt()
+                    "VID" -> 0x1F00BCD4.toInt()
+                    else -> 0x1F888888.toInt()
+                }
+                chatFileIconBg.setBackgroundColor(bgColor)
+                chatFileIconText.text = fileExt
+                chatFileName.text = user.lastMsg.removePrefix("Файл: ").trim()
+            } else if (user.lastMsgType == "voice") {
                 voicePreview.visibility = View.VISIBLE
                 lastMessage.visibility = View.GONE
                 val mins = user.lastMsgDuration / 60
@@ -109,6 +145,7 @@ class ChatAdapter(
                 waveformView.stopAnimation()
             } else {
                 voicePreview.visibility = View.GONE
+                filePreview.visibility = View.GONE
                 lastMessage.visibility = View.VISIBLE
                 val lastMsg = user.lastMsg
                 if (lastMsg.isNotEmpty()) {
