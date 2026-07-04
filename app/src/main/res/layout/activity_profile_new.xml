@@ -20,7 +20,7 @@
             android:layout_height="96dp"
             android:layout_marginBottom="12dp">
             <TextView
-                android:id="@+id/profileAvatarLarge"
+                android:id="@+id/profileAvatar"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
                 android:gravity="center"
@@ -92,7 +92,7 @@
                     android:background="?attr/selectableItemBackground">
                     <TextView android:text="Статус" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
                     <EditText
-                        android:id="@+id/profileStatus"
+                        android:id="@+id/profileBio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="В сети"
