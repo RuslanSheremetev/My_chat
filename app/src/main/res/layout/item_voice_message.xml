@@ -7,21 +7,20 @@
     android:gravity="center_vertical"
     android:paddingVertical="6dp"
     android:paddingHorizontal="12dp"
-    android:layout_marginTop="4dp"
-    android:visibility="gone">
+    android:layout_marginTop="4dp">
     <TextView
         android:id="@+id/btnPlayVoice"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:text="▶"
         android:textSize="10sp"
         android:textColor="#fff"
-        android:background="@drawable/circle_pink_bg"/>
+        android:background="@drawable/circle_play_bg"/>
     <com.mychat.app.views.WaveformView
         android:id="@+id/waveformView"
         android:layout_width="100dp"
-        android:layout_height="20dp"
+        android:layout_height="24dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"/>
     <TextView
@@ -29,6 +28,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
-        android:textColor="#999999"
+        android:textColor="#66ffffff"
         android:visibility="gone"/>
 </LinearLayout>
