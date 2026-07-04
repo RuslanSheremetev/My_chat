@@ -13,6 +13,7 @@ class WaveformView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
+    var isAnimating: Boolean = false
     
     private val paint = Paint().apply {
         color = Color.parseColor("#ff5e8e")
@@ -43,5 +44,15 @@ class WaveformView @JvmOverloads constructor(
             barHeights[i] = rand.nextFloat()
         }
         postInvalidateDelayed(300)
+    }
+    
+    fun startAnimation() {
+        isAnimating = true
+        postInvalidate()
+    }
+    
+    fun stopAnimation() {
+        isAnimating = false
+        postInvalidate()
     }
 }

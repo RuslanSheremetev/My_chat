@@ -14,6 +14,7 @@ import com.mychat.app.models.User
 import com.mychat.app.views.WaveformView
 import android.media.MediaPlayer
 import com.mychat.app.utils.FileCache
+import kotlin.concurrent.thread
 
 fun circleBg(color: String): GradientDrawable {
     val d = GradientDrawable()
@@ -99,7 +100,7 @@ class ChatAdapter(
                 voiceDuration.text = String.format("%d:%02d", mins, secs)
                 voicePlayIcon.text = "▶"
                 voicePlayIcon.setOnClickListener {
-                    playVoice(it, user.lastFileUrl, waveformView)
+                    playVoice(user.lastFileUrl, waveformView)
                 }
                 waveformView.postInvalidate()
             } else {
