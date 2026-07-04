@@ -98,12 +98,20 @@ class ChatAdapter(
             name.text = displayName
             
             // Бейдж (Группа / Лента / Bot)
-            when {
-                user.isBot -> { badge.visibility = View.VISIBLE; badge.text = "Bot"; badge.setTextColor(0xff34c759.toInt()); badge.setBackgroundColor(0x1A34c759) }
-                user.isGroup -> { badge.visibility = View.VISIBLE; badge.text = "Группа"; badge.setTextColor(0xffff5e8e.toInt()); badge.setBackgroundColor(0x1Aff5e8e) }
-                user.isFeed -> { badge.visibility = View.VISIBLE; badge.text = "Лента"; badge.setTextColor(0xff3ca0ff.toInt()); badge.setBackgroundColor(0x1A3ca0ff) }
-                else -> { badge.visibility = View.GONE }
+            badge.visibility = View.VISIBLE
+            badge.text = when {
+                user.isBot -> "Bot"
+                user.isGroup -> "Группа"
+                user.isFeed -> "Лента"
+                else -> "?"
             }
+            badge.setTextColor(when {
+                user.isBot -> 0xff34c759.toInt()
+                user.isGroup -> 0xffff5e8e.toInt()
+                user.isFeed -> 0xff3ca0ff.toInt()
+                else -> 0xff888888.toInt()
+            })
+            badge.setBackgroundColor(0x33000000)
             
             // Проверяем тип файла
             val fileExt = user.lastMsg.let { msg ->
