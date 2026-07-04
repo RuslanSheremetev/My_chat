@@ -184,7 +184,7 @@ class ChatAdapter(
                 else -> msgStatusIcon.visibility = View.GONE
             }
             
-            onlineDot.visibility = if (user.online && !user.isGroup && !user.isFeed) View.VISIBLE else View.GONE
+            onlineDot.visibility = if (user.online && !user.isGroup && !user.isFeed && !user.isBot) View.VISIBLE else View.GONE
             muteIcon.visibility = if (user.isMuted) View.VISIBLE else View.GONE
             
             itemView.setOnClickListener {
