@@ -24,6 +24,8 @@
         
         <activity android:name=".activities.FavoritesActivity" android:exported="false" />
         <activity android:name=".activities.ProfileActivity" android:exported="false" />
+        <activity android:name=".activities.CreateGroupActivity" android:exported="false" />
+        <activity android:name=".activities.CreateFeedActivity" android:exported="false" />
         
         <provider
             android:name="androidx.core.content.FileProvider"
