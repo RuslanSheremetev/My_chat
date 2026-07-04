@@ -46,7 +46,8 @@
                 android:layout_height="wrap_content"
                 android:textSize="10sp"
                 android:textColor="#88ffffff"/>
-            <include layout="@layout/item_voice_message" />
+            <include layout="@layout/item_file_icon" />
+        <include layout="@layout/item_voice_message" />
     <include layout="@layout/item_link_preview" />
 </LinearLayout>
     <include layout="@layout/reply_quote" />

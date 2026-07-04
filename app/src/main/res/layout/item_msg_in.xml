@@ -43,6 +43,7 @@
     <include layout="@layout/reply_quote" />
     <include layout="@layout/item_youtube_preview" />
     <include layout="@layout/item_youtube_preview" />
+        <include layout="@layout/item_file_icon" />
         <include layout="@layout/item_voice_message" />
     <include layout="@layout/item_link_preview" />
 </LinearLayout>

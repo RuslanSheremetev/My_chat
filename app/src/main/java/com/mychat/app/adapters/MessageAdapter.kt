@@ -149,6 +149,7 @@ class MessageAdapter(
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
                     showFileIcon(holder.itemView, item)
+                    holder.text.visibility = View.GONE
                     holder.text.isClickable = true
                     holder.text.setOnClickListener {
                         val url = item.file!!.url.let { if (it.startsWith("http")) it else "http://2.26.71.102:8000$it" }
@@ -233,6 +234,7 @@ class MessageAdapter(
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
                     showFileIcon(holder.itemView, item)
+                    holder.text.visibility = View.GONE
                     holder.text.isClickable = true
                     holder.text.setOnClickListener {
                         val url = item.file!!.url.let { if (it.startsWith("http")) it else "http://2.26.71.102:8000$it" }
@@ -502,6 +504,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         val iconText = view.findViewById<TextView>(R.id.fileIconText)
         val fileName = view.findViewById<TextView>(R.id.fileNameText)
         val fileSize = view.findViewById<TextView>(R.id.fileSizeText)
+        val downloadBtn = view.findViewById<TextView>(R.id.fileDownloadBtn)
         
         val name = msg.file?.name ?: msg.text.removePrefix("File:").trim()
         val ext = name.substringAfterLast('.').uppercase().take(3).ifEmpty { "?" }
@@ -521,6 +524,58 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         iconText.text = ext
         fileName.text = name
         fileSize.text = size
+        
+        // Кнопка скачать
+        downloadBtn.visibility = View.VISIBLE
+        downloadBtn.text = "↓ Скачать"
+        downloadBtn.setOnClickListener {
+            val url = msg.file?.url ?: return@setOnClickListener
+            val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8000$url"
+            
+            downloadBtn.text = "..."
+            thread {
+                try {
+                    val cachedFile = com.mychat.app.utils.FileCache.getCachedFile(fullUrl)
+                    if (cachedFile != null) {
+                        openFile(view.context, cachedFile)
+                        downloadBtn.post { downloadBtn.text = "✓ Открыть" }
+                    } else {
+                        val bytes = java.net.URL(fullUrl).readBytes()
+                        val savedFile = com.mychat.app.utils.FileCache.saveToCache(fullUrl, bytes)
+                        savedFile?.let { file ->
+                            downloadBtn.post {
+                                openFile(view.context, file)
+                                downloadBtn.text = "✓ Открыть"
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    downloadBtn.post { downloadBtn.text = "↓ Скачать" }
+                }
+            }
+        }
+    }
+    
+    private fun formatFileSize(bytes: Long): String {
+        return when {
+            bytes < 1024 -> "$bytes B"
+            bytes < 1024 * 1024 -> "${bytes / 1024} KB"
+            bytes < 1024 * 1024 * 1024 -> "${"%.1f".format(bytes.toDouble() / (1024*1024))} MB"
+            else -> "${"%.1f".format(bytes.toDouble() / (1024*1024*1024))} GB"
+        }
+    }
+    
+    private fun openFile(context: android.content.Context, file: java.io.File) {
+        val uri = androidx.core.content.FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            file
+        )
+        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "*/*")
+            addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(intent)
     }
     
     private fun formatFileSize(bytes: Long): String {
