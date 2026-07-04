@@ -582,19 +582,6 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         }
     }
     
-    private fun openFile(context: android.content.Context, file: java.io.File) {
-        val uri = androidx.core.content.FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            file
-        )
-        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, "*/*")
-            addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        context.startActivity(intent)
-    }
-    
     
     private fun showVoicePlayer(view: View, msg: ChatMessage) {
         val player = view.findViewById<LinearLayout>(R.id.voicePlayer) ?: return
