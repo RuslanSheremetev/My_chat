@@ -20,9 +20,11 @@ class ProfileActivity : AppCompatActivity() {
         val avatar = findViewById<TextView>(R.id.profileAvatar)
         val username = prefs.getString("username", "A") ?: "A"
         avatar.text = username.take(1).uppercase()
+        findViewById<TextView>(R.id.profileName).text = prefs.getString("user_name", username) ?: username
+        findViewById<TextView>(R.id.profileUsername).text = "@$username"
 
         // Статус
-        val statusInput = findViewById<EditText>(R.id.profileStatus)
+        val statusInput = findViewById<EditText>(R.id.profileBio)
         statusInput.setText(prefs.getString("user_status", "В сети") ?: "В сети")
 
         // О себе

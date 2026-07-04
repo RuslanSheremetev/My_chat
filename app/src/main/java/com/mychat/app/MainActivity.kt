@@ -554,12 +554,12 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         
         dialogView.findViewById<LinearLayout>(R.id.menuGroup).setOnClickListener {
             dialog.dismiss()
-            showCreateGroupDialog()
+            startActivity(android.content.Intent(this@MainActivity, com.mychat.app.activities.CreateGroupActivity::class.java))
         }
         
         dialogView.findViewById<LinearLayout>(R.id.menuFeed).setOnClickListener {
             dialog.dismiss()
-            showCreateFeedDialog()
+            startActivity(android.content.Intent(this@MainActivity, com.mychat.app.activities.CreateFeedActivity::class.java))
         }
         dialog.show()
     }
