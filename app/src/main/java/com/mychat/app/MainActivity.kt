@@ -777,6 +777,12 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         mainContainer.visibility = View.GONE
         bottomNav.visibility = View.GONE
         chatLayout.visibility = View.VISIBLE
+        // Отмечаем сообщения как прочитанные
+        // Отмечаем последнее сообщение как прочитанное
+        val lastMsg = msgAdapter.getItems().lastOrNull()
+        if (lastMsg is ChatMessage) {
+            ws?.send("{\"type\":\"read\",\"from\":\"$me\",\"to\":\"$id\",\"msg_id\":\"${lastMsg.id}\"}")
+        }
         
         lastMessageCount = 0
         refreshMessages()
