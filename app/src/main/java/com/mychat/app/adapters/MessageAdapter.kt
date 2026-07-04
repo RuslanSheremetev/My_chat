@@ -150,8 +150,12 @@ class MessageAdapter(
                     if (vp != null) vp.visibility = View.GONE
                 }
                 // Если это файл — делаем кликабельным
-                if (item.file != null && !item.text.contains("🎤 Голосовое")) {
-                    showFileIcon(holder.itemView, item)
+                if (item.file != null && !item.text.contains("🎤 Голосовое") && !item.text.startsWith("File:") == false) {
+                    val name = item.file?.name ?: ""
+                    val isImage = name.endsWith(".jpg", true) || name.endsWith(".jpeg", true) || name.endsWith(".png", true) || name.endsWith(".gif", true) || name.endsWith(".webp", true) || name.endsWith(".bmp", true)
+                    if (!isImage) {
+                        showFileIcon(holder.itemView, item)
+                    }
                     holder.text.visibility = View.GONE
                     holder.text.isClickable = true
                     holder.text.setOnClickListener {
@@ -235,8 +239,12 @@ class MessageAdapter(
                     if (vp != null) vp.visibility = View.GONE
                 }
                 // Если это файл — делаем кликабельным
-                if (item.file != null && !item.text.contains("🎤 Голосовое")) {
-                    showFileIcon(holder.itemView, item)
+                if (item.file != null && !item.text.contains("🎤 Голосовое") && !item.text.startsWith("File:") == false) {
+                    val name = item.file?.name ?: ""
+                    val isImage = name.endsWith(".jpg", true) || name.endsWith(".jpeg", true) || name.endsWith(".png", true) || name.endsWith(".gif", true) || name.endsWith(".webp", true) || name.endsWith(".bmp", true)
+                    if (!isImage) {
+                        showFileIcon(holder.itemView, item)
+                    }
                     holder.text.visibility = View.GONE
                     holder.text.isClickable = true
                     holder.text.setOnClickListener {
