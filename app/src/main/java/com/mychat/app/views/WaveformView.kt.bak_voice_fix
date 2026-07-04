@@ -2,20 +2,17 @@ package com.mychat.app.views
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import kotlin.random.Random
 
-class WaveformView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : View(context, attrs, defStyleAttr) {
+class WaveformView : View {
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     
     private val paint = Paint().apply {
-        color = Color.parseColor("#ff5e8e")
+        color = 0xffff5e8e.toInt()
         isAntiAlias = true
     }
     
@@ -31,14 +28,14 @@ class WaveformView @JvmOverloads constructor(
         val density = resources.displayMetrics.density
         
         for (i in 0 until barCount) {
-            val barHeight = (h * 0.2f + barHeights[i] * h * 0.6f)
+            val barHeight = (h * 0.2 + barHeights[i] * h * 0.6).toFloat()
             val left = i * (barWidth + gap) * density
             val top = (h - barHeight) / 2
             val right = left + barWidth * density
             val bottom = top + barHeight
             canvas.drawRoundRect(left, top, right, bottom, 2f, 2f, paint)
         }
-        
+        // Меняем высоты для анимации
         for (i in 0 until barCount) {
             barHeights[i] = rand.nextFloat()
         }

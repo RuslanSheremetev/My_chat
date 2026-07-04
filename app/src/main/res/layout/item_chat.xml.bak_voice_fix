@@ -15,6 +15,8 @@
             android:layout_height="48dp">
             <TextView
                 android:id="@+id/avatar"
+                android:elevation="4dp"
+                android:outlineProvider="bounds"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:gravity="center"
@@ -44,6 +46,8 @@
                 android:textSize="16sp"
                 android:textColor="#fff"
                 android:textStyle="bold"/>
+            
+            <!-- Контейнер для голосового превью -->
             <LinearLayout
                 android:id="@+id/voicePreview"
                 android:layout_width="match_parent"
@@ -52,6 +56,8 @@
                 android:gravity="center_vertical"
                 android:visibility="gone"
                 android:layout_marginTop="4dp">
+                
+                <!-- Иконка play -->
                 <TextView
                     android:id="@+id/voicePlayIcon"
                     android:layout_width="20dp"
@@ -61,6 +67,8 @@
                     android:textSize="8sp"
                     android:textColor="#fff"
                     android:background="@drawable/circle_pink_bg"/>
+                
+                <!-- Waveform -->
                 <com.mychat.app.views.WaveformView
                     android:id="@+id/waveformView"
                     android:layout_width="0dp"
@@ -68,6 +76,8 @@
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"/>
+                
+                <!-- Длительность -->
                 <TextView
                     android:id="@+id/voiceDuration"
                     android:layout_width="wrap_content"
@@ -75,6 +85,8 @@
                     android:textSize="11sp"
                     android:textColor="#777777"/>
             </LinearLayout>
+            
+            <!-- Обычный текст сообщения -->
             <TextView
                 android:id="@+id/lastMessage"
                 android:layout_width="wrap_content"

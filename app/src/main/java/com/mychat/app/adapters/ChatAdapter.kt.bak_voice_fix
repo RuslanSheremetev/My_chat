@@ -1,5 +1,4 @@
 package com.mychat.app.adapters
-
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
@@ -66,6 +65,8 @@ class ChatAdapter(
         private val onlineDot: View = itemView.findViewById(R.id.onlineDot)
         private val msgStatusIcon: ImageView = itemView.findViewById(R.id.msgStatusIcon)
         private val muteIcon: ImageView = itemView.findViewById(R.id.muteIcon)
+        
+        // Новые View для голосовых
         private val voicePreview: LinearLayout = itemView.findViewById(R.id.voicePreview)
         private val waveformView: WaveformView = itemView.findViewById(R.id.waveformView)
         private val voiceDuration: TextView = itemView.findViewById(R.id.voiceDuration)
@@ -73,32 +74,39 @@ class ChatAdapter(
         fun bind(user: User) {
             val displayName = if (user.name.isNotEmpty()) user.name else user.username
             avatar.text = displayName.take(1).uppercase()
-            val colors = arrayOf("#2AABEE", "#34C759", "#FF9500", "#FF3B30", "#9C6BFF", "#FF6B9D", "#00BCD4", "#FF5722")
+            val colors = arrayOf("#2AABEE", "#34C759", "#FF9500",
+"#FF3B30", "#9C6BFF", "#FF6B9D", "#00BCD4", "#FF5722")
             val colorIndex = user.username.hashCode().mod(colors.size)
             val color = colors[if (colorIndex < 0) colorIndex * -1 else colorIndex]
             avatar.background = circleBg(color)
             name.text = displayName
             
+            val lastMsg = user.lastMsg
+            
+            // Проверяем тип сообщения
             if (user.lastMsgType == "voice") {
+                // Показываем голосовое превью
                 voicePreview.visibility = View.VISIBLE
                 lastMessage.visibility = View.GONE
-                val mins = user.lastMsgDuration / 60
-                val secs = user.lastMsgDuration % 60
-                voiceDuration.text = String.format("%d:%02d", mins, secs)
+                
+                // Устанавливаем длительность
+                val durText = formatDuration(user.lastMsgDuration)
+                voiceDuration.text = durText
+                
+                // Запускаем анимацию волны
+                waveformView.visibility = View.VISIBLE
                 waveformView.postInvalidate()
             } else {
+                // Показываем обычный текст
                 voicePreview.visibility = View.GONE
                 lastMessage.visibility = View.VISIBLE
-                val lastMsg = user.lastMsg
+                
                 if (lastMsg.isNotEmpty()) {
                     lastMessage.text = lastMsg
-                    when {
-                        user.lastMsgType == "call" && lastMsg.contains("Пропущенный") -> 
-                            lastMessage.setTextColor(0xffff453a.toInt())
-                        user.lastMsgType == "call" -> 
-                            lastMessage.setTextColor(0xff8e8e93.toInt())
-                        else -> 
-                            lastMessage.setTextColor(0xff8e8e93.toInt())
+                    if (user.lastMsgType == "call") {
+                        lastMessage.setTextColor(if (lastMsg.contains("Пропущенный")) 0xffff453a.toInt() else 0xff8e8e93.toInt())
+                    } else {
+                        lastMessage.setTextColor(0xff8e8e93.toInt())
                     }
                     lastMessage.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
                 } else {
@@ -109,21 +117,44 @@ class ChatAdapter(
             
             lastTime.text = user.lastTime
             
+            // Статус последнего сообщения
             when (user.lastMsgStatus) {
-                "sending" -> { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_sending); msgStatusIcon.setColorFilter(0xff8e8e93.toInt()) }
-                "sent" -> { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_sent); msgStatusIcon.setColorFilter(0xff8e8e93.toInt()) }
-                "delivered" -> { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_delivered); msgStatusIcon.setColorFilter(0xff8e8e93.toInt()) }
-                "read" -> { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_read); msgStatusIcon.setColorFilter(0xff4fc3f7.toInt()) }
-                else -> msgStatusIcon.visibility = View.GONE
+                "sending" -> {
+                    msgStatusIcon.visibility = View.VISIBLE
+                    msgStatusIcon.setImageResource(R.drawable.ic_check_sending)
+                    msgStatusIcon.setColorFilter(0xff8e8e93.toInt())
+                }
+                "sent" -> {
+                    msgStatusIcon.visibility = View.VISIBLE
+                    msgStatusIcon.setImageResource(R.drawable.ic_check_sent)
+                    msgStatusIcon.setColorFilter(0xff8e8e93.toInt())
+                }
+                "delivered" -> {
+                    msgStatusIcon.visibility = View.VISIBLE
+                    msgStatusIcon.setImageResource(R.drawable.ic_check_delivered)
+                    msgStatusIcon.setColorFilter(0xff8e8e93.toInt())
+                }
+                "read" -> {
+                    msgStatusIcon.visibility = View.VISIBLE
+                    msgStatusIcon.setImageResource(R.drawable.ic_check_read)
+                    msgStatusIcon.setColorFilter(0xff4fc3f7.toInt())
+                }
+                else -> {
+                    msgStatusIcon.visibility = View.GONE
+                }
             }
             
             onlineDot.visibility = if (user.online) View.VISIBLE else View.GONE
             muteIcon.visibility = if (user.isMuted) View.VISIBLE else View.GONE
             
             itemView.setOnClickListener {
-                itemView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(itemView.context, R.anim.item_click_scale))
+                itemView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
+                    itemView.context, R.anim.item_click_scale
+                ))
                 itemView.postDelayed({
-                    itemView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(itemView.context, R.anim.item_click_release))
+                    itemView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(
+                        itemView.context, R.anim.item_click_release
+                    ))
                 }, 150)
                 onClick(user)
             }
@@ -134,6 +165,12 @@ class ChatAdapter(
                 onLongClick?.invoke(user)
                 true
             }
+        }
+        
+        private fun formatDuration(seconds: Int): String {
+            val minutes = seconds / 60
+            val secs = seconds % 60
+            return String.format("%d:%02d", minutes, secs)
         }
     }
 }
