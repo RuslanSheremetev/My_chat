@@ -156,8 +156,8 @@
                         <TextView android:text="Приватная группа" android:textSize="15sp" android:textColor="#fff"/>
                         <TextView android:text="Вход только по приглашению" android:textSize="12sp" android:textColor="#777777"/>
                     </LinearLayout>
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switchPrivate"
+                    <ToggleButton
+                        android:id="@+id/switchPrivate" android:textOff="Публичная" android:textOn="Приватная"
                         android:layout_width="48dp"
                         android:layout_height="28dp"/>
                 </LinearLayout>
