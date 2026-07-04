@@ -86,6 +86,8 @@ class ChatAdapter(
                 lastMessage.text = lastMsg
                 if (user.lastMsgType == "call") {
                     lastMessage.setTextColor(if (lastMsg.contains("Пропущенный")) 0xffff453a.toInt() else 0xff8e8e93.toInt())
+                } else if (user.lastMsgType == "voice") {
+                    lastMessage.setTextColor(0xffff5e8e.toInt())
                 }
                 lastMessage.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
             } else {
