@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mychat.app.R
 import com.mychat.app.models.User
 import com.mychat.app.views.WaveformView
+import android.media.MediaPlayer
+import com.mychat.app.utils.FileCache
 
 fun circleBg(color: String): GradientDrawable {
     val d = GradientDrawable()
@@ -24,6 +26,7 @@ class ChatAdapter(
     private val onClick: (User) -> Unit,
     private val onLongClick: ((User) -> Unit)? = null
 ) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
+    private var mediaPlayer: MediaPlayer? = null
     private val users = mutableListOf<User>()
     var selectedPosition: Int = -1
     
@@ -56,6 +59,14 @@ class ChatAdapter(
     }
     
     fun getUsers(): List<User> = users.toList()
+    
+    fun stopVoice() {
+        mediaPlayer?.apply {
+            if (isPlaying) stop()
+            release()
+        }
+        mediaPlayer = null
+    }
     override fun getItemCount(): Int = users.size
     
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -69,6 +80,7 @@ class ChatAdapter(
         private val voicePreview: LinearLayout = itemView.findViewById(R.id.voicePreview)
         private val waveformView: WaveformView = itemView.findViewById(R.id.waveformView)
         private val voiceDuration: TextView = itemView.findViewById(R.id.voiceDuration)
+        private val voicePlayIcon: TextView = itemView.findViewById(R.id.voicePlayIcon)
         
         fun bind(user: User) {
             val displayName = if (user.name.isNotEmpty()) user.name else user.username
@@ -85,6 +97,10 @@ class ChatAdapter(
                 val mins = user.lastMsgDuration / 60
                 val secs = user.lastMsgDuration % 60
                 voiceDuration.text = String.format("%d:%02d", mins, secs)
+                voicePlayIcon.text = "▶"
+                voicePlayIcon.setOnClickListener {
+                    playVoice(it, user.lastFileUrl, waveformView)
+                }
                 waveformView.postInvalidate()
             } else {
                 voicePreview.visibility = View.GONE
@@ -135,5 +151,44 @@ class ChatAdapter(
                 true
             }
         }
+    }
+
+
+    private fun playVoice(playIcon: View, url: String, waveform: WaveformView) {
+        if (url.isEmpty()) return
+        mediaPlayer?.apply { if (isPlaying) stop(); release() }
+        
+        val cached = FileCache.getCachedFile(url)
+        if (cached != null) {
+            startPlay(cached.absolutePath, playIcon, waveform)
+            return
+        }
+        
+        thread {
+            try {
+                val conn = java.net.URL(url).openConnection() as java.net.HttpURLConnection
+                conn.connect()
+                val bytes = conn.inputStream.readBytes()
+                FileCache.saveToCache(url, bytes)
+                val file = FileCache.getCachedFile(url)
+                file?.let {
+                    playIcon.post { startPlay(it.absolutePath, playIcon, waveform) }
+                }
+            } catch (e: Exception) { e.printStackTrace() }
+        }
+    }
+    
+    private fun startPlay(path: String, playIcon: View, waveform: WaveformView) {
+        mediaPlayer = MediaPlayer().apply {
+            setDataSource(path)
+            prepare()
+            setOnCompletionListener {
+                playIcon.post { (playIcon as? TextView)?.text = "▶" }
+                waveform.stopAnimation()
+            }
+            start()
+        }
+        (playIcon as? TextView)?.text = "⏸"
+        waveform.startAnimation()
     }
 }

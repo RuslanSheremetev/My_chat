@@ -1077,7 +1077,10 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                             user.lastMsg = when {
                                                 last.optString("type") == "call_missed" -> "📞 Пропущенный звонок"
                                                 last.optString("type") == "call" -> if (last.optBoolean("missed", false)) "🔴 Пропущенный звонок" else "📞 Звонок ${last.optString("duration", "")}"
-                                                last.optJSONObject("file")?.optString("type") == "voice" -> "🎤 ${last.optJSONObject("file")?.optString("name", "Голосовое")}".also { user.lastMsgDuration = last.optJSONObject("file")?.optInt("duration", 0) ?: 0 }
+                                                last.optJSONObject("file")?.optString("type") == "voice" -> "🎤 ${last.optJSONObject("file")?.optString("name", "Голосовое")}".also {
+    user.lastMsgDuration = last.optJSONObject("file")?.optInt("duration", 0) ?: 0
+    user.lastFileUrl = last.optJSONObject("file")?.optString("url", "") ?: ""
+}
                                                 else -> "Файл: $fileName"
                                             }
                                         }
