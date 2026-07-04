@@ -142,12 +142,15 @@ class MessageAdapter(
                     holder.text.movementMethod = android.text.method.LinkMovementMethod.getInstance()
                     holder.itemView.findViewById<LinearLayout>(R.id.ytPreview)?.visibility = View.GONE
                     holder.text.visibility = View.VISIBLE
+                    // Скрываем иконку файла для обычных сообщений
+                    val fc = holder.itemView.findViewById<LinearLayout>(R.id.fileIconContainer)
+                    if (fc != null) fc.visibility = View.GONE
                     if (item.file == null) showLinkPreview(holder.itemView, item.text)
                     val vp = holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)
                     if (vp != null) vp.visibility = View.GONE
                 }
                 // Если это файл — делаем кликабельным
-                if (item.file != null && item.text.startsWith("File:")) {
+                if (item.file != null && !item.text.contains("🎤 Голосовое")) {
                     showFileIcon(holder.itemView, item)
                     holder.text.visibility = View.GONE
                     holder.text.isClickable = true
@@ -232,7 +235,7 @@ class MessageAdapter(
                     if (vp != null) vp.visibility = View.GONE
                 }
                 // Если это файл — делаем кликабельным
-                if (item.file != null && item.text.startsWith("File:")) {
+                if (item.file != null && !item.text.contains("🎤 Голосовое")) {
                     showFileIcon(holder.itemView, item)
                     holder.text.visibility = View.GONE
                     holder.text.isClickable = true
@@ -497,7 +500,12 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
 
     private fun showFileIcon(view: View, msg: ChatMessage) {
         val container = view.findViewById<LinearLayout>(R.id.fileIconContainer)
-        if (container == null) return
+        if (container == null || msg.file == null) return
+        
+        // Скрываем текст сообщения
+        val textView = view.findViewById<TextView>(R.id.text)
+        textView?.visibility = View.GONE
+        
         container.visibility = View.VISIBLE
         
         val iconBg = view.findViewById<View>(R.id.fileIconBg)
@@ -506,7 +514,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         val fileSize = view.findViewById<TextView>(R.id.fileSizeText)
         val downloadBtn = view.findViewById<TextView>(R.id.fileDownloadBtn)
         
-        val name = msg.file?.name ?: msg.text.removePrefix("File:").trim()
+        val name = msg.file?.name ?: "file"
         val ext = name.substringAfterLast('.').uppercase().take(3).ifEmpty { "?" }
         val size = formatFileSize(msg.file?.size ?: 0)
         
@@ -514,10 +522,10 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
             "PDF" -> 0x1FFF3B30.toInt()
             "DOC", "DOCX" -> 0x1F2AABEE.toInt()
             "XLS", "XLSX" -> 0x1F34C759.toInt()
-            "ZIP", "RAR", "7Z" -> 0x1FFF9500.toInt()
-            "JPG", "PNG", "GIF", "WEBP" -> 0x1F9C6BFF.toInt()
-            "MP3", "WAV", "AAC", "M4A" -> 0x1FFF5E8E.toInt()
-            "MP4", "AVI", "MOV" -> 0x1F00BCD4.toInt()
+            "ZIP", "RAR", "7Z", "GZ" -> 0x1FFF9500.toInt()
+            "JPG", "PNG", "GIF", "BMP", "WEBP" -> 0x1F9C6BFF.toInt()
+            "MP3", "WAV", "AAC", "M4A", "OGG" -> 0x1FFF5E8E.toInt()
+            "MP4", "AVI", "MOV", "MKV" -> 0x1F00BCD4.toInt()
             else -> 0x1F888888.toInt()
         }
         iconBg.setBackgroundColor(bgColor)
@@ -526,33 +534,42 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         fileSize.text = size
         
         // Кнопка скачать
-        downloadBtn.visibility = View.VISIBLE
-        downloadBtn.text = "↓ Скачать"
-        downloadBtn.setOnClickListener {
-            val url = msg.file?.url ?: return@setOnClickListener
-            val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8000$url"
-            
-            downloadBtn.text = "..."
-            thread {
-                try {
-                    val cachedFile = com.mychat.app.utils.FileCache.getCachedFile(fullUrl)
-                    if (cachedFile != null) {
-                        openFile(view.context, cachedFile)
-                        downloadBtn.post { downloadBtn.text = "✓ Открыть" }
-                    } else {
-                        val bytes = java.net.URL(fullUrl).readBytes()
-                        val savedFile = com.mychat.app.utils.FileCache.saveToCache(fullUrl, bytes)
-                        savedFile?.let { file ->
-                            downloadBtn.post {
-                                openFile(view.context, file)
-                                downloadBtn.text = "✓ Открыть"
-                            }
+        downloadBtn?.let { btn ->
+            btn.visibility = View.VISIBLE
+            btn.text = "↓ Скачать"
+            btn.setOnClickListener {
+                val url = msg.file?.url ?: return@setOnClickListener
+                val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8000$url"
+                btn.text = "..."
+                thread {
+                    try {
+                        val cached = com.mychat.app.utils.FileCache.getCachedFile(fullUrl)
+                        if (cached != null) {
+                            btn.post { openFile(view.context, cached); btn.text = "✓ Открыть" }
+                        } else {
+                            val bytes = java.net.URL(fullUrl).readBytes()
+                            val saved = com.mychat.app.utils.FileCache.saveToCache(fullUrl, bytes)
+                            saved?.let { btn.post { openFile(view.context, it); btn.text = "✓ Открыть" } }
                         }
+                    } catch (e: Exception) {
+                        btn.post { btn.text = "↓ Скачать" }
                     }
-                } catch (e: Exception) {
-                    downloadBtn.post { downloadBtn.text = "↓ Скачать" }
                 }
             }
+        }
+    }
+    
+    private fun openFile(context: android.content.Context, file: java.io.File) {
+        try {
+            val uri = androidx.core.content.FileProvider.getUriForFile(
+                context, "${context.packageName}.fileprovider", file)
+            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "*/*")
+                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            android.widget.Toast.makeText(context, "Нет приложения для открытия", android.widget.Toast.LENGTH_SHORT).show()
         }
     }
     
