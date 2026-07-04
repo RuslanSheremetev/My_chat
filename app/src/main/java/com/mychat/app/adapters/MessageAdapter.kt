@@ -142,7 +142,7 @@ class MessageAdapter(
                     holder.text.movementMethod = android.text.method.LinkMovementMethod.getInstance()
                     holder.itemView.findViewById<LinearLayout>(R.id.ytPreview)?.visibility = View.GONE
                     holder.text.visibility = View.VISIBLE
-                    showLinkPreview(holder.itemView, item.text)
+                    if (item.file == null) showLinkPreview(holder.itemView, item.text)
                     val vp = holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)
                     if (vp != null) vp.visibility = View.GONE
                 }
