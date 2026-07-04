@@ -24,7 +24,7 @@ class ProfileActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.profileUsername).text = "@$username"
 
         // Статус
-        val statusInput = findViewById<EditText>(R.id.profileBio)
+        val statusInput = findViewById<EditText>(R.id.profileStatus)
         statusInput.setText(prefs.getString("user_status", "В сети") ?: "В сети")
 
         // О себе

@@ -400,11 +400,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             popup.elevation = 20f
             view.findViewById<LinearLayout>(R.id.menuCreateGroup).setOnClickListener {
                 popup.dismiss()
-                t("Создание группы")
+                startActivity(android.content.Intent(this@MainActivity, com.mychat.app.activities.CreateGroupActivity::class.java))
             }
             view.findViewById<LinearLayout>(R.id.menuCreateFeed).setOnClickListener {
                 popup.dismiss()
-                t("Создание ленты")
+                startActivity(android.content.Intent(this@MainActivity, com.mychat.app.activities.CreateFeedActivity::class.java))
             }
             view.findViewById<LinearLayout>(R.id.menuCreateBot).setOnClickListener {
                 popup.dismiss()
