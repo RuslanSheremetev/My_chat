@@ -148,6 +148,7 @@ class MessageAdapter(
                 }
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
+                    showFileIcon(holder.itemView, item)
                     holder.text.isClickable = true
                     holder.text.setOnClickListener {
                         val url = item.file!!.url.let { if (it.startsWith("http")) it else "http://2.26.71.102:8000$it" }
@@ -231,6 +232,7 @@ class MessageAdapter(
                 }
                 // Если это файл — делаем кликабельным
                 if (item.file != null && item.text.startsWith("File:")) {
+                    showFileIcon(holder.itemView, item)
                     holder.text.isClickable = true
                     holder.text.setOnClickListener {
                         val url = item.file!!.url.let { if (it.startsWith("http")) it else "http://2.26.71.102:8000$it" }
@@ -490,7 +492,47 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         }
     }
 
-private fun showVoicePlayer(view: View, msg: ChatMessage) {
+
+    private fun showFileIcon(view: View, msg: ChatMessage) {
+        val container = view.findViewById<LinearLayout>(R.id.fileIconContainer)
+        if (container == null) return
+        container.visibility = View.VISIBLE
+        
+        val iconBg = view.findViewById<View>(R.id.fileIconBg)
+        val iconText = view.findViewById<TextView>(R.id.fileIconText)
+        val fileName = view.findViewById<TextView>(R.id.fileNameText)
+        val fileSize = view.findViewById<TextView>(R.id.fileSizeText)
+        
+        val name = msg.file?.name ?: msg.text.removePrefix("File:").trim()
+        val ext = name.substringAfterLast('.').uppercase().take(3).ifEmpty { "?" }
+        val size = formatFileSize(msg.file?.size ?: 0)
+        
+        val bgColor = when (ext) {
+            "PDF" -> 0x1FFF3B30.toInt()
+            "DOC", "DOCX" -> 0x1F2AABEE.toInt()
+            "XLS", "XLSX" -> 0x1F34C759.toInt()
+            "ZIP", "RAR", "7Z" -> 0x1FFF9500.toInt()
+            "JPG", "PNG", "GIF", "WEBP" -> 0x1F9C6BFF.toInt()
+            "MP3", "WAV", "AAC", "M4A" -> 0x1FFF5E8E.toInt()
+            "MP4", "AVI", "MOV" -> 0x1F00BCD4.toInt()
+            else -> 0x1F888888.toInt()
+        }
+        iconBg.setBackgroundColor(bgColor)
+        iconText.text = ext
+        fileName.text = name
+        fileSize.text = size
+    }
+    
+    private fun formatFileSize(bytes: Long): String {
+        return when {
+            bytes < 1024 -> "$bytes B"
+            bytes < 1024 * 1024 -> "${bytes / 1024} KB"
+            bytes < 1024 * 1024 * 1024 -> "${"%.1f".format(bytes.toDouble() / (1024*1024))} MB"
+            else -> "${"%.1f".format(bytes.toDouble() / (1024*1024*1024))} GB"
+        }
+    }
+
+    private fun showVoicePlayer(view: View, msg: ChatMessage) {
         val player = view.findViewById<LinearLayout>(R.id.voicePlayer) ?: return
         player.visibility = View.VISIBLE
         val url = msg.file?.url ?: msg.text.removePrefix("🎤 Голосовое ").trim()
