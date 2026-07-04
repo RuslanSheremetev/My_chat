@@ -17,7 +17,7 @@ class ProfileActivity : AppCompatActivity() {
         val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
 
         // Аватар
-        val avatar = findViewById<TextView>(R.id.profileAvatarLarge)
+        val avatar = findViewById<TextView>(R.id.profileAvatar)
         val username = prefs.getString("username", "A") ?: "A"
         avatar.text = username.take(1).uppercase()
 
