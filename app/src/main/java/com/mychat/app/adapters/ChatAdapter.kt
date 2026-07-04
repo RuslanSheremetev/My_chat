@@ -99,10 +99,14 @@ class ChatAdapter(
                 val secs = user.lastMsgDuration % 60
                 voiceDuration.text = String.format("%d:%02d", mins, secs)
                 voicePlayIcon.text = "▶"
-                voicePlayIcon.setOnClickListener {
-                    playVoice(voicePlayIcon, user.lastFileUrl, waveformView)
+                voicePlayIcon.isClickable = true
+                voicePlayIcon.isFocusable = true
+                voicePlayIcon.setOnClickListener { v ->
+                    v.postDelayed({
+                        playVoice(voicePlayIcon, user.lastFileUrl, waveformView)
+                    }, 100)
                 }
-                waveformView.postInvalidate()
+                waveformView.stopAnimation()
             } else {
                 voicePreview.visibility = View.GONE
                 lastMessage.visibility = View.VISIBLE
@@ -157,39 +161,36 @@ class ChatAdapter(
 
     private fun playVoice(playIcon: View, url: String, waveform: WaveformView) {
         if (url.isEmpty()) return
-        mediaPlayer?.apply { if (isPlaying) stop(); release() }
+        val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8000$url"
         
-        val cached = FileCache.getCachedFile(url)
-        if (cached != null) {
-            startPlay(cached.absolutePath, playIcon, waveform)
+        if (mediaPlayer?.isPlaying == true) {
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
+            mediaPlayer = null
+            (playIcon as? TextView)?.text = "▶"
+            waveform.stopAnimation()
             return
         }
         
-        thread {
-            try {
-                val conn = java.net.URL(url).openConnection() as java.net.HttpURLConnection
-                conn.connect()
-                val bytes = conn.inputStream.readBytes()
-                FileCache.saveToCache(url, bytes)
-                val file = FileCache.getCachedFile(url)
-                file?.let {
-                    playIcon.post { startPlay(it.absolutePath, playIcon, waveform) }
+        mediaPlayer?.apply { if (isPlaying) stop(); release() }
+        
+        try {
+            mediaPlayer = MediaPlayer().apply {
+                setDataSource(fullUrl)
+                setOnPreparedListener { mp ->
+                    mp.start()
+                    (playIcon as? TextView)?.post { waveform.startAnimation() }
                 }
-            } catch (e: Exception) { e.printStackTrace() }
-        }
-    }
-    
-    private fun startPlay(path: String, playIcon: View, waveform: WaveformView) {
-        mediaPlayer = MediaPlayer().apply {
-            setDataSource(path)
-            prepare()
-            setOnCompletionListener {
-                playIcon.post { (playIcon as? TextView)?.text = "▶" }
-                waveform.stopAnimation()
+                setOnCompletionListener {
+                    playIcon.post { (playIcon as? TextView)?.text = "▶" }
+                    waveform.stopAnimation()
+                }
+                prepareAsync()
             }
-            start()
+            (playIcon as? TextView)?.text = "⏸"
+        } catch (e: Exception) {
+            e.printStackTrace()
+            (playIcon as? TextView)?.text = "▶"
         }
-        (playIcon as? TextView)?.text = "⏸"
-        waveform.startAnimation()
     }
 }

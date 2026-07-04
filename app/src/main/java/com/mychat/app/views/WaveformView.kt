@@ -40,10 +40,12 @@ class WaveformView @JvmOverloads constructor(
             canvas.drawRoundRect(left, top, right, bottom, 2f, 2f, paint)
         }
         
-        for (i in 0 until barCount) {
-            barHeights[i] = rand.nextFloat()
+        if (isAnimating) {
+            for (i in 0 until barCount) {
+                barHeights[i] = rand.nextFloat()
+            }
+            postInvalidateDelayed(300)
         }
-        postInvalidateDelayed(300)
     }
     
     fun startAnimation() {
