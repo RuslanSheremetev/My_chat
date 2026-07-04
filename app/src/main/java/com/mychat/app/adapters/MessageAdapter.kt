@@ -458,6 +458,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         val regex = Regex("https?://[\\w\\d./?=&#%:_-]+")
         val url = regex.find(text)?.value ?: return
         val preview = view.findViewById<LinearLayout>(R.id.linkPreview) ?: return
+        preview.visibility = View.GONE  // скрываем по умолчанию
         
         thread {
             try {
