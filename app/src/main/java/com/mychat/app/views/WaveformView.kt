@@ -57,4 +57,9 @@ class WaveformView @JvmOverloads constructor(
         isAnimating = false
         postInvalidate()
     }
+
+    fun setWaveColor(color: Int) {
+        paint.color = color
+        invalidate()
+    }
 }
