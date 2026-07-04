@@ -599,15 +599,6 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         val player = view.findViewById<LinearLayout>(R.id.voicePlayer) ?: return
         player.visibility = View.VISIBLE
         
-        // Цвет фона как у сообщения (розовый для исходящих)
-        val bubble = view.findViewById<LinearLayout>(R.id.messageBubble)
-        if (bubble != null) {
-            val bg = bubble.background
-            if (bg is android.graphics.drawable.GradientDrawable) {
-                player.background = bg.mutate()
-            }
-        }
-        
         val url = msg.file?.url ?: msg.text.removePrefix("🎤 Голосовое ").trim()
         if (url.isEmpty() || url == "🎤 Голосовое") return
         val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8000$url"
