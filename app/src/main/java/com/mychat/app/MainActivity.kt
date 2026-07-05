@@ -1071,8 +1071,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     isGroup = isGroup,
                                     isFeed = isFeed,
                                     isBot = isBot,
-                                    name = finalName,
-                                    unread = o.optInt("unread", 0)
+                                    name = finalName
                                 )
                             )
                     }
@@ -1082,19 +1081,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         val s = db.messageDao().getChatSettings(u.username)
                         if (s != null) {
                             u.isMuted = s.isMuted
-                            // Берём максимум из Room и сервера
-                            if (s.unread > u.unread) u.unread = s.unread
-                        }
-                        // Сохраняем unread в Room для синхронизации
-                        if (u.unread > 0) {
-                            val settings = db.messageDao().getChatSettings(u.username)
-                            db.messageDao().saveChatSettings(
-                                com.mychat.app.data.ChatSettings(
-                                    chatKey = u.username,
-                                    isMuted = settings?.isMuted ?: false,
-                                    unread = u.unread
-                                )
-                            )
+                            u.unread = s.unread
                         }
                     }
                     for (user in userList) {
@@ -1143,6 +1130,10 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     
                     users.addAll(userList)
                     handler.post {
+                        // Удаляем дубликаты перед показом
+                        val unique = users.distinctBy { it.username }
+                        users.clear()
+                        users.addAll(unique)
                         chatAdapter.update(users)
                     }
                 }
@@ -1176,10 +1167,9 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         val nm = o.optString("name", "")
                         if ((un.contains(q, true) || nm.contains(q, true)) ) {
                             val displayName = if (nm.isNotEmpty()) nm else un
-                            if (res.none { it.username == un }) {
-                                res.add(
-                                    User(
-                                        username = un,
+                            res.add(
+                                User(
+                                    username = un,
                                     avatarColor = o.optString("avatar_color", "#2AABEE"),
                                     online = o.optBoolean("online", false),
                                     lastSeen = o.optString("last_seen", ""),
@@ -1187,8 +1177,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     avatarUrl = o.optString("avatar_url", ""),
                                     isGroup = o.optBoolean("is_group", false),
                                     isFeed = o.optBoolean("is_feed", false),
-                                    name = displayName,
-                                    unread = o.optInt("unread", 0)
+                                    name = displayName
                                 )
                             )
                         }
@@ -1201,9 +1190,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     u.unread = s.unread
                                 }
                             }
-                            handler.post { chatAdapter.update(res) }
-                        }
-                    }
+                        handler.post { chatAdapter.update(res) }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -2102,7 +2089,11 @@ private fun sendMessageTo(to: String, text: String) {
                         val index = users.indexOf(user)
                         if (index >= 0) {
                             users.removeAt(index)
-                            chatAdapter.update(users)
+                            // Удаляем дубликаты перед показом
+                        val unique = users.distinctBy { it.username }
+                        users.clear()
+                        users.addAll(unique)
+                        chatAdapter.update(users)
                         }
                         t("Чат удалён")
                     } else {
@@ -2521,5 +2512,4 @@ private fun sendMessageTo(to: String, text: String) {
             e.printStackTrace()
         }
     }
-}
 }
