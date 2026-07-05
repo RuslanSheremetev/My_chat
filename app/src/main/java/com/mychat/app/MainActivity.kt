@@ -945,15 +945,76 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         }
         view.findViewById<LinearLayout>(R.id.actionDelete)?.setOnClickListener {
             bottomSheet.dismiss()
-            AlertDialog.Builder(this)
-                    .setTitle("Удалить сообщение?")
-                    .setPositiveButton("У всех") { _, _ -> deleteMessage(msg) }
-                    .setNegativeButton("Только у меня") { _, _ ->
-                        thread { db.messageDao().markDeleted(msg.id) }
-                        msgAdapter.markDeleted(msg.id)
-                    }
-                    .setNeutralButton("Отмена", null)
-                    .show()
+            // Кастомный тёмный диалог удаления
+            val dialogView = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(48, 40, 48, 24)
+                setBackgroundColor(0xff1e1e1e.toInt())
+            }
+            // Иконка корзины
+            val iconView = TextView(this).apply {
+                text = "🗑"
+                textSize = 32f
+                gravity = android.view.Gravity.CENTER
+                setPadding(0, 0, 0, 16)
+            }
+            // Заголовок
+            val titleView = TextView(this).apply {
+                text = "Удалить сообщение?"
+                textSize = 17f
+                setTextColor(0xffffffff.toInt())
+                gravity = android.view.Gravity.CENTER
+                setPadding(0, 0, 0, 8)
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+            }
+            // Описание
+            val descView = TextView(this).apply {
+                text = "Это сообщение будет удалено у всех участников чата."
+                textSize = 13f
+                setTextColor(0xff777777.toInt())
+                gravity = android.view.Gravity.CENTER
+                setPadding(0, 0, 0, 28)
+            }
+            dialogView.addView(iconView)
+            dialogView.addView(titleView)
+            dialogView.addView(descView)
+            
+            val dialog = AlertDialog.Builder(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+                .setView(dialogView)
+                .create()
+            
+            dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(0xff1e1e1e.toInt()))
+            dialog.show()
+            
+            // Кнопки добавляем после показа
+            val btnContainer = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(0, 0, 0, 0)
+            }
+            val btnDeleteAll = Button(this).apply {
+                text = "Удалить у всех"
+                setTextColor(0xffffffff.toInt())
+                setBackgroundColor(0xffff5e8e.toInt())
+                setPadding(0, 12, 0, 12)
+                setOnClickListener {
+                    dialog.dismiss()
+                    deleteMessage(msg)
+                }
+            }
+            val btnDeleteMine = Button(this).apply {
+                text = "Только у меня"
+                setTextColor(0xff777777.toInt())
+                setBackgroundColor(0x00000000.toInt())
+                setPadding(0, 12, 0, 12)
+                setOnClickListener {
+                    dialog.dismiss()
+                    thread { db.messageDao().markDeleted(msg.id) }
+                    msgAdapter.markDeleted(msg.id)
+                }
+            }
+            btnContainer.addView(btnDeleteAll)
+            btnContainer.addView(btnDeleteMine)
+            dialogView.addView(btnContainer)
         }
         
         log("UI: bottomSheet show"); bottomSheet.show()
