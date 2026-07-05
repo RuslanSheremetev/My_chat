@@ -518,9 +518,26 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
 
     private fun showVideo(msg: ChatMessage, playerView: PlayerView) {
         val url = msg.file?.url?.let { if (it.startsWith("http")) it else "http://2.26.71.102:8000$it" } ?: return
+        val cacheKey = "video_${msg.file?.name ?: url}"
+        
+        // Проверяем кэш
+        val cached = com.mychat.app.utils.FileCache.getCachedFile(cacheKey)
+        val playUrl = if (cached != null) {
+            cached.absolutePath
+        } else {
+            // Фоновое кэширование для следующего раза
+            thread {
+                try {
+                    val bytes = java.net.URL(url).readBytes()
+                    com.mychat.app.utils.FileCache.saveToCache(cacheKey, bytes)
+                } catch (_: Exception) {}
+            }
+            url
+        }
+        
         val player = ExoPlayer.Builder(playerView.context).build()
         playerView.player = player
-        player.setMediaItem(MediaItem.fromUri(url))
+        player.setMediaItem(MediaItem.fromUri(playUrl))
         player.prepare()
         player.playWhenReady = true
         playerView.useController = true
