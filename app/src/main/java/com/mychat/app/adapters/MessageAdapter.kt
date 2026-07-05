@@ -513,19 +513,19 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
     }
 
 
-    private fun showLocationMap(msg: ChatMessage) {
+    private fun showLocationMap(msg: ChatMessage, mapImg: ImageView, view: View) {
         val lat = msg.location?.lat ?: return
         val lon = msg.location?.lon ?: return
         thread {
             try {
                 val mapUrl = "https://staticmap.openstreetmap.de/staticmap.php?center=$lat,$lon&zoom=15&size=400x400&markers=$lat,$lon,red-pushpin"
                 val bmp = android.graphics.BitmapFactory.decodeStream(URL(mapUrl).openStream())
-                mapImage.post { mapImage.setImageBitmap(bmp) }
+                mapImg.post { mapImg.setImageBitmap(bmp) }
             } catch (_: Exception) {}
         }
-        mapImage.setOnClickListener {
+        mapImg.setOnClickListener {
             val uri = Uri.parse("geo:$lat,$lon?q=$lat,$lon")
-            itemView.context.startActivity(Intent(Intent.ACTION_VIEW, uri))
+            view.context.startActivity(Intent(Intent.ACTION_VIEW, uri))
         }
     }
 
