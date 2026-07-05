@@ -1583,6 +1583,7 @@ private fun sendMessageTo(to: String, text: String) {
     private fun sendLocation() {
         try {
             val locationManager = getSystemService(android.content.Context.LOCATION_SERVICE) as LocationManager
+            handler.post { t("LocationManager получен") }
             
             // Проверяем разрешения
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -1628,6 +1629,7 @@ private fun sendMessageTo(to: String, text: String) {
                 }
                 try {
                     val locationManager = getSystemService(android.content.Context.LOCATION_SERVICE) as LocationManager
+            handler.post { t("LocationManager получен") }
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                         if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
                             return
