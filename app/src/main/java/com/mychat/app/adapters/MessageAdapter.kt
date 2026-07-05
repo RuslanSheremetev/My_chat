@@ -4,6 +4,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.net.Uri
+import java.net.URL
+import android.content.Intent
 import android.widget.LinearLayout
 import android.widget.ImageView
 import android.graphics.BitmapFactory
@@ -509,6 +512,22 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         }
     }
 
+
+    private fun showLocationMap(msg: ChatMessage) {
+        val lat = msg.location?.lat ?: return
+        val lon = msg.location?.lon ?: return
+        thread {
+            try {
+                val mapUrl = "https://staticmap.openstreetmap.de/staticmap.php?center=$lat,$lon&zoom=15&size=400x400&markers=$lat,$lon,red-pushpin"
+                val bmp = android.graphics.BitmapFactory.decodeStream(URL(mapUrl).openStream())
+                mapImage.post { mapImage.setImageBitmap(bmp) }
+            } catch (_: Exception) {}
+        }
+        mapImage.setOnClickListener {
+            val uri = Uri.parse("geo:$lat,$lon?q=$lat,$lon")
+            itemView.context.startActivity(Intent(Intent.ACTION_VIEW, uri))
+        }
+    }
 
     private fun showFileIcon(view: View, msg: ChatMessage) {
         val container = view.findViewById<LinearLayout>(R.id.fileIconContainer)
