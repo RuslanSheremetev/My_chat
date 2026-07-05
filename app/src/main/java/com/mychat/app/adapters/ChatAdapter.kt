@@ -190,9 +190,9 @@ class ChatAdapter(
                     // Проверяем reply
             val replyPreview = itemView.findViewById<LinearLayout>(R.id.replyPreview)
             val replyText = itemView.findViewById<TextView>(R.id.replyText)
-            if (lastMsg.startsWith("↩")) {
+            if (lastMsg.startsWith("↩") || lastMsg.startsWith("↪")) {
                 replyPreview.visibility = View.VISIBLE
-                replyText.text = lastMsg.replace("↩", "").trim()
+                replyText.text = lastMsg.replace("↩", "").replace("↪", "").trim()
                 lastMessage.visibility = View.GONE
             } else {
                 replyPreview.visibility = View.GONE
