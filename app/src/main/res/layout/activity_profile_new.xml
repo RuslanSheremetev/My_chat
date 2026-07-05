@@ -73,7 +73,7 @@
                 android:text="ИНФОРМАЦИЯ"
                 android:textSize="12sp"
                 android:textColor="#777777"
-                android:letterSpacing="0.08"
+                android:letterSpacing="0.08sp"
                 android:layout_marginBottom="8dp"/>
 
             <LinearLayout
@@ -140,7 +140,7 @@
                 android:text="НАСТРОЙКИ"
                 android:textSize="12sp"
                 android:textColor="#777777"
-                android:letterSpacing="0.08"
+                android:letterSpacing="0.08sp"
                 android:layout_marginBottom="8dp"/>
 
             <LinearLayout

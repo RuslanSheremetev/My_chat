@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="T" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="T" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">#f06292</item>
         <item name="colorPrimaryVariant">#e0557e</item>
         <item name="colorOnPrimary">#ffffff</item>

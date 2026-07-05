@@ -13,7 +13,7 @@ class CreateGroupActivity : AppCompatActivity() {
             var isPrivate = false
             val privBtn = findViewById<Button>(R.id.switchPrivate)
             privBtn.setOnClickListener { isPrivate = !isPrivate; privBtn.text = if (isPrivate) "Публичная" else "Приватная" }
-            findViewById<Button>(R.id.btnBack).setOnClickListener { finish() }
+            findViewById<ImageView>(R.id.btnBack).setOnClickListener { finish() }
             findViewById<Button>(R.id.btnCreate).setOnClickListener {
                 val name = findViewById<EditText>(R.id.groupName).text.toString().trim()
                 if (name.isEmpty()) { Toast.makeText(this, "Введите название", Toast.LENGTH_SHORT).show(); return@setOnClickListener }

@@ -4,8 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#121212">
-
-    <!-- Шапка -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -13,13 +11,14 @@
         android:gravity="center_vertical"
         android:background="#1e1e1e"
         android:paddingHorizontal="12dp">
-        <ImageButton
+        <ImageView
             android:id="@+id/btnBack"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_arrow_back"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="#FF9500"/>
+            android:clickable="true"
+            android:focusable="true"/>
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -39,17 +38,13 @@
             android:background="@drawable/btn_orange_bg"
             android:paddingHorizontal="18dp"/>
     </LinearLayout>
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <!-- Аватарка -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -74,8 +69,6 @@
                     android:textColor="#777777"
                     android:layout_marginTop="10dp"/>
             </LinearLayout>
-
-            <!-- Название и описание -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -85,7 +78,7 @@
                     android:text="ИНФОРМАЦИЯ"
                     android:textSize="12sp"
                     android:textColor="#777777"
-                    android:letterSpacing="0.08"
+                    android:letterSpacing="0.08sp"
                     android:layout_marginBottom="8dp"/>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -127,8 +120,6 @@
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-
-            <!-- Тип ленты -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -138,10 +129,11 @@
                     android:text="ТИП ЛЕНТЫ"
                     android:textSize="12sp"
                     android:textColor="#777777"
-                    android:letterSpacing="0.08"
+                    android:letterSpacing="0.08sp"
                     android:layout_marginBottom="8dp"/>
                 <LinearLayout
-                    android:id="@+id/feedTypeGroup" android:orientation="vertical"
+                    android:id="@+id/feedTypeGroup"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#1e1e1e">
@@ -159,8 +151,7 @@
                             android:layout_weight="1"
                             android:text="Публичная лента"
                             android:textSize="15sp"
-                            android:textColor="#fff"
-                            />
+                            android:textColor="#fff"/>
                         <TextView
                             android:text="Видна всем, любой может подписаться"
                             android:textSize="12sp"
@@ -189,8 +180,6 @@
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-
-            <!-- Подписчики -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -200,7 +189,7 @@
                     android:text="ПОДПИСЧИКИ"
                     android:textSize="12sp"
                     android:textColor="#777777"
-                    android:letterSpacing="0.08"
+                    android:letterSpacing="0.08sp"
                     android:layout_marginBottom="8dp"/>
                 <LinearLayout
                     android:id="@+id/subscribersContainer"
@@ -218,7 +207,6 @@
                         android:paddingHorizontal="12dp"/>
                 </LinearLayout>
             </LinearLayout>
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

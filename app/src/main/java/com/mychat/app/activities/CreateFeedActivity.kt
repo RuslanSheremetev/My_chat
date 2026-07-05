@@ -15,7 +15,7 @@ class CreateFeedActivity : AppCompatActivity() {
             val prb = findViewById<Button>(R.id.radioPrivate)
             pb.setOnClickListener { isPrivate = false; pb.setTextColor(0xffFF9500.toInt()); prb.setTextColor(0xff777777.toInt()) }
             prb.setOnClickListener { isPrivate = true; prb.setTextColor(0xffFF9500.toInt()); pb.setTextColor(0xff777777.toInt()) }
-            findViewById<Button>(R.id.btnBack).setOnClickListener { finish() }
+            findViewById<ImageView>(R.id.btnBack).setOnClickListener { finish() }
             findViewById<Button>(R.id.btnCreate).setOnClickListener {
                 val name = findViewById<EditText>(R.id.feedName).text.toString().trim()
                 if (name.isEmpty()) { Toast.makeText(this, "Введите название", Toast.LENGTH_SHORT).show(); return@setOnClickListener }
