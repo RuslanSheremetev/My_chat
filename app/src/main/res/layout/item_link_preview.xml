@@ -34,6 +34,6 @@
         android:textSize="12sp"
         android:textColor="#aaa"
         android:maxLines="2"
-        android:paddingHorizontal="8dp"
+        android:paddingStart="8dp" android:paddingEnd="8dp"
         android:paddingBottom="4dp" />
 </LinearLayout>

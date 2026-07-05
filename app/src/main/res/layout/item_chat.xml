@@ -58,7 +58,7 @@
                     android:textAllCaps="true"
                     android:layout_marginStart="8dp"
                     android:visibility="gone"
-                    android:paddingHorizontal="8dp"
+                    android:paddingStart="8dp" android:paddingEnd="8dp"
                     android:paddingVertical="2dp"
                     android:background="@drawable/badge_bg"/>
             </LinearLayout>
@@ -194,7 +194,7 @@
                 android:background="@drawable/badge_bg"
                 android:gravity="center"
                 android:minWidth="20dp"
-                android:paddingHorizontal="6dp"
+                android:paddingStart="6dp" android:paddingEnd="6dp"
                 android:paddingVertical="2dp"
                 android:visibility="gone"
                 android:layout_gravity="end"

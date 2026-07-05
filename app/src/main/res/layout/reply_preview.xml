@@ -7,7 +7,7 @@
     android:gravity="center_vertical"
     android:background="#16171A"
     android:paddingVertical="10dp"
-    android:paddingHorizontal="16dp"
+    android:paddingStart="16dp" android:paddingEnd="16dp"
     android:visibility="gone">
 
     <LinearLayout

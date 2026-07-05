@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
+        android:paddingStart="16dp" android:paddingEnd="16dp"
         android:background="#1e1e1e">
         <ImageButton
             android:id="@+id/btnBack"
@@ -26,7 +26,7 @@
             android:id="@+id/btnSendLocation"
             android:layout_width="wrap_content" android:layout_height="36dp"
             android:text="Отправить" android:textColor="#fff" android:textSize="13sp"
-            android:background="@drawable/bg_btn_pink" android:paddingHorizontal="16dp" />
+            android:background="@drawable/bg_btn_pink" android:paddingStart="16dp" android:paddingEnd="16dp" />
     </LinearLayout>
 
     <WebView

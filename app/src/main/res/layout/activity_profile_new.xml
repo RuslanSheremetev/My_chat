@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="#1e1e1e"
-                android:paddingHorizontal="16dp"
+                android:paddingStart="16dp" android:paddingEnd="16dp"
                 android:layout_marginBottom="16dp">
 
                 <LinearLayout
@@ -141,7 +141,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="#1e1e1e"
-                android:paddingHorizontal="16dp"
+                android:paddingStart="16dp" android:paddingEnd="16dp"
                 android:layout_marginBottom="16dp">
 
                 <LinearLayout
@@ -169,7 +169,7 @@
                         android:textSize="13sp"
                         android:textColor="#ff5e8e"
                         android:background="@drawable/btn_mini_bg"
-                        android:paddingHorizontal="12dp"
+                        android:paddingStart="12dp" android:paddingEnd="12dp"
                         android:layout_height="30dp"/>
                 </LinearLayout>
             </LinearLayout>

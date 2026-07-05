@@ -12,7 +12,7 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="#1e1e1e"
-        android:paddingHorizontal="12dp">
+        android:paddingStart="12dp" android:paddingEnd="12dp">
         <ImageView
             android:id="@+id/btnBack"
             android:layout_width="40dp"
@@ -38,7 +38,7 @@
             android:textSize="14sp"
             android:textColor="#fff"
             android:background="@drawable/btn_orange_bg"
-            android:paddingHorizontal="18dp"/>
+            android:paddingStart="18dp" android:paddingEnd="18dp"/>
     </LinearLayout>
 
     <ScrollView
@@ -92,7 +92,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="#1e1e1e"
-                android:paddingHorizontal="16dp"
+                android:paddingStart="16dp" android:paddingEnd="16dp"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginBottom="16dp">
 
@@ -217,7 +217,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
+                android:paddingStart="16dp" android:paddingEnd="16dp"
                 android:layout_marginBottom="8dp">
                 <Button
                     android:id="@+id/btnAddSubscriber"
@@ -227,7 +227,7 @@
                     android:textSize="13sp"
                     android:textColor="#777777"
                     android:background="@drawable/btn_dashed_bg"
-                    android:paddingHorizontal="12dp"/>
+                    android:paddingStart="12dp" android:paddingEnd="12dp"/>
             </LinearLayout>
 
             <TextView

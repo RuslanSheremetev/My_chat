@@ -61,7 +61,7 @@
         android:id="@+id/fileDownloadBtn"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
-        android:paddingHorizontal="12dp"
+        android:paddingStart="12dp" android:paddingEnd="12dp"
         android:gravity="center"
         android:textSize="12sp"
         android:textColor="#FFFFFF"
