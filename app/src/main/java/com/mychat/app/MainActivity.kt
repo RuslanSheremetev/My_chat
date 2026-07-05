@@ -1082,7 +1082,19 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         val s = db.messageDao().getChatSettings(u.username)
                         if (s != null) {
                             u.isMuted = s.isMuted
-                            u.unread = s.unread
+                            // Берём максимум из Room и сервера
+                            if (s.unread > u.unread) u.unread = s.unread
+                        }
+                        // Сохраняем unread в Room для синхронизации
+                        if (u.unread > 0) {
+                            val settings = db.messageDao().getChatSettings(u.username)
+                            db.messageDao().saveChatSettings(
+                                com.mychat.app.data.ChatSettings(
+                                    chatKey = u.username,
+                                    isMuted = settings?.isMuted ?: false,
+                                    unread = u.unread
+                                )
+                            )
                         }
                     }
                     for (user in userList) {
