@@ -4,6 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#121212">
+
+    <!-- Шапка -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -16,9 +18,9 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_arrow_back"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
-            android:focusable="true"/>
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -38,6 +40,7 @@
             android:background="@drawable/btn_pink_bg"
             android:paddingHorizontal="18dp"/>
     </LinearLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -45,6 +48,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <!-- Аватар -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,118 +76,135 @@
                     android:textColor="#777777"
                     android:layout_marginTop="10dp"/>
             </LinearLayout>
+
+            <!-- Информация -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ИНФОРМАЦИЯ"
+                android:textSize="12sp"
+                android:textColor="#777777"
+                android:letterSpacing="0.08"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
-                <TextView
-                    android:text="ИНФОРМАЦИЯ"
-                    android:textSize="12sp"
-                    android:textColor="#777777"
-                    android:letterSpacing="0.08"
-                    android:layout_marginBottom="8dp"/>
+                android:background="#1e1e1e"
+                android:paddingHorizontal="16dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background="#1e1e1e"
-                    android:paddingHorizontal="16dp">
-                    <LinearLayout
+                    android:paddingVertical="14dp">
+                    <TextView android:text="НАЗВАНИЕ ГРУППЫ" android:textSize="11sp" android:textColor="#777777"/>
+                    <EditText
+                        android:id="@+id/groupName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingVertical="14dp">
-                        <TextView android:text="НАЗВАНИЕ ГРУППЫ" android:textSize="11sp" android:textColor="#777777"/>
-                        <EditText
-                            android:id="@+id/groupName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Придумайте название"
-                            android:textSize="16sp"
-                            android:textColor="#fff"
-                            android:background="@null"
-                            android:singleLine="true"/>
-                    </LinearLayout>
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#2c2c2c"/>
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingVertical="14dp">
-                        <TextView android:text="ОПИСАНИЕ" android:textSize="11sp" android:textColor="#777777"/>
-                        <EditText
-                            android:id="@+id/groupDesc"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="О чём эта группа?"
-                            android:textSize="16sp"
-                            android:textColor="#fff"
-                            android:background="@null"/>
-                    </LinearLayout>
+                        android:hint="Придумайте название"
+                        android:textSize="16sp"
+                        android:textColor="#fff"
+                        android:background="@null"
+                        android:singleLine="true"/>
                 </LinearLayout>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingHorizontal="16dp">
-                <TextView
-                    android:text="НАСТРОЙКИ"
-                    android:textSize="12sp"
-                    android:textColor="#777777"
-                    android:letterSpacing="0.08"
-                    android:layout_marginBottom="8dp"/>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#2c2c2c"/>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:background="#1e1e1e"
-                    android:padding="16dp">
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    android:orientation="vertical"
+                    android:paddingVertical="14dp">
+                    <TextView android:text="ОПИСАНИЕ" android:textSize="11sp" android:textColor="#777777"/>
+                    <EditText
+                        android:id="@+id/groupDesc"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-                        <TextView android:text="Приватная группа" android:textSize="15sp" android:textColor="#fff"/>
-                        <TextView android:text="Вход только по приглашению" android:textSize="12sp" android:textColor="#777777"/>
-                    </LinearLayout>
-                    <Button
-                        android:id="@+id/switchPrivate"
-                        android:text="Приватная"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="8dp"/>
+                        android:hint="О чём эта группа?"
+                        android:textSize="16sp"
+                        android:textColor="#fff"
+                        android:background="@null"/>
                 </LinearLayout>
             </LinearLayout>
+
+            <!-- Приватность -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="НАСТРОЙКИ"
+                android:textSize="12sp"
+                android:textColor="#777777"
+                android:letterSpacing="0.08"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="16dp"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-                <TextView
-                    android:text="УЧАСТНИКИ"
-                    android:textSize="12sp"
-                    android:textColor="#777777"
-                    android:letterSpacing="0.08"
-                    android:layout_marginBottom="8dp"/>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="#1e1e1e"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="16dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp">
+
                 <LinearLayout
-                    android:id="@+id/membersContainer"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <Button
-                        android:id="@+id/btnAddMember"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="+ Добавить"
-                        android:textSize="13sp"
-                        android:textColor="#777777"
-                        android:background="@drawable/btn_dashed_bg"
-                        android:paddingHorizontal="12dp"/>
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView android:text="Приватная группа" android:textSize="15sp" android:textColor="#fff"/>
+                    <TextView android:text="Вход только по приглашению" android:textSize="12sp" android:textColor="#777777"/>
                 </LinearLayout>
+
+                <Button
+                    android:id="@+id/switchPrivate"
+                    android:text="Приватная"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:textSize="13sp"
+                    android:textColor="#fff"
+                    android:background="@drawable/btn_mini_bg"/>
             </LinearLayout>
+
+            <!-- Участники -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="УЧАСТНИКИ"
+                android:textSize="12sp"
+                android:textColor="#777777"
+                android:letterSpacing="0.08"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="8dp">
+                <Button
+                    android:id="@+id/btnAddMember"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+ Добавить"
+                    android:textSize="13sp"
+                    android:textColor="#777777"
+                    android:background="@drawable/btn_dashed_bg"
+                    android:paddingHorizontal="12dp"/>
+            </LinearLayout>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

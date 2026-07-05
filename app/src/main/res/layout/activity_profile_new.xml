@@ -15,28 +15,16 @@
         android:paddingTop="40dp"
         android:paddingBottom="20dp">
 
-        <FrameLayout
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_marginBottom="12dp">
-            <TextView
-                android:id="@+id/profileAvatar"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:gravity="center"
-                android:textSize="38sp"
-                android:textColor="#fff"
-                android:textStyle="bold"
-                android:background="@drawable/av_blue_circle"/>
-            <View
-                android:id="@+id/profileOnlineDot"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_gravity="bottom|end"
-                android:layout_marginEnd="4dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/online_dot_green"/>
-        </FrameLayout>
+        <TextView
+            android:id="@+id/profileAvatar"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:gravity="center"
+            android:textSize="38sp"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:background="@drawable/av_blue_circle"
+            android:layout_marginBottom="12dp"/>
 
         <TextView
             android:id="@+id/profileName"
@@ -46,6 +34,7 @@
             android:textColor="#fff"
             android:textStyle="bold"
             android:layout_marginBottom="2dp"/>
+
         <TextView
             android:id="@+id/profileUsername"
             android:layout_width="wrap_content"
@@ -83,13 +72,13 @@
                 android:background="#1e1e1e"
                 android:paddingHorizontal="16dp"
                 android:layout_marginBottom="16dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingVertical="14dp"
-                    >
+                    android:paddingVertical="14dp">
                     <TextView android:text="Статус" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
                     <EditText
                         android:id="@+id/profileBio"
@@ -102,7 +91,9 @@
                         android:gravity="end"
                         android:singleLine="true"/>
                 </LinearLayout>
+
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#2c2c2c"/>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -121,7 +112,9 @@
                         android:gravity="end"
                         android:singleLine="true"/>
                 </LinearLayout>
+
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#2c2c2c"/>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -150,6 +143,7 @@
                 android:background="#1e1e1e"
                 android:paddingHorizontal="16dp"
                 android:layout_marginBottom="16dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -159,7 +153,9 @@
                     <TextView android:text="Тема" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
                     <TextView android:text="Тёмная" android:textSize="14sp" android:textColor="#777777"/>
                 </LinearLayout>
+
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#2c2c2c"/>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
