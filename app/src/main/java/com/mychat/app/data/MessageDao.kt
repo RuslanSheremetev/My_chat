@@ -47,4 +47,10 @@ interface MessageDao {
 
     @Query("UPDATE messages SET deleted = 1 WHERE id = :msgId")
     fun markDeleted(msgId: String)
+    
+    @Query("UPDATE chat_settings SET unread = :count WHERE chatKey = :chatKey")
+    fun updateUnread(chatKey: String, count: Int)
+    
+    @Query("UPDATE chat_settings SET unread = 0 WHERE chatKey = :chatKey")
+    fun resetUnread(chatKey: String)
 }

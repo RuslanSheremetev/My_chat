@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class ChatSettings(
     @PrimaryKey val chatKey: String,
     val isMuted: Boolean = false,
-    val isBlocked: Boolean = false
+    val isBlocked: Boolean = false,
+    val unread: Int = 0
 )
