@@ -157,9 +157,10 @@
                         <TextView android:text="Вход только по приглашению" android:textSize="12sp" android:textColor="#777777"/>
                     </LinearLayout>
                     <Button
-                        android:id="@+id/switchPrivate" android:text="Приватная группа"
-                        android:layout_width="48dp"
-                        android:layout_height="28dp"/>
+                        android:id="@+id/switchPrivate" android:text="Приватная"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"/>
                 </LinearLayout>
             </LinearLayout>
 
