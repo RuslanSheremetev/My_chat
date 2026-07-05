@@ -1523,7 +1523,7 @@ private fun sendMessageTo(to: String, text: String) {
         }
         view.findViewById<LinearLayout>(R.id.attachLocation).setOnClickListener {
                 bottomSheet.dismiss()
-                t("Геолокация будет позже")
+                sendLocation()
             }
             view.findViewById<LinearLayout>(R.id.attachFile).setOnClickListener {
             bottomSheet.dismiss()
@@ -1547,6 +1547,61 @@ private fun sendMessageTo(to: String, text: String) {
         log("UI: bottomSheet show"); bottomSheet.show()
     }
     
+    private fun sendLocation() {
+        try {
+            val locationManager = getSystemService(android.content.Context.LOCATION_SERVICE) as LocationManager
+            
+            // Проверяем разрешения
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 300)
+                    return
+                }
+            }
+            
+            // Получаем последнюю известную локацию
+            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            
+            if (location != null) {
+                sendLocationMessage(location.latitude, location.longitude)
+            } else {
+                // Запрашиваем обновление локации один раз
+                t("Определение местоположения...")
+                locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, object : LocationListener {
+                    override fun onLocationChanged(loc: Location) {
+                        sendLocationMessage(loc.latitude, loc.longitude)
+                    }
+                    override fun onProviderDisabled(provider: String) {}
+                    override fun onProviderEnabled(provider: String) {}
+                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+                }, null)
+            }
+        } catch (e: Exception) {
+            t("Ошибка: " + e.message)
+        }
+    }
+    
+    private fun sendLocationMessage(lat: Double, lon: Double) {
+        thread {
+            try {
+                val json = org.json.JSONObject().apply {
+                    put("type", "private")
+                    put("to", selId)
+                    put("text", "")
+                    put("location", org.json.JSONObject().apply {
+                        put("lat", lat)
+                        put("lon", lon)
+                    })
+                }
+                ws?.send(json.toString())
+                handler.post { t("📍 Локация отправлена") }
+            } catch (e: Exception) {
+                handler.post { t("Ошибка отправки") }
+            }
+        }
+    }
+
     private fun pickPhoto() {
         startActivityForResult(
             Intent(Intent.ACTION_PICK).apply {
