@@ -133,7 +133,16 @@ class MessageAdapter(
                         holder.selectCheck.isChecked = !holder.selectCheck.isChecked
                     }
                 }
-                showReplyQuote(holder.itemView, item)
+                // Проверяем локацию
+            val lc = holder.itemView.findViewById<LinearLayout>(R.id.locationContainer)
+            if (item.location != null) {
+                lc?.visibility = View.VISIBLE
+                val mi = holder.itemView.findViewById<ImageView>(R.id.mapImage)
+                if (mi != null) showLocationMap(item, mi, holder.itemView)
+            } else {
+                lc?.visibility = View.GONE
+            }
+            showReplyQuote(holder.itemView, item)
                 onLog?.invoke("VOICE: checking text=${item.text.take(50)}"); if (item.text.contains("🎤 Голосовое")) {
                     val fc = holder.itemView.findViewById<LinearLayout>(R.id.fileIconContainer)
                     if (fc != null) fc.visibility = View.GONE
@@ -227,7 +236,16 @@ class MessageAdapter(
                         holder.selectCheck.isChecked = !holder.selectCheck.isChecked
                     }
                 }
-                showReplyQuote(holder.itemView, item)
+                // Проверяем локацию
+            val lc = holder.itemView.findViewById<LinearLayout>(R.id.locationContainer)
+            if (item.location != null) {
+                lc?.visibility = View.VISIBLE
+                val mi = holder.itemView.findViewById<ImageView>(R.id.mapImage)
+                if (mi != null) showLocationMap(item, mi, holder.itemView)
+            } else {
+                lc?.visibility = View.GONE
+            }
+            showReplyQuote(holder.itemView, item)
                 onLog?.invoke("VOICE: checking text=${item.text.take(50)}"); if (item.text.contains("🎤 Голосовое")) {
                     val fc = holder.itemView.findViewById<LinearLayout>(R.id.fileIconContainer)
                     if (fc != null) fc.visibility = View.GONE
