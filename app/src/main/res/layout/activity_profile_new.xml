@@ -27,7 +27,7 @@
                 android:textSize="38sp"
                 android:textColor="#fff"
                 android:textStyle="bold"
-                android:background="@drawable/circle_avatar_bg"/>
+                android:background="@drawable/av_blue_circle"/>
             <View
                 android:id="@+id/profileOnlineDot"
                 android:layout_width="22dp"

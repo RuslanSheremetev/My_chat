@@ -67,7 +67,7 @@
                     android:textSize="40sp"
                     android:textColor="#fff"
                     android:textStyle="bold"
-                    android:background="@drawable/circle_orange_bg"/>
+                    android:background="@drawable/av_orange_circle"/>
                 <TextView
                     android:text="Нажмите, чтобы добавить фото"
                     android:textSize="12sp"
