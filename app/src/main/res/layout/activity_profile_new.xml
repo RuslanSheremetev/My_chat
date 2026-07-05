@@ -78,7 +78,7 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
                     android:paddingVertical="14dp">
-                    <TextView android:text="Статус" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
+                    <TextView android:layout_width="0dp" android:text="Статус" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
                     <EditText
                         android:id="@+id/profileBio"
                         android:layout_width="wrap_content"
@@ -99,7 +99,7 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
                     android:paddingVertical="14dp">
-                    <TextView android:text="О себе" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
+                    <TextView android:layout_width="0dp" android:text="О себе" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
                     <EditText
                         android:id="@+id/profileStatus"
                         android:layout_width="wrap_content"
@@ -120,7 +120,7 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
                     android:paddingVertical="14dp">
-                    <TextView android:text="Телефон" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
+                    <TextView android:layout_width="0dp" android:text="Телефон" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
                     <TextView android:id="@+id/profilePhone" android:text="—" android:textSize="14sp" android:textColor="#777777"/>
                 </LinearLayout>
             </LinearLayout>
@@ -148,7 +148,7 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
                     android:paddingVertical="14dp">
-                    <TextView android:text="Тема" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
+                    <TextView android:layout_width="0dp" android:text="Тема" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
                     <TextView android:text="Тёмная" android:textSize="14sp" android:textColor="#777777"/>
                 </LinearLayout>
 
@@ -160,7 +160,7 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
                     android:paddingVertical="14dp">
-                    <TextView android:text="Хранилище" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
+                    <TextView android:layout_width="0dp" android:text="Хранилище" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
                     <Button
                         android:id="@+id/btnClearCache"
                         android:text="Очистить"
