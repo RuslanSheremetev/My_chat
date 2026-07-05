@@ -706,4 +706,3 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         }
     }
 
-}
