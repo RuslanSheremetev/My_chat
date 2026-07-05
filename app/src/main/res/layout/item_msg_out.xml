@@ -22,7 +22,7 @@
         android:background="@drawable/bg_msg_out"
         android:padding="8dp"
         android:maxWidth="280dp">
-        <ImageView
+        <LinearLayout
             android:id="@+id/locationContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
