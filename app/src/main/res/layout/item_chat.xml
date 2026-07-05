@@ -61,6 +61,14 @@
                     android:paddingStart="8dp" android:paddingEnd="8dp"
                     android:paddingTop="2dp" android:paddingBottom="2dp"
                     android:background="@drawable/badge_bg"/>
+                <ImageView
+                    android:id="@+id/muteIcon"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:src="@drawable/ic_muted"
+                    android:tint="#777777"
+                    android:visibility="gone"
+                    android:layout_marginStart="6dp"/>
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/voicePreview"
@@ -170,13 +178,7 @@
             android:orientation="vertical"
             android:gravity="end"
             android:layout_marginStart="8dp">
-            <ImageView
-                android:id="@+id/muteIcon"
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:src="@drawable/ic_muted"
-                android:visibility="gone"
-                android:layout_marginEnd="4dp"/>
+
             <TextView
                 android:id="@+id/lastTime"
                 android:layout_width="wrap_content"
