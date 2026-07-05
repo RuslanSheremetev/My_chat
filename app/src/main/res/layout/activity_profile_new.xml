@@ -89,7 +89,7 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
                     android:paddingVertical="14dp"
-                    android:background="?attr/selectableItemBackground">
+                    >
                     <TextView android:text="Статус" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
                     <EditText
                         android:id="@+id/profileBio"
