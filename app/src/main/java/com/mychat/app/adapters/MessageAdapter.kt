@@ -5,6 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.net.Uri
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.ui.PlayerView
 import java.net.URL
 import android.content.Intent
 import android.widget.LinearLayout
@@ -512,6 +515,16 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         }
     }
 
+
+    private fun showVideo(msg: ChatMessage, playerView: PlayerView) {
+        val url = msg.file?.url?.let { if (it.startsWith("http")) it else "http://2.26.71.102:8000$it" } ?: return
+        val player = ExoPlayer.Builder(playerView.context).build()
+        playerView.player = player
+        player.setMediaItem(MediaItem.fromUri(url))
+        player.prepare()
+        player.playWhenReady = true
+        playerView.useController = true
+    }
 
     private fun showLocationMap(msg: ChatMessage, mapImg: ImageView, view: View) {
         val lat = msg.location?.lat ?: return
