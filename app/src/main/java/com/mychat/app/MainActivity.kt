@@ -1585,6 +1585,61 @@ private fun sendMessageTo(to: String, text: String) {
         }
     }
     
+    private fun startLiveLocation() {
+        isLiveLocation = true
+        t("📍 Live-локация запущена")
+        
+        liveLocationTimer = java.util.Timer()
+        liveLocationTimer?.schedule(object : java.util.TimerTask() {
+            override fun run() {
+                if (!isLiveLocation) {
+                    cancel()
+                    return
+                }
+                try {
+                    val locationManager = getSystemService(android.content.Context.LOCATION_SERVICE) as LocationManager
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                            return
+                        }
+                    }
+                    val loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                        ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                    loc?.let {
+                        handler.post {
+                            sendLocationUpdate(it.latitude, it.longitude)
+                        }
+                    }
+                } catch (_: Exception) {}
+            }
+        }, 0, 5000) // Каждые 5 секунд
+    }
+    
+    private fun stopLiveLocation() {
+        isLiveLocation = false
+        liveLocationTimer?.cancel()
+        liveLocationTimer = null
+        t("📍 Live-локация остановлена")
+    }
+    
+    private fun sendLocationUpdate(lat: Double, lon: Double) {
+        thread {
+            try {
+                val json = org.json.JSONObject().apply {
+                    put("type", "private")
+                    put("to", selId)
+                    put("text", "")
+                    put("location", org.json.JSONObject().apply {
+                        put("lat", lat)
+                        put("lon", lon)
+                        put("live", true)
+                    })
+                }
+                ws?.send(json.toString())
+            } catch (_: Exception) {}
+        }
+    }
+
     private fun sendLocationMessage(lat: Double, lon: Double) {
         thread {
             try {
@@ -2582,6 +2637,8 @@ private fun sendMessageTo(to: String, text: String) {
     }
     
     private var isMuted = false
+    private var isLiveLocation = false
+    private var liveLocationTimer: java.util.Timer? = null
     private var isBlocked = false
     
     private fun toggleMute() {
