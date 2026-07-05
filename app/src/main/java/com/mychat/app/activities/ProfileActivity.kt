@@ -38,7 +38,7 @@ class ProfileActivity : AppCompatActivity() {
             }
         } catch (e: Exception) {
             logToServer("CRASH: ProfileActivity - " + (e.message ?: "unknown"))
-            Toast.makeText(this, "Ошибка", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Ошибка: " + e.message, Toast.LENGTH_LONG).show()
             finish()
         }
     }
