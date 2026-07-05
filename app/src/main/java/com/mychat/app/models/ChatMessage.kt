@@ -1,12 +1,5 @@
 package com.mychat.app.models
 
-
-data class LocationData(
-    val lat: Double = 0.0,
-    val lon: Double = 0.0,
-    val live: Boolean = false
-)
-
 data class ChatMessage(
     val id: String,
     val from: String,
@@ -14,7 +7,6 @@ data class ChatMessage(
     val text: String = "",
     val time: String = "",
     val file: FileInfo? = null,
-    val location: LocationData? = null,
     val isGroup: Boolean = false,
     val read: Boolean = false,
     val delivered: Boolean = false,
