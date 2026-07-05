@@ -1066,6 +1066,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             )
                     }
                     
+                    // Загружаем isMuted из Room для основного списка
+                    for (u in userList) {
+                        val s = db.messageDao().getChatSettings(u.username)
+                        if (s != null) { u.isMuted = s.isMuted }
+                    }
                     for (user in userList) {
                         try {
                             val msgR = client.newCall(
@@ -1160,20 +1165,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             )
                         }
                     }
-                    // Загружаем isMuted из Room
-                            for (u in res) {
-                                val s = db.messageDao().getChatSettings(u.username)
-                                if (s != null) { u.isMuted = s.isMuted; log("Mute loaded: ${u.username} = ${u.isMuted}") }
-                            }
-                            // Загружаем isMuted для каждого пользователя
+                    // Загружаем isMuted из Room для результатов поиска
                             for (u in res) {
                                 val s = db.messageDao().getChatSettings(u.username)
                                 if (s != null) { u.isMuted = s.isMuted }
                             }
-                            for (u in res) {
-                            val s = db.messageDao().getChatSettings(u.username)
-                            if (s != null) u.isMuted = s.isMuted
-                        }
                         handler.post { chatAdapter.update(res) }
                 }
             } catch (e: Exception) {
