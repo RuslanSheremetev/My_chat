@@ -44,8 +44,7 @@
                 android:gravity="center_vertical">
                 <TextView
                     android:id="@+id/name"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:textColor="#fff"
@@ -181,7 +180,6 @@
                 android:textColor="#8e8e93"
                 android:maxLines="1"
                 android:ellipsize="end"/>
-                <ImageView android:id="@+id/msgStatusIcon" android:layout_width="12dp" android:layout_height="12dp" android:src="@drawable/ic_check_sent" android:tint="#8e8e93" android:visibility="gone" android:layout_marginStart="4dp"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
@@ -206,6 +204,17 @@
                 android:visibility="gone"
                 android:layout_gravity="end"
                 android:layout_marginBottom="4dp"/>
+            <ImageView
+                android:id="@+id/msgStatusIcon"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/ic_check_sent"
+                android:tint="#8e8e93"
+                android:visibility="gone"
+                android:layout_gravity="end"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+        <ImageView
             android:id="@+id/lastImage"
             android:layout_width="40dp"
             android:layout_height="40dp"
