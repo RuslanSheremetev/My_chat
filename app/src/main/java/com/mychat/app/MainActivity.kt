@@ -1310,6 +1310,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                 o.optString("text"),
                                 o.optString("time"),
                                 fi,
+                                null,
                                 o.optBoolean("is_group")
                             )
                         )
@@ -1383,6 +1384,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                 o.optString("text"),
                                 o.optString("time"),
                                 fi,
+                                null,
                                 o.optBoolean("is_group")
                             )
                         )
