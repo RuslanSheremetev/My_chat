@@ -4,10 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.ui.PlayerView
-
 import android.widget.LinearLayout
 import android.widget.ImageView
 import android.graphics.BitmapFactory
@@ -207,15 +203,7 @@ class MessageAdapter(
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.time) ?: Date()
                 )
                 loadPhoto(item, holder.imageMsg)
-                // Проверяем location
-            val locView = holder.itemView.findViewById<LinearLayout>(R.id.locationContainer)
-            if (item.location != null) {
-                locView?.visibility = View.VISIBLE
-                showLocationPreview(holder.itemView, item)
-            } else {
-                locView?.visibility = View.GONE
-            }
-            holder.itemView.setOnLongClickListener { onMessageLongClick(item); true }
+                holder.itemView.setOnLongClickListener { onMessageLongClick(item); true }
                 // Показываем реакции
                 val reactionsStr = formatReactions(item.reactions)
                 android.util.Log.d("Reaction", "In bind: id=${item.id}, reactions=${item.reactions}, str=$reactionsStr")
@@ -307,15 +295,7 @@ class MessageAdapter(
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.time) ?: Date()
                 )
                 loadPhoto(item, holder.imageMsg)
-                // Проверяем location
-            val locView = holder.itemView.findViewById<LinearLayout>(R.id.locationContainer)
-            if (item.location != null) {
-                locView?.visibility = View.VISIBLE
-                showLocationPreview(holder.itemView, item)
-            } else {
-                locView?.visibility = View.GONE
-            }
-            holder.itemView.setOnLongClickListener { onMessageLongClick(item); true }
+                holder.itemView.setOnLongClickListener { onMessageLongClick(item); true }
                 // Показываем реакции
                 val reactionsStr = formatReactions(item.reactions)
                 holder.reactionsText.text = reactionsStr
@@ -704,33 +684,3 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
                 val reactionsText: TextView = view.findViewById(R.id.reactionsText)
     }
 }
-
-    private fun showLocationPreview(view: View, msg: ChatMessage) {
-        val mapImage = view.findViewById<ImageView>(R.id.mapImage) ?: return
-        val lat = msg.location?.lat ?: return
-        val lon = msg.location?.lon ?: return
-        
-        // Загружаем карту из OpenStreetMap
-        thread {
-            try {
-                val mapUrl = "https://staticmap.openstreetmap.de/staticmap.php?center=$lat,$lon&zoom=15&size=600x300&markers=$lat,$lon,red-pushpin"
-                val url = URL(mapUrl)
-                val bmp = BitmapFactory.decodeStream(url.openStream())
-                mapImage.post {
-                    mapImage.setImageBitmap(bmp)
-                }
-            } catch (e: Exception) {
-                mapImage.post {
-                    mapImage.setBackgroundColor(0xff2a2a2a.toInt())
-                }
-            }
-        }
-        
-        // Открыть в картах при клике
-        mapImage.setOnClickListener {
-            val uri = Uri.parse("geo:$lat,$lon?q=$lat,$lon")
-            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
-            view.context.startActivity(intent)
-        }
-    }
-
