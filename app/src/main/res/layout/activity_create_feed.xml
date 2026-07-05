@@ -160,7 +160,7 @@
                             android:text="Публичная лента"
                             android:textSize="15sp"
                             android:textColor="#fff"
-                            android:checked="true"/>
+                            />
                         <TextView
                             android:text="Видна всем, любой может подписаться"
                             android:textSize="12sp"

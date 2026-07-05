@@ -3,11 +3,13 @@ package com.mychat.app.activities
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import org.json.JSONObject
 import com.mychat.app.R
 
 class CreateFeedActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        try {
         setContentView(R.layout.activity_create_feed)
         
         var isPrivate = false
@@ -37,6 +39,38 @@ class CreateFeedActivity : AppCompatActivity() {
         
         findViewById<Button>(R.id.btnAddSubscriber).setOnClickListener {
             Toast.makeText(this, "Добавление подписчиков", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    private fun logToServer(msg: String) {
+        thread {
+            try {
+                val json = org.json.JSONObject().apply {
+                    put("logs", org.json.JSONArray().apply {
+                        put(org.json.JSONObject().apply {
+                            put("timestamp", java.text.SimpleDateFormat("HH:mm:ss").format(java.util.Date()))
+                            put("message", msg)
+                            put("level", "ERROR")
+                        })
+                    })
+                }
+                val url = java.net.URL("http://2.26.71.102:8000/api/logs")
+                val conn = url.openConnection() as java.net.HttpURLConnection
+                conn.requestMethod = "POST"
+                conn.setRequestProperty("Content-Type", "application/json")
+                conn.doOutput = true
+                conn.outputStream.write(json.toString().toByteArray())
+                conn.responseCode
+            } catch (_: Exception) {}
+        }
+    }
+
+
+        } catch (e: Exception) {
+            logToServer("CRASH: CreateFeedActivity - " + (e.message ?: "unknown"))
+            Toast.makeText(this, "Ошибка", Toast.LENGTH_SHORT).show()
+            finish()
         }
     }
 }
