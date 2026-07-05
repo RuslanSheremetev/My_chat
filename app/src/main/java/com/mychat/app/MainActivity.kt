@@ -1004,8 +1004,9 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                 handler.post {
                                     updateMessagesSilent()
                                 }
+                            } else {
+                                handler.post { loadUsers() }
                             }
-                            handler.post { loadUsers() }
                         } catch (_: Exception) {}
                     }
                     override fun onFailure(webSocket: WebSocket, t: Throwable, response: okhttp3.Response?) {
