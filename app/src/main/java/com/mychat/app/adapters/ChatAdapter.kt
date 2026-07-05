@@ -100,9 +100,36 @@ class ChatAdapter(
             // Бейдж (Группа / Лента / Bot)
             android.util.Log.d("BADGE", "user=" + user.username + " bot=" + user.isBot + " group=" + user.isGroup + " feed=" + user.isFeed)
             when {
-                user.isBot -> { android.util.Log.d("BADGE", "showing Bot"); badge.visibility = View.VISIBLE; badge.text = "Bot"; badge.setTextColor(0xff34c759.toInt()); badge.setBackgroundColor(0x33000000) }
-                user.isGroup -> { badge.visibility = View.VISIBLE; badge.text = "Группа"; badge.setTextColor(0xffff5e8e.toInt()); badge.setBackgroundColor(0x33000000) }
-                user.isFeed -> { badge.visibility = View.VISIBLE; badge.text = "Лента"; badge.setTextColor(0xff3ca0ff.toInt()); badge.setBackgroundColor(0x33000000) }
+                user.isBot -> {
+                    badge.visibility = View.VISIBLE
+                    badge.text = "bot"
+                    badge.setTextColor(0xff34c759.toInt())
+                    badge.background = android.graphics.drawable.GradientDrawable().apply {
+                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                        cornerRadius = 20f * resources.displayMetrics.density
+                        setColor(0x2E34c759.toInt())
+                    }
+                }
+                user.isGroup -> {
+                    badge.visibility = View.VISIBLE
+                    badge.text = "группа"
+                    badge.setTextColor(0xffff5e8e.toInt())
+                    badge.background = android.graphics.drawable.GradientDrawable().apply {
+                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                        cornerRadius = 20f * resources.displayMetrics.density
+                        setColor(0x2Eff5e8e.toInt())
+                    }
+                }
+                user.isFeed -> {
+                    badge.visibility = View.VISIBLE
+                    badge.text = "лента"
+                    badge.setTextColor(0xff3ca0ff.toInt())
+                    badge.background = android.graphics.drawable.GradientDrawable().apply {
+                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                        cornerRadius = 20f * resources.displayMetrics.density
+                        setColor(0x2E3ca0ff.toInt())
+                    }
+                }
                 else -> { badge.visibility = View.GONE }
             }
             

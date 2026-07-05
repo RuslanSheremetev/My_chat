@@ -54,13 +54,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="10sp"
-                    android:textColor="#ff5e8e"
                     android:fontFamily="sans-serif-medium"
-                    android:letterSpacing="0.03"
+                    android:textAllCaps="true"
                     android:layout_marginStart="8dp"
                     android:visibility="gone"
-                    android:paddingHorizontal="6dp"
-                    android:paddingVertical="1dp"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
                     android:background="@drawable/badge_bg"/>
             </LinearLayout>
             <LinearLayout
