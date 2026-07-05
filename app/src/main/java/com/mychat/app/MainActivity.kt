@@ -1517,7 +1517,7 @@ private fun sendMessageTo(to: String, text: String) {
                         JSONObject().apply {
                             put("type", "private")
                             put("to", selId)
-                            put("text", "")
+                            put("text", "📷 Фото")
                             put("file", JSONObject().apply {
                                 put("name", fn)
                                 put("url", u)
@@ -1626,7 +1626,7 @@ private fun sendMessageTo(to: String, text: String) {
                         JSONObject().apply {
                             put("type", "private")
                             put("to", selId)
-                            val text = if (caption.isNotEmpty()) caption else if (isImage) "" else "File: $fn"
+                            val text = if (caption.isNotEmpty()) caption else if (isImage) "📷 Фото" else "📎 $fn"
                             put("text", text)
                             put("file", JSONObject().apply {
                                 put("name", fn)
