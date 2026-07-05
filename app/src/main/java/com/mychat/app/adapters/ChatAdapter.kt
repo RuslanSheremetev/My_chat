@@ -77,6 +77,7 @@ class ChatAdapter(
         private val lastTime: TextView = itemView.findViewById(R.id.lastTime)
         private val onlineDot: View = itemView.findViewById(R.id.onlineDot)
         private val msgStatusIcon: ImageView = itemView.findViewById(R.id.msgStatusIcon)
+        private val unreadBadge: TextView = itemView.findViewById(R.id.unreadBadge)
         private val muteIcon: ImageView = itemView.findViewById(R.id.muteIcon)
         private val voicePreview: LinearLayout = itemView.findViewById(R.id.voicePreview)
         private val waveformView: WaveformView = itemView.findViewById(R.id.waveformView)
@@ -217,7 +218,19 @@ class ChatAdapter(
                 lastTime.visibility = View.GONE
             } else {
                 lastTime.visibility = View.VISIBLE
+            if (user.lastMsgType == "voice") {
+                lastTime.visibility = View.GONE
+            } else {
+                lastTime.visibility = View.VISIBLE
                 lastTime.text = user.lastTime
+            }
+            // Unread badge
+            if (user.unread > 0) {
+                unreadBadge.visibility = View.VISIBLE
+                unreadBadge.text = if (user.unread > 99) "99+" else user.unread.toString()
+            } else {
+                unreadBadge.visibility = View.GONE
+            }
             }
             
             when (user.lastMsgStatus) {
