@@ -575,7 +575,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
                     return@thread
                 }
                 // Загружаем и кэшируем
-                val mapUrl = "https://staticmap.openstreetmap.de/staticmap.php?center=$lat,$lon&zoom=15&size=400x400&markers=$lat,$lon,red-pushpin"
+                val mapUrl = "https://static-maps.yandex.ru/1.x/?ll=$lon,$lat&size=400,400&z=15&l=map&pt=$lon,$lat,pm2rdm&apikey=20c37aa0-ce6d-49e1-bfb3-5bc9f6e1ed0b"
                 val bmp = android.graphics.BitmapFactory.decodeStream(URL(mapUrl).openStream())
                 mapImg.post { mapImg.setImageBitmap(bmp) }
                 // Сохраняем в кэш
