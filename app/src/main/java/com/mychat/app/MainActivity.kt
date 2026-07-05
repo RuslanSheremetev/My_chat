@@ -1306,7 +1306,12 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             val loc = o.getJSONObject("location")
                             fi = null
                             nm.add(ChatMessage(
-                                o.optString("id"), o.optString("from"), "📍 Геолокация", o.optString("time"), fi, LocationData(lat = loc.optDouble("lat", 0.0), lon = loc.optDouble("lon", 0.0))
+                                id = o.optString("id"),
+                                from = o.optString("from"),
+                                to = o.optString("to", selId),
+                                text = "📍 Геолокация",
+                                time = o.optString("time"),
+                                location = LocationData(lat = loc.optDouble("lat", 0.0), lon = loc.optDouble("lon", 0.0))
                             ))
                         } else if (o.has("file")) {
                             val f = o.getJSONObject("file")
@@ -1386,7 +1391,12 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             val loc = o.getJSONObject("location")
                             fi = null
                             nm.add(ChatMessage(
-                                o.optString("id"), o.optString("from"), "📍 Геолокация", o.optString("time"), fi, LocationData(lat = loc.optDouble("lat", 0.0), lon = loc.optDouble("lon", 0.0))
+                                id = o.optString("id"),
+                                from = o.optString("from"),
+                                to = o.optString("to", selId),
+                                text = "📍 Геолокация",
+                                time = o.optString("time"),
+                                location = LocationData(lat = loc.optDouble("lat", 0.0), lon = loc.optDouble("lon", 0.0))
                             ))
                         } else if (o.has("file")) {
                             val f = o.getJSONObject("file")
