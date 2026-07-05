@@ -106,7 +106,7 @@ class ChatAdapter(
                     badge.setTextColor(0xff34c759.toInt())
                     badge.background = android.graphics.drawable.GradientDrawable().apply {
                         shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                        cornerRadius = 20f * resources.displayMetrics.density
+                        cornerRadius = 20f * itemView.resources.displayMetrics.density
                         setColor(0x2E34c759.toInt())
                     }
                 }
@@ -116,7 +116,7 @@ class ChatAdapter(
                     badge.setTextColor(0xffff5e8e.toInt())
                     badge.background = android.graphics.drawable.GradientDrawable().apply {
                         shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                        cornerRadius = 20f * resources.displayMetrics.density
+                        cornerRadius = 20f * itemView.resources.displayMetrics.density
                         setColor(0x2Eff5e8e.toInt())
                     }
                 }
@@ -126,7 +126,7 @@ class ChatAdapter(
                     badge.setTextColor(0xff3ca0ff.toInt())
                     badge.background = android.graphics.drawable.GradientDrawable().apply {
                         shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                        cornerRadius = 20f * resources.displayMetrics.density
+                        cornerRadius = 20f * itemView.resources.displayMetrics.density
                         setColor(0x2E3ca0ff.toInt())
                     }
                 }
