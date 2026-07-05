@@ -160,22 +160,16 @@ class ChatAdapter(
                 val lastMsg = user.lastMsg
                 if (lastMsg.isNotEmpty()) {
                     // Проверяем reply
+            val replyPreview = itemView.findViewById<LinearLayout>(R.id.replyPreview)
+            val replyText = itemView.findViewById<TextView>(R.id.replyText)
             if (lastMsg.startsWith("↩")) {
-                // Показываем reply-превью с полоской
-                lastMessage.text = lastMsg.replace("↩", "").trim()
-                lastMessage.setTextColor(0xff888888.toInt())
-                // Розовая полоска слева
-                val line = android.graphics.drawable.GradientDrawable().apply {
-                    shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                    setSize(6, 14)
-                    setColor(0xffff5e8e.toInt())
-                    cornerRadius = 2f
-                }
-                lastMessage.setCompoundDrawablesWithIntrinsicBounds(line, null, null, null)
-                lastMessage.compoundDrawablePadding = 8
+                replyPreview.visibility = View.VISIBLE
+                replyText.text = lastMsg.replace("↩", "").trim()
+                lastMessage.visibility = View.GONE
             } else {
+                replyPreview.visibility = View.GONE
+                lastMessage.visibility = View.VISIBLE
                 lastMessage.text = lastMsg
-                lastMessage.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
             }
                     when {
                         user.lastMsgType == "call" && lastMsg.contains("Пропущенный") -> 
