@@ -1176,9 +1176,10 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         val nm = o.optString("name", "")
                         if ((un.contains(q, true) || nm.contains(q, true)) ) {
                             val displayName = if (nm.isNotEmpty()) nm else un
-                            res.add(
-                                User(
-                                    username = un,
+                            if (res.none { it.username == un }) {
+                                res.add(
+                                    User(
+                                        username = un,
                                     avatarColor = o.optString("avatar_color", "#2AABEE"),
                                     online = o.optBoolean("online", false),
                                     lastSeen = o.optString("last_seen", ""),
