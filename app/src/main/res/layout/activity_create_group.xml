@@ -80,7 +80,7 @@
                     android:text="ИНФОРМАЦИЯ"
                     android:textSize="12sp"
                     android:textColor="#777777"
-                    android:letterSpacing="0.08sp"
+                    android:letterSpacing="0.08"
                     android:layout_marginBottom="8dp"/>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -131,7 +131,7 @@
                     android:text="НАСТРОЙКИ"
                     android:textSize="12sp"
                     android:textColor="#777777"
-                    android:letterSpacing="0.08sp"
+                    android:letterSpacing="0.08"
                     android:layout_marginBottom="8dp"/>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -165,7 +165,7 @@
                     android:text="УЧАСТНИКИ"
                     android:textSize="12sp"
                     android:textColor="#777777"
-                    android:letterSpacing="0.08sp"
+                    android:letterSpacing="0.08"
                     android:layout_marginBottom="8dp"/>
                 <LinearLayout
                     android:id="@+id/membersContainer"
