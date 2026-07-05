@@ -1201,7 +1201,9 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     u.unread = s.unread
                                 }
                             }
-                        handler.post { chatAdapter.update(res) }
+                            handler.post { chatAdapter.update(res) }
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
