@@ -1309,7 +1309,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                 id = o.optString("id"),
                                 from = o.optString("from"),
                                 to = o.optString("to", selId),
-                                text = "📍 Геолокация",
+                                text = "🧭 Геолокация",
                                 time = o.optString("time"),
                                 location = LocationData(lat = loc.optDouble("lat", 0.0), lon = loc.optDouble("lon", 0.0))
                             ))
@@ -1395,7 +1395,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                 id = o.optString("id"),
                                 from = o.optString("from"),
                                 to = o.optString("to", selId),
-                                text = "📍 Геолокация",
+                                text = "🧭 Геолокация",
                                 time = o.optString("time"),
                                 location = LocationData(lat = loc.optDouble("lat", 0.0), lon = loc.optDouble("lon", 0.0))
                             ))
