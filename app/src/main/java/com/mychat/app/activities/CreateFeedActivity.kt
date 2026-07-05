@@ -53,3 +53,4 @@ class CreateFeedActivity : AppCompatActivity() {
         }
     }
 }
+}
