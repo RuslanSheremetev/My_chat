@@ -134,6 +134,28 @@
                     android:layout_marginStart="8dp"/>
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/replyPreview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:visibility="gone"
+                android:layout_marginTop="2dp">
+                <View
+                    android:layout_width="3dp"
+                    android:layout_height="14dp"
+                    android:background="#ff5e8e"/>
+                <TextView
+                    android:id="@+id/replyText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="#888888"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:layout_marginStart="6dp"/>
+            </LinearLayout>
             <TextView
                 android:id="@+id/lastMessage"
                 android:layout_width="wrap_content"
