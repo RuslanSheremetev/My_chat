@@ -213,7 +213,12 @@ class ChatAdapter(
                 }
             }
             
-            lastTime.text = user.lastTime
+            if (user.lastMsgType == "voice") {
+                lastTime.visibility = View.GONE
+            } else {
+                lastTime.visibility = View.VISIBLE
+                lastTime.text = user.lastTime
+            }
             
             when (user.lastMsgStatus) {
                 "sending" -> { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_sending); msgStatusIcon.setColorFilter(0xff8e8e93.toInt()) }
