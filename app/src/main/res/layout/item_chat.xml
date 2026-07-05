@@ -79,7 +79,7 @@
                     android:text="▶"
                     android:textSize="8sp"
                     android:textColor="#fff"
-                    android:background="@drawable/circle_pink_bg"/>
+                    android:background="@drawable/av_pink_circle"/>
                 <com.mychat.app.views.WaveformView
                     android:id="@+id/waveformView"
                     android:layout_width="0dp"
