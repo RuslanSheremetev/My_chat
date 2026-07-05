@@ -1058,9 +1058,9 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     lastSeen = o.optString("last_seen", ""),
                                     bio = bio,
                                     avatarUrl = o.optString("avatar_url", ""),
-                                    isGroup = false,
-                                    isFeed = false,
-                                    isBot = false,
+                                    isGroup = isGroup,
+                                    isFeed = isFeed,
+                                    isBot = isBot,
                                     name = finalName
                                 )
                             )
