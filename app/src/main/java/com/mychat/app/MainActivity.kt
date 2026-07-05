@@ -60,6 +60,9 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import android.location.Location
+import android.location.LocationManager
+import android.location.LocationListener
 
 class MainActivity : AppCompatActivity() {
     companion object {
