@@ -1071,7 +1071,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     isGroup = isGroup,
                                     isFeed = isFeed,
                                     isBot = isBot,
-                                    name = finalName
+                                    name = finalName,
+                                    unread = o.optInt("unread", 0)
                                 )
                             )
                     }
@@ -1173,7 +1174,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     avatarUrl = o.optString("avatar_url", ""),
                                     isGroup = o.optBoolean("is_group", false),
                                     isFeed = o.optBoolean("is_feed", false),
-                                    name = displayName
+                                    name = displayName,
+                                    unread = o.optInt("unread", 0)
                                 )
                             )
                         }
