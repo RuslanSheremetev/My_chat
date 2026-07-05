@@ -529,11 +529,24 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
     private fun showLocationMap(msg: ChatMessage, mapImg: ImageView, view: View) {
         val lat = msg.location?.lat ?: return
         val lon = msg.location?.lon ?: return
+        val cacheKey = "map_${lat}_${lon}"
         thread {
             try {
+                // Проверяем кэш
+                val cached = com.mychat.app.utils.FileCache.getCachedFile(cacheKey)
+                if (cached != null) {
+                    val bmp = android.graphics.BitmapFactory.decodeFile(cached.absolutePath)
+                    mapImg.post { mapImg.setImageBitmap(bmp) }
+                    return@thread
+                }
+                // Загружаем и кэшируем
                 val mapUrl = "https://staticmap.openstreetmap.de/staticmap.php?center=$lat,$lon&zoom=15&size=400x400&markers=$lat,$lon,red-pushpin"
                 val bmp = android.graphics.BitmapFactory.decodeStream(URL(mapUrl).openStream())
                 mapImg.post { mapImg.setImageBitmap(bmp) }
+                // Сохраняем в кэш
+                val baos = java.io.ByteArrayOutputStream()
+                bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, baos)
+                com.mychat.app.utils.FileCache.saveToCache(cacheKey, baos.toByteArray())
             } catch (_: Exception) {}
         }
         mapImg.setOnClickListener {
