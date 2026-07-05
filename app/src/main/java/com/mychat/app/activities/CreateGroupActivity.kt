@@ -51,4 +51,3 @@ class CreateGroupActivity : AppCompatActivity() {
         }
     }
 }
-}
