@@ -36,6 +36,6 @@
         android:text="🔴 LIVE"
         android:textSize="10sp"
         android:textColor="#ff3b30"
-        android:padding="4dp 8dp"
+        android:paddingStart="8dp" paddingEnd="8dp" paddingTop="4dp" paddingBottom="4dp"
         android:visibility="gone"/>
 </LinearLayout>
