@@ -152,7 +152,7 @@ class MessageAdapter(
                     if (vp != null) vp.visibility = View.GONE
                 }
                 // Если это файл — делаем кликабельным
-                if (item.file != null && !item.text.contains("🎤 Голосовое") && !item.text.startsWith("File:") == false) {
+                if (item.file != null && !item.text.contains("🎤 Голосовое")) {
                     val name = item.file?.name ?: ""
                     val isImage = name.endsWith(".jpg", true) || name.endsWith(".jpeg", true) || name.endsWith(".png", true) || name.endsWith(".gif", true) || name.endsWith(".webp", true) || name.endsWith(".bmp", true)
                     if (!isImage) {
@@ -243,7 +243,7 @@ class MessageAdapter(
                     if (vp != null) vp.visibility = View.GONE
                 }
                 // Если это файл — делаем кликабельным
-                if (item.file != null && !item.text.contains("🎤 Голосовое") && !item.text.startsWith("File:") == false) {
+                if (item.file != null && !item.text.contains("🎤 Голосовое")) {
                     val name = item.file?.name ?: ""
                     val isImage = name.endsWith(".jpg", true) || name.endsWith(".jpeg", true) || name.endsWith(".png", true) || name.endsWith(".gif", true) || name.endsWith(".webp", true) || name.endsWith(".bmp", true)
                     if (!isImage) {
