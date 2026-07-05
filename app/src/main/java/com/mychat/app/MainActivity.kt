@@ -1160,7 +1160,10 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     user.lastMsg = last.optString("text", "")
                                     user.lastTime = formatTime(last.optString("time", ""))
                                     
-                                    if (last.has("file")) {
+                                    if (last.has("location")) {
+                                        user.lastMsg = "📍 Геолокация"
+                                        user.lastMsgType = "location"
+                                    } else if (last.has("file")) {
                                         val file = last.getJSONObject("file")
                                         val fileName = file.optString("name", "")
                                         if (fileName.contains(".jpg") || fileName.contains(".png") || fileName.contains(".jpeg")) {
@@ -1298,7 +1301,27 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     for (i in 0 until a.length()) {
                         val o = a.getJSONObject(i)
                         var fi: FileInfo? = null
-                        if (o.has("file")) {
+                        if (o.has("location")) {
+                            val loc = o.getJSONObject("location")
+                            val lat = loc.optDouble("lat", 0.0)
+                            val lon = loc.optDouble("lon", 0.0)
+                            messagesForRoom.add(ChatMessage(
+                                id = o.optString("id"),
+                                from = o.optString("from"),
+                                text = "📍 Геолокация",
+                                time = o.optString("time"),
+                                location = LocationData(lat = lat, lon = lon)
+                            ))
+                        } else if (o.has("location")) {
+                            val loc = o.getJSONObject("location")
+                            messagesForRoom.add(ChatMessage(
+                                id = o.optString("id"),
+                                from = o.optString("from"),
+                                text = "📍 Геолокация",
+                                time = o.optString("time"),
+                                location = LocationData(lat = loc.optDouble("lat", 0.0), lon = loc.optDouble("lon", 0.0))
+                            ))
+                        } else if (o.has("file")) {
                             val f = o.getJSONObject("file")
                             fi = FileInfo(f.optString("name"), f.optString("url"), f.optLong("size"))
                         }
@@ -1372,7 +1395,18 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     for (i in 0 until a.length()) {
                         val o = a.getJSONObject(i)
                         var fi: FileInfo? = null
-                        if (o.has("file")) {
+                        if (o.has("location")) {
+                            val loc = o.getJSONObject("location")
+                            val lat = loc.optDouble("lat", 0.0)
+                            val lon = loc.optDouble("lon", 0.0)
+                            messagesForRoom.add(ChatMessage(
+                                id = o.optString("id"),
+                                from = o.optString("from"),
+                                text = "📍 Геолокация",
+                                time = o.optString("time"),
+                                location = LocationData(lat = lat, lon = lon)
+                            ))
+                        } else if (o.has("file")) {
                             val f = o.getJSONObject("file")
                             fi = FileInfo(f.optString("name"), f.optString("url"), f.optLong("size"))
                         }
