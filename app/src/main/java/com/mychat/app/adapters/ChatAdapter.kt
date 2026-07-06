@@ -223,7 +223,6 @@ class ChatAdapter(
             } else {
                 unreadBadge.visibility = View.GONE
             }
-            }
             
             when (user.lastMsgStatus) {
                 "sending" -> { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_sending); msgStatusIcon.setColorFilter(0xff8e8e93.toInt()) }
