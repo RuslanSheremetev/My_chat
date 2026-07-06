@@ -1025,6 +1025,26 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         log("UI: bottomSheet show"); bottomSheet.show()
     }
 
+
+    private fun showDeletePopup(msg: ChatMessage) {
+        val popupView = layoutInflater.inflate(R.layout.popup_delete_menu, null)
+        val popup = android.widget.PopupWindow(popupView,
+            (220 * resources.displayMetrics.density).toInt(),
+            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, true)
+        popup.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+        popup.elevation = 20f
+        popupView.findViewById<LinearLayout>(R.id.menuDeleteLocal).setOnClickListener {
+            popup.dismiss()
+            deleteMessage(msg)
+        }
+        popupView.findViewById<LinearLayout>(R.id.menuDeleteGlobal).setOnClickListener {
+            popup.dismiss()
+            thread { db.messageDao().markDeleted(msg.id) }
+            msgAdapter.markDeleted(msg.id)
+        }
+        popup.showAtLocation(window.decorView, android.view.Gravity.CENTER, 0, 0)
+    }
+
     private fun connectWS() {
         try {
             log("WS connecting..."); val wsUrl = "ws://${server.replace("http://", "")}/ws/$me?token=$token"
