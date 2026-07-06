@@ -243,9 +243,6 @@ class ChatAdapter(
             }
             
             when (user.lastMsgStatus) {
-                "sending" -> { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_sending); msgStatusIcon.setColorFilter(0xff8e8e93.toInt()) }
-                "sent" -> { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_sent); msgStatusIcon.setColorFilter(0xff8e8e93.toInt()) }
-                "delivered" -> { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_delivered); msgStatusIcon.setColorFilter(0xff8e8e93.toInt()) }
                 "read" -> { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_read); msgStatusIcon.setColorFilter(0xff34c759.toInt()) }
                 else -> msgStatusIcon.visibility = View.GONE
             }
