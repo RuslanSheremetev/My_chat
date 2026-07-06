@@ -40,5 +40,6 @@
         </provider>
             <activity android:name=".activities.GalleryActivity" android:exported="false" />
             <activity android:name=".activities.CallActivity" android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity android:name=".activities.CreateBotActivity" android:exported="false"/>
     </application>
 </manifest>

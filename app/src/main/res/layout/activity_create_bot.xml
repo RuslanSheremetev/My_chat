@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#121212">
+
+    <!-- Шапка -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="#1e1e1e"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_arrow_back"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Новый бот"
+            android:textSize="18sp"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:layout_marginStart="4dp"/>
+
+        <Button
+            android:id="@+id/btnCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Создать"
+            android:textSize="14sp"
+            android:textColor="#fff"
+            android:background="@drawable/btn_bot_bg"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Аватар -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="#1a1a2a"
+                android:paddingTop="28dp"
+                android:paddingBottom="20dp">
+
+                <TextView
+                    android:id="@+id/botAvatar"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:gravity="center"
+                    android:text="🤖"
+                    android:textSize="40sp"
+                    android:textColor="#fff"
+                    android:background="@drawable/av_purple_circle"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Нажмите, чтобы выбрать иконку"
+                    android:textSize="12sp"
+                    android:textColor="#777777"
+                    android:layout_marginTop="10dp"/>
+            </LinearLayout>
+
+            <!-- Информация -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Информация"
+                android:textSize="12sp"
+                android:textColor="#777777"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#1e1e1e"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Имя бота"
+                        android:textSize="11sp"
+                        android:textColor="#777777"
+                        android:layout_marginBottom="6dp"/>
+
+                    <EditText
+                        android:id="@+id/botName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Придумайте имя"
+                        android:textSize="16sp"
+                        android:textColor="#fff"
+                        android:background="@null"
+                        android:singleLine="true"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#2c2c2c"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Описание"
+                        android:textSize="11sp"
+                        android:textColor="#777777"
+                        android:layout_marginBottom="6dp"/>
+
+                    <EditText
+                        android:id="@+id/botDesc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Что умеет этот бот?"
+                        android:textSize="16sp"
+                        android:textColor="#fff"
+                        android:background="@null"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Тип бота -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Тип бота"
+                android:textSize="12sp"
+                android:textColor="#777777"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#1e1e1e"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp">
+
+                <LinearLayout
+                    android:id="@+id/radioAI"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="14dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <View
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/radio_selected_bot"
+                        android:layout_marginEnd="12dp"/>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="AI Бот"
+                            android:textSize="15sp"
+                            android:textColor="#fff"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Отвечает с помощью нейросети"
+                            android:textSize="12sp"
+                            android:textColor="#777777"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#2c2c2c"/>
+
+                <LinearLayout
+                    android:id="@+id/radioSimple"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="14dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <View
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/radio_unselected"
+                        android:layout_marginEnd="12dp"/>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Простой бот"
+                            android:textSize="15sp"
+                            android:textColor="#fff"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Отвечает по ключевым словам"
+                            android:textSize="12sp"
+                            android:textColor="#777777"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Команды -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Команды"
+                android:textSize="12sp"
+                android:textColor="#777777"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#1e1e1e"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Команда /help"
+                        android:textSize="11sp"
+                        android:textColor="#777777"
+                        android:layout_marginBottom="6dp"/>
+
+                    <EditText
+                        android:id="@+id/botHelpCommand"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Текст ответа на /help"
+                        android:textSize="16sp"
+                        android:textColor="#fff"
+                        android:background="@null"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Бот будет доступен в общем списке чатов"
+                android:textSize="12sp"
+                android:textColor="#777777"
+                android:gravity="center"
+                android:padding="16dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
