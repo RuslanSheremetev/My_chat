@@ -137,6 +137,15 @@ class ChatAdapter(
                     badge.setTextColor(0xff8e44ad.toInt())
                     badge.background = android.graphics.drawable.GradientDrawable().apply {
                         setColor(0x228e44ad.toInt())
+                        cornerRadius = 12 * resources.displayMetrics.density
+                    }
+                }
+                user.username == "MyChat" -> {
+                    badge.visibility = View.VISIBLE
+                    badge.text = "системный"
+                    badge.setTextColor(0xff8e44ad.toInt())
+                    badge.background = android.graphics.drawable.GradientDrawable().apply {
+                        setColor(0x228e44ad.toInt())
                         cornerRadius = 12f * itemView.context.resources.displayMetrics.density
                     }
                 }
