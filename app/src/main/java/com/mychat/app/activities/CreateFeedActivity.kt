@@ -1,6 +1,7 @@
 package com.mychat.app.activities
 
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.mychat.app.R
@@ -18,14 +19,14 @@ class CreateFeedActivity : AppCompatActivity() {
 
             radioPublic.setOnClickListener {
                 isPrivate = false
-                (radioPublic.getChildAt(0) as? View)?.setBackgroundResource(R.drawable.radio_selected)
-                (radioPrivate.getChildAt(0) as? View)?.setBackgroundResource(R.drawable.radio_unselected)
+                (radioPublic.getChildAt(0) as View).setBackgroundResource(R.drawable.radio_selected)
+                (radioPrivate.getChildAt(0) as View).setBackgroundResource(R.drawable.radio_unselected)
             }
 
             radioPrivate.setOnClickListener {
                 isPrivate = true
-                (radioPublic.getChildAt(0) as? View)?.setBackgroundResource(R.drawable.radio_unselected)
-                (radioPrivate.getChildAt(0) as? View)?.setBackgroundResource(R.drawable.radio_selected)
+                (radioPublic.getChildAt(0) as View).setBackgroundResource(R.drawable.radio_unselected)
+                (radioPrivate.getChildAt(0) as View).setBackgroundResource(R.drawable.radio_selected)
             }
 
             findViewById<ImageView>(R.id.btnBack).setOnClickListener { finish() }
