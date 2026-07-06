@@ -1370,7 +1370,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         )
                     }
                     
-                    handler.post { t("Загружено сообщений: ${nm.size}") }
+                    // t("Загружено сообщений: ${nm.size}")
                     if (nm.size > lastMessageCount) {
                         val wasAtBottom = !messagesList.canScrollVertically(1)
                         handler.post {
