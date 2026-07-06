@@ -85,6 +85,8 @@ class ChatAdapter(
         private val voicePlayIcon: TextView = itemView.findViewById(R.id.voicePlayIcon)
         private val badge: TextView = itemView.findViewById(R.id.badge)
         private val botBadge: ImageView = itemView.findViewById(R.id.botBadge)
+        private val groupBadge: ImageView = itemView.findViewById(R.id.groupBadge)
+        private val feedBadge: ImageView = itemView.findViewById(R.id.feedBadge)
         private val filePreview: LinearLayout = itemView.findViewById(R.id.filePreview)
         private val chatFileIconBg: View = itemView.findViewById(R.id.chatFileIconBg)
         private val chatFileIconText: TextView = itemView.findViewById(R.id.chatFileIconText)
