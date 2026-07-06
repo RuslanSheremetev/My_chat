@@ -214,10 +214,6 @@ class ChatAdapter(
                 }
             }
             
-            if (user.lastMsgType == "voice") {
-                lastTime.visibility = View.GONE
-            } else {
-                lastTime.visibility = View.VISIBLE
             lastTime.visibility = View.VISIBLE
             lastTime.text = user.lastTime
             // Unread badge
