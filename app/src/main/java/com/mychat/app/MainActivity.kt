@@ -1661,7 +1661,7 @@ private fun sendMessageTo(to: String, text: String) {
                 val json = org.json.JSONObject().apply {
                     put("type", "private")
                     put("to", selId)
-                    put("text", "")
+                    put("text", "🧭 Геолокация")
                     put("location", org.json.JSONObject().apply {
                         put("lat", lat)
                         put("lon", lon)
@@ -1679,7 +1679,7 @@ private fun sendMessageTo(to: String, text: String) {
                 val json = org.json.JSONObject().apply {
                     put("type", "private")
                     put("to", selId)
-                    put("text", "")
+                    put("text", "🧭 Геолокация")
                     put("location", org.json.JSONObject().apply {
                         put("lat", lat)
                         put("lon", lon)
