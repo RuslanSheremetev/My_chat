@@ -189,7 +189,7 @@ class ChatAdapter(
                 lastMessage.visibility = View.GONE
                 val mins = user.lastMsgDuration / 60
                 val secs = user.lastMsgDuration % 60
-                voiceDuration.text = String.format("%d:%02d", mins, secs)
+                voiceDuration.visibility = View.GONE
                 voicePlayIcon.text = "▶"
                 voicePlayIcon.isClickable = true
                 voicePlayIcon.isFocusable = true
