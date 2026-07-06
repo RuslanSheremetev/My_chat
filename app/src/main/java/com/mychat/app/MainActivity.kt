@@ -412,7 +412,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             }
             view.findViewById<LinearLayout>(R.id.menuCreateBot).setOnClickListener {
                 popup.dismiss()
-                t("Создание бота")
+                val intent = android.content.Intent(this@MainActivity, com.mychat.app.activities.CreateBotActivity::class.java)
+                startActivityForResult(intent, 103)
             }
             popup.showAsDropDown(anchor, 0, 8.dpToPx())
         }
@@ -1718,6 +1719,22 @@ private fun sendMessageTo(to: String, text: String) {
             val bitmap = data?.extras?.get("data") as? android.graphics.Bitmap
             if (bitmap != null) { uploadBitmap(bitmap) }
             return
+        }
+        if (rc == 103 && rc2 == RESULT_OK) data?.let { d ->
+            val name = d.getStringExtra("botName") ?: ""
+            val desc = d.getStringExtra("botDesc") ?: ""
+            val type = d.getStringExtra("botType") ?: "ai"
+            val help = d.getStringExtra("botHelp") ?: ""
+            if (name.isNotEmpty()) {
+                ws?.send(JSONObject().apply {
+                    put("type", "create_bot")
+                    put("name", name)
+                    put("desc", desc)
+                    put("bot_type", type)
+                    put("help", help)
+                }.toString())
+                t("Бот $name создаётся...")
+            }
         }
         if (rc == 101 && rc2 == RESULT_OK) data?.data?.let { showPhotoDialog(it) }
         if (rc == 100 && rc2 == RESULT_OK) data?.data?.let { uploadFile(it) }
