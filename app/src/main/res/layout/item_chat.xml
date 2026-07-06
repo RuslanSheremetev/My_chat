@@ -30,7 +30,6 @@
                 android:layout_marginEnd="2dp"
                 android:layout_marginBottom="2dp"
                 android:visibility="gone"/>
-
             <ImageView
                 android:id="@+id/botBadge"
                 android:layout_width="18dp"
@@ -39,7 +38,6 @@
                 android:background="@drawable/bot_badge_bg"
                 android:layout_gravity="bottom|end"
                 android:visibility="gone"/>
-
             <ImageView
                 android:id="@+id/groupBadge"
                 android:layout_width="18dp"
@@ -48,7 +46,6 @@
                 android:background="@drawable/group_badge_bg"
                 android:layout_gravity="bottom|end"
                 android:visibility="gone"/>
-
             <ImageView
                 android:id="@+id/feedBadge"
                 android:layout_width="18dp"
@@ -71,8 +68,9 @@
                 android:gravity="center_vertical">
                 <TextView
                     android:id="@+id/name"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:textSize="16sp"
                     android:textColor="#fff"
                     android:textStyle="bold"/>
@@ -96,15 +94,6 @@
                     android:tint="#777777"
                     android:visibility="gone"
                     android:layout_marginStart="6dp"/>
-                
-                <TextView
-                    android:id="@+id/lastTime"
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_height="wrap_content"
-                    android:textSize="11sp"
-                    android:textColor="#8e8e93"
-                    android:layout_marginStart="8dp"/>
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/voicePreview"
@@ -137,7 +126,6 @@
                     android:textSize="11sp"
                     android:textColor="#777777"/>
             </LinearLayout>
-<!-- filePreview -->
             <LinearLayout
                 android:id="@+id/filePreview"
                 android:layout_width="match_parent"
@@ -146,7 +134,6 @@
                 android:gravity="center_vertical"
                 android:visibility="gone"
                 android:layout_marginTop="4dp">
-                
                 <FrameLayout
                     android:layout_width="28dp"
                     android:layout_height="28dp">
@@ -164,7 +151,6 @@
                         android:textColor="#B3FFFFFF"
                         android:fontFamily="sans-serif-medium"/>
                 </FrameLayout>
-                
                 <TextView
                     android:id="@+id/chatFileName"
                     android:layout_width="0dp"
@@ -176,7 +162,6 @@
                     android:ellipsize="end"
                     android:layout_marginStart="8dp"/>
             </LinearLayout>
-
             <LinearLayout
                 android:id="@+id/replyPreview"
                 android:layout_width="wrap_content"
@@ -198,7 +183,6 @@
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:layout_marginStart="6dp"/>
-                
             </LinearLayout>
             <TextView
                 android:id="@+id/lastMessage"
@@ -215,8 +199,26 @@
             android:orientation="vertical"
             android:gravity="end"
             android:layout_marginStart="8dp">
-
-            
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <TextView
+                    android:id="@+id/lastTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="11sp"
+                    android:textColor="#8e8e93"
+                    android:layout_marginEnd="4dp"/>
+                <ImageView
+                    android:id="@+id/check"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:src="@drawable/ic_check"
+                    android:tint="#8e8e93"
+                    android:visibility="gone"/>
+            </LinearLayout>
             <TextView
                 android:id="@+id/unreadBadge"
                 android:layout_width="wrap_content"
@@ -224,14 +226,13 @@
                 android:textSize="11sp"
                 android:textColor="#fff"
                 android:fontFamily="sans-serif-medium"
-                android:background="@drawable/badge_bg"
+                android:background="@drawable/unread_bg"
                 android:gravity="center"
                 android:minWidth="20dp"
                 android:paddingStart="6dp" android:paddingEnd="6dp"
                 android:paddingTop="2dp" android:paddingBottom="2dp"
                 android:visibility="gone"
-                android:layout_gravity="end"
-                android:layout_marginBottom="4dp"/>
+                android:layout_marginTop="4dp"/>
             <ImageView
                 android:id="@+id/msgStatusIcon"
                 android:layout_width="12dp"
@@ -239,7 +240,6 @@
                 android:src="@drawable/ic_check_sent"
                 android:tint="#8e8e93"
                 android:visibility="gone"
-                android:layout_gravity="end"
                 android:layout_marginTop="2dp"/>
         </LinearLayout>
         <ImageView
