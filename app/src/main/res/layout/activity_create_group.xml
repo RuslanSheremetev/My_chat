@@ -12,7 +12,9 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="#1e1e1e"
-        android:paddingStart="12dp" android:paddingEnd="12dp">
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
+
         <ImageView
             android:id="@+id/btnBack"
             android:layout_width="40dp"
@@ -21,6 +23,7 @@
             android:clickable="true"
             android:focusable="true"
             android:background="?attr/selectableItemBackgroundBorderless"/>
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -30,6 +33,7 @@
             android:textColor="#fff"
             android:textStyle="bold"
             android:layout_marginStart="4dp"/>
+
         <Button
             android:id="@+id/btnCreate"
             android:layout_width="wrap_content"
@@ -38,12 +42,14 @@
             android:textSize="14sp"
             android:textColor="#fff"
             android:background="@drawable/btn_pink_bg"
-            android:paddingStart="18dp" android:paddingEnd="18dp"/>
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"/>
     </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,6 +64,7 @@
                 android:background="#1a2a3a"
                 android:paddingTop="28dp"
                 android:paddingBottom="20dp">
+
                 <TextView
                     android:id="@+id/groupAvatar"
                     android:layout_width="90dp"
@@ -68,6 +75,7 @@
                     android:textColor="#fff"
                     android:textStyle="bold"
                     android:background="@drawable/av_pink_circle"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -81,28 +89,35 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ИНФОРМАЦИЯ"
+                android:text="Информация"
                 android:textSize="12sp"
                 android:textColor="#777777"
-                android:layout_marginBottom="8dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="#1e1e1e"
-                android:paddingStart="16dp" android:paddingEnd="16dp"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingTop="14dp" android:paddingBottom="14dp">
-                    <TextView android:text="НАЗВАНИЕ ГРУППЫ" android:textSize="11sp" android:textColor="#777777"/>
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Название группы"
+                        android:textSize="11sp"
+                        android:textColor="#777777"
+                        android:layout_marginBottom="6dp"/>
+
                     <EditText
                         android:id="@+id/groupName"
                         android:layout_width="match_parent"
@@ -114,14 +129,25 @@
                         android:singleLine="true"/>
                 </LinearLayout>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#2c2c2c"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#2c2c2c"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingTop="14dp" android:paddingBottom="14dp">
-                    <TextView android:text="ОПИСАНИЕ" android:textSize="11sp" android:textColor="#777777"/>
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Описание"
+                        android:textSize="11sp"
+                        android:textColor="#777777"
+                        android:layout_marginBottom="6dp"/>
+
                     <EditText
                         android:id="@+id/groupDesc"
                         android:layout_width="match_parent"
@@ -133,64 +159,74 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Приватность -->
+            <!-- Настройки -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="НАСТРОЙКИ"
+                android:text="Настройки"
                 android:textSize="12sp"
                 android:textColor="#777777"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="16dp"/>
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
+                android:orientation="vertical"
                 android:background="#1e1e1e"
-                android:paddingStart="16dp" android:paddingEnd="16dp"
-                android:paddingTop="16dp" android:paddingBottom="16dp"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp">
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-                    <TextView android:text="Приватная группа" android:textSize="15sp" android:textColor="#fff"/>
-                    <TextView android:text="Вход только по приглашению" android:textSize="12sp" android:textColor="#777777"/>
-                </LinearLayout>
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp">
 
-                <Button
-                    android:id="@+id/switchPrivate"
-                    android:text="Приватная"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="12dp" android:paddingEnd="12dp"
-                    android:paddingTop="6dp" android:paddingBottom="6dp"
-                    android:textSize="13sp"
-                    android:textColor="#fff"
-                    android:background="@drawable/btn_mini_bg"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Приватная группа"
+                        android:textSize="15sp"
+                        android:textColor="#fff"/>
+
+                    <Button
+                        android:id="@+id/switchPrivate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Приватная"
+                        android:textSize="13sp"
+                        android:textColor="#fff"
+                        android:background="@drawable/btn_mini_bg"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"/>
+                </LinearLayout>
             </LinearLayout>
 
             <!-- Участники -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="УЧАСТНИКИ"
+                android:text="Участники"
                 android:textSize="12sp"
                 android:textColor="#777777"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="16dp"/>
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingStart="16dp" android:paddingEnd="16dp"
-                android:layout_marginBottom="8dp">
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
                 <Button
                     android:id="@+id/btnAddMember"
                     android:layout_width="wrap_content"
@@ -199,7 +235,8 @@
                     android:textSize="13sp"
                     android:textColor="#777777"
                     android:background="@drawable/btn_dashed_bg"
-                    android:paddingStart="12dp" android:paddingEnd="12dp"/>
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"/>
             </LinearLayout>
 
             <TextView
@@ -210,6 +247,7 @@
                 android:textColor="#777777"
                 android:gravity="center"
                 android:padding="16dp"/>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
