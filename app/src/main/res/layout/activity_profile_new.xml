@@ -1,197 +1,278 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#121212">
 
-    <!-- Шапка профиля -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="#1a2a3a"
-        android:paddingTop="40dp"
-        android:paddingBottom="20dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/profileAvatar"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
+        <!-- Шапка профиля -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:gravity="center"
-            android:textSize="38sp"
-            android:textColor="#fff"
-            android:textStyle="bold"
-            android:background="@drawable/av_blue_circle"
-            android:layout_marginBottom="12dp"/>
+            android:background="#1a2a3a"
+            android:paddingTop="40dp"
+            android:paddingBottom="20dp">
 
+            <TextView
+                android:id="@+id/profileAvatar"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:gravity="center"
+                android:text="R"
+                android:textSize="38sp"
+                android:textColor="#fff"
+                android:textStyle="bold"
+                android:background="@drawable/av_blue_circle"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:id="@+id/profileName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Руслан Шереметев"
+                android:textSize="22sp"
+                android:textColor="#fff"
+                android:textStyle="bold"
+                android:layout_marginBottom="2dp"/>
+
+            <TextView
+                android:id="@+id/profileUsername"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@Ruslan"
+                android:textSize="14sp"
+                android:textColor="#777777"/>
+        </LinearLayout>
+
+        <!-- Информация -->
         <TextView
-            android:id="@+id/profileName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="22sp"
-            android:textColor="#fff"
-            android:textStyle="bold"
-            android:layout_marginBottom="2dp"/>
-
-        <TextView
-            android:id="@+id/profileUsername"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="#777777"/>
-    </LinearLayout>
-
-    <!-- Контент -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="16dp">
+            android:text="Информация"
+            android:textSize="12sp"
+            android:textColor="#777777"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Информация -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ИНФОРМАЦИЯ"
-                android:textSize="12sp"
-                android:textColor="#777777"
-                android:layout_marginBottom="8dp"/>
+            android:orientation="vertical"
+            android:background="#1e1e1e"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="#1e1e1e"
-                android:paddingStart="16dp" android:paddingEnd="16dp"
-                android:layout_marginBottom="16dp">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingTop="14dp" android:paddingBottom="14dp">
-                    <TextView android:layout_width="0dp" android:text="Статус" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
-                    <EditText
-                        android:id="@+id/profileBio"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="В сети"
-                        android:textSize="14sp"
-                        android:textColor="#777777"
-                        android:background="@null"
-                        android:gravity="end"
-                        android:singleLine="true"/>
-                </LinearLayout>
+                    android:layout_weight="1"
+                    android:text="Статус"
+                    android:textSize="15sp"
+                    android:textColor="#fff"/>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#2c2c2c"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <EditText
+                    android:id="@+id/profileStatus"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingTop="14dp" android:paddingBottom="14dp">
-                    <TextView android:layout_width="0dp" android:text="О себе" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
-                    <EditText
-                        android:id="@+id/profileStatus"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:hint="Расскажите о себе"
-                        android:textSize="14sp"
-                        android:textColor="#777777"
-                        android:background="@null"
-                        android:gravity="end"
-                        android:singleLine="true"/>
-                </LinearLayout>
-
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#2c2c2c"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingTop="14dp" android:paddingBottom="14dp">
-                    <TextView android:layout_width="0dp" android:text="Телефон" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
-                    <TextView android:id="@+id/profilePhone" android:text="—" android:textSize="14sp" android:textColor="#777777"/>
-                </LinearLayout>
+                    android:text="В сети"
+                    android:textSize="14sp"
+                    android:textColor="#777777"
+                    android:background="@null"
+                    android:gravity="end"
+                    android:singleLine="true"/>
             </LinearLayout>
 
-            <!-- Настройки -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="НАСТРОЙКИ"
-                android:textSize="12sp"
-                android:textColor="#777777"
-                android:layout_marginBottom="8dp"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#2c2c2c"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="#1e1e1e"
-                android:paddingStart="16dp" android:paddingEnd="16dp"
-                android:layout_marginBottom="16dp">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingTop="14dp" android:paddingBottom="14dp">
-                    <TextView android:layout_width="0dp" android:text="Тема" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
-                    <TextView android:text="Тёмная" android:textSize="14sp" android:textColor="#777777"/>
-                </LinearLayout>
+                    android:layout_weight="1"
+                    android:text="О себе"
+                    android:textSize="15sp"
+                    android:textColor="#fff"/>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#2c2c2c"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <EditText
+                    android:id="@+id/profileBio"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingTop="14dp" android:paddingBottom="14dp">
-                    <TextView android:layout_width="0dp" android:text="Хранилище" android:textColor="#fff" android:textSize="15sp" android:layout_weight="1"/>
-                    <Button
-                        android:id="@+id/btnClearCache"
-                        android:text="Очистить"
-                        android:textSize="13sp"
-                        android:textColor="#ff5e8e"
-                        android:background="@drawable/btn_mini_bg"
-                        android:paddingStart="12dp" android:paddingEnd="12dp"
-                        android:layout_height="30dp"/>
-                </LinearLayout>
+                    android:hint="Расскажите о себе"
+                    android:textSize="14sp"
+                    android:textColor="#777777"
+                    android:background="@null"
+                    android:gravity="end"
+                    android:singleLine="true"/>
             </LinearLayout>
 
-            <!-- Кнопки -->
-            <Button
-                android:id="@+id/btnSaveProfile"
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:text="Сохранить"
-                android:textSize="15sp"
-                android:textColor="#fff"
-                android:background="@drawable/btn_pink_bg"
-                android:layout_marginBottom="8dp"/>
+                android:layout_height="1dp"
+                android:background="#2c2c2c"/>
 
-            <Button
-                android:id="@+id/btnLogout"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:text="Выйти из аккаунта"
-                android:textSize="15sp"
-                android:textColor="#777777"
-                android:background="#1e1e1e"
-                android:layout_marginBottom="20dp"/>
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Телефон"
+                    android:textSize="15sp"
+                    android:textColor="#fff"/>
+
+                <TextView
+                    android:id="@+id/profilePhone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textSize="14sp"
+                    android:textColor="#777777"/>
+            </LinearLayout>
         </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+
+        <!-- Настройки -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Настройки"
+            android:textSize="12sp"
+            android:textColor="#777777"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#1e1e1e"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Тема"
+                    android:textSize="15sp"
+                    android:textColor="#fff"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Тёмная"
+                    android:textSize="14sp"
+                    android:textColor="#777777"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#2c2c2c"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Хранилище"
+                    android:textSize="15sp"
+                    android:textColor="#fff"/>
+
+                <Button
+                    android:id="@+id/btnClearCache"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:text="Очистить"
+                    android:textSize="13sp"
+                    android:textColor="#ff5e8e"
+                    android:background="@drawable/btn_mini_bg"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Кнопки -->
+        <Button
+            android:id="@+id/btnSaveProfile"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Сохранить"
+            android:textSize="15sp"
+            android:textColor="#fff"
+            android:background="@drawable/btn_pink_bg"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Выйти из аккаунта"
+            android:textSize="15sp"
+            android:textColor="#777777"
+            android:background="#1e1e1e"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="20dp"/>
+
+    </LinearLayout>
+</ScrollView>
