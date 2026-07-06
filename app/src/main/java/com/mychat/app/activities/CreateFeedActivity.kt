@@ -1,7 +1,6 @@
 package com.mychat.app.activities
 
 import android.os.Bundle
-import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.mychat.app.R
@@ -19,14 +18,14 @@ class CreateFeedActivity : AppCompatActivity() {
 
             radioPublic.setOnClickListener {
                 isPrivate = false
-                radioPublic.findViewById<View>(R.id.radio_indicator)?.let { updateRadio(it, true) }
-                radioPrivate.findViewById<View>(R.id.radio_indicator)?.let { updateRadio(it, false) }
+                (radioPublic.getChildAt(0) as? View)?.setBackgroundResource(R.drawable.radio_selected)
+                (radioPrivate.getChildAt(0) as? View)?.setBackgroundResource(R.drawable.radio_unselected)
             }
 
             radioPrivate.setOnClickListener {
                 isPrivate = true
-                radioPublic.findViewById<View>(R.id.radio_indicator)?.let { updateRadio(it, false) }
-                radioPrivate.findViewById<View>(R.id.radio_indicator)?.let { updateRadio(it, true) }
+                (radioPublic.getChildAt(0) as? View)?.setBackgroundResource(R.drawable.radio_unselected)
+                (radioPrivate.getChildAt(0) as? View)?.setBackgroundResource(R.drawable.radio_selected)
             }
 
             findViewById<ImageView>(R.id.btnBack).setOnClickListener { finish() }
@@ -55,10 +54,6 @@ class CreateFeedActivity : AppCompatActivity() {
             Toast.makeText(this, "Ошибка: " + e.message, Toast.LENGTH_LONG).show()
             finish()
         }
-    }
-
-    private fun updateRadio(view: View, selected: Boolean) {
-        view.setBackgroundResource(if (selected) R.drawable.radio_selected else R.drawable.radio_unselected)
     }
 
     private fun logToServer(msg: String) {
