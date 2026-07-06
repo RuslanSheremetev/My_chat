@@ -1,6 +1,7 @@
 package com.mychat.app.activities
 
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.mychat.app.R
@@ -13,10 +14,19 @@ class CreateGroupActivity : AppCompatActivity() {
         try {
             setContentView(R.layout.activity_create_group)
 
-            val privBtn = findViewById<Button>(R.id.switchPrivate)
-            privBtn.setOnClickListener {
-                isPrivate = !isPrivate
-                privBtn.text = if (isPrivate) "Публичная" else "Приватная"
+            val radioPublic = findViewById<LinearLayout>(R.id.radioPublic)
+            val radioPrivate = findViewById<LinearLayout>(R.id.radioPrivate)
+
+            radioPublic.setOnClickListener {
+                isPrivate = false
+                (radioPublic.getChildAt(0) as View).setBackgroundResource(R.drawable.radio_selected_group)
+                (radioPrivate.getChildAt(0) as View).setBackgroundResource(R.drawable.radio_unselected)
+            }
+
+            radioPrivate.setOnClickListener {
+                isPrivate = true
+                (radioPublic.getChildAt(0) as View).setBackgroundResource(R.drawable.radio_unselected)
+                (radioPrivate.getChildAt(0) as View).setBackgroundResource(R.drawable.radio_selected_group)
             }
 
             findViewById<ImageView>(R.id.btnBack).setOnClickListener { finish() }
