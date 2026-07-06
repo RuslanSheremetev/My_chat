@@ -84,6 +84,7 @@ class ChatAdapter(
         private val voiceDuration: TextView = itemView.findViewById(R.id.voiceDuration)
         private val voicePlayIcon: TextView = itemView.findViewById(R.id.voicePlayIcon)
         private val badge: TextView = itemView.findViewById(R.id.badge)
+        private val botBadge: ImageView = itemView.findViewById(R.id.botBadge)
         private val filePreview: LinearLayout = itemView.findViewById(R.id.filePreview)
         private val chatFileIconBg: View = itemView.findViewById(R.id.chatFileIconBg)
         private val chatFileIconText: TextView = itemView.findViewById(R.id.chatFileIconText)
@@ -251,6 +252,7 @@ class ChatAdapter(
             }
             
             onlineDot.visibility = if (user.online && !user.isGroup && !user.isFeed && !user.isBot) View.VISIBLE else View.GONE
+        botBadge.visibility = if (user.isBot) View.VISIBLE else View.GONE
             muteIcon.visibility = if (user.isMuted) View.VISIBLE else View.GONE
             
             itemView.setOnClickListener {
