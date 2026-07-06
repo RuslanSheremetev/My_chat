@@ -372,7 +372,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             startActivity(intent)
         }
         findViewById<ImageButton>(R.id.btnChatMenu)?.setOnClickListener { anchor ->
-            val view = layoutInflater.inflate(R.layout.dropdown_chat_menu, null)
+            val view = layoutInflater.inflate(R.layout.popup_chat_menu, null)
             val popup = android.widget.PopupWindow(view, 
                 (220 * resources.displayMetrics.density).toInt(),
                 android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, true)
