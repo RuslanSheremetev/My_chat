@@ -30,30 +30,7 @@
                 android:layout_marginEnd="2dp"
                 android:layout_marginBottom="2dp"
                 android:visibility="gone"/>
-            <ImageView
-                android:id="@+id/botBadge"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:src="@drawable/ic_bot_badge"
-                android:background="@drawable/bot_badge_bg"
-                android:layout_gravity="bottom|end"
-                android:visibility="gone"/>
-            <ImageView
-                android:id="@+id/groupBadge"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:src="@drawable/ic_group_badge"
-                android:background="@drawable/group_badge_bg"
-                android:layout_gravity="bottom|end"
-                android:visibility="gone"/>
-            <ImageView
-                android:id="@+id/feedBadge"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:src="@drawable/ic_feed_badge"
-                android:background="@drawable/feed_badge_bg"
-                android:layout_gravity="bottom|end"
-                android:visibility="gone"/>
+
         </FrameLayout>
         <LinearLayout
             android:layout_width="0dp"
