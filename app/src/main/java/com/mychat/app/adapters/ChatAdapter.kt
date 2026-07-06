@@ -255,6 +255,8 @@ class ChatAdapter(
             
             onlineDot.visibility = if (user.online && !user.isGroup && !user.isFeed && !user.isBot) View.VISIBLE else View.GONE
         botBadge.visibility = if (user.isBot) View.VISIBLE else View.GONE
+        groupBadge.visibility = if (user.isGroup) View.VISIBLE else View.GONE
+        feedBadge.visibility = if (user.isFeed) View.VISIBLE else View.GONE
             muteIcon.visibility = if (user.isMuted) View.VISIBLE else View.GONE
             
             itemView.setOnClickListener {
