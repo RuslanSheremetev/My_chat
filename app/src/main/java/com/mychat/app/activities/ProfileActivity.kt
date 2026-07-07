@@ -22,7 +22,7 @@ class ProfileActivity : AppCompatActivity() {
             avatar.text = username.take(1).uppercase()
 
             // Загружаем сохранённый аватар
-            val savedAvatarPath = prefs.getString("avatar_path", "")
+            val savedAvatarPath = prefs.getString("avatar_path", "") ?: ""
             if (savedAvatarPath.isNotEmpty()) {
                 try {
                     val bmp = BitmapFactory.decodeFile(savedAvatarPath)
