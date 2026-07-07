@@ -31,11 +31,35 @@ class ChatAdapter(
     private val users = mutableListOf<User>()
     var selectedPosition: Int = -1
     
+
+    class UserDiffCallback(
+        private val oldList: List<User>,
+        private val newList: List<User>
+    ) : androidx.recyclerview.widget.DiffUtil.Callback() {
+        override fun getOldListSize() = oldList.size
+        override fun getNewListSize() = newList.size
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].username == newList[newItemPosition].username
+        }
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val old = oldList[oldItemPosition]
+            val new = newList[newItemPosition]
+            return old.lastMessage == new.lastMessage &&
+                   old.lastTime == new.lastTime &&
+                   old.unread == new.unread &&
+                   old.online == new.online &&
+                   old.isBot == new.isBot &&
+                   old.isGroup == new.isGroup &&
+                   old.isFeed == new.isFeed
+        }
+    }
+
     fun update(list: List<User>) {
+        val diffResult = androidx.recyclerview.widget.DiffUtil.calculateDiff(UserDiffCallback(users, list))
         users.clear()
         users.addAll(list)
         selectedPosition = -1
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
     
     fun removeItem(position: Int): User {
