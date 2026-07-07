@@ -143,6 +143,7 @@ class MessageAdapter(
                 lc?.visibility = View.GONE
             }
             showReplyQuote(holder.itemView, item)
+            showForwardBlock(holder.itemView, item)
                 onLog?.invoke("VOICE: checking text=${item.text.take(50)}"); if (item.text.contains("🎤 Голосовое")) {
                     val fc = holder.itemView.findViewById<LinearLayout>(R.id.fileIconContainer)
                     if (fc != null) fc.visibility = View.GONE
@@ -246,6 +247,7 @@ class MessageAdapter(
                 lc?.visibility = View.GONE
             }
             showReplyQuote(holder.itemView, item)
+            showForwardBlock(holder.itemView, item)
                 onLog?.invoke("VOICE: checking text=${item.text.take(50)}"); if (item.text.contains("🎤 Голосовое")) {
                     val fc = holder.itemView.findViewById<LinearLayout>(R.id.fileIconContainer)
                     if (fc != null) fc.visibility = View.GONE
@@ -589,6 +591,18 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
             val uri = Uri.parse("geo:$lat,$lon?q=$lat,$lon")
             view.context.startActivity(Intent(Intent.ACTION_VIEW, uri))
         }
+    }
+
+
+    private fun showForwardBlock(view: View, msg: ChatMessage) {
+        val fwdBlock = view.findViewById<LinearLayout>(R.id.forwardBlock) ?: return
+        if (msg.forward != null) {
+            fwdBlock.visibility = View.VISIBLE
+            view.findViewById<TextView>(R.id.forwardFrom)?.text = "↩ ${msg.forward!!.from}"
+            view.findViewById<TextView>(R.id.forwardText)?.text = msg.forward!!.text
+            val fn = view.findViewById<TextView>(R.id.forwardFileName)
+            if (msg.forward!!.file != null) { fn?.visibility = View.VISIBLE; fn?.text = "📎 ${msg.forward!!.file!!.name}" } else { fn?.visibility = View.GONE }
+        } else { fwdBlock.visibility = View.GONE }
     }
 
     private fun showFileIcon(view: View, msg: ChatMessage) {
