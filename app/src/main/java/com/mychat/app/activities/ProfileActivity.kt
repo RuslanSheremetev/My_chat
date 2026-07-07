@@ -34,7 +34,6 @@ class ProfileActivity : AppCompatActivity() {
                 } catch (_: Exception) {}
             }
 
-            // Клик по аватарке — выбор фото
             avatar.setOnClickListener {
                 val intent = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                 startActivityForResult(intent, PICK_AVATAR)
@@ -76,49 +75,72 @@ class ProfileActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_AVATAR && resultCode == RESULT_OK && data != null) {
             val uri = data.data ?: return
-            try {
-                val inputStream = contentResolver.openInputStream(uri)
-                val bmp = BitmapFactory.decodeStream(inputStream)
-                inputStream?.close()
-                if (bmp != null) {
-                    val avatar = findViewById<TextView>(R.id.profileAvatar)
-                    val roundedBmp = android.graphics.drawable.BitmapDrawable(resources, getRoundedBitmap(bmp))
-                    avatar.background = roundedBmp
-                    avatar.text = ""
+            Thread {
+                try {
+                    val inputStream = contentResolver.openInputStream(uri)
+                    val bmp = BitmapFactory.decodeStream(inputStream)
+                    inputStream?.close()
+                    if (bmp != null) {
+                        runOnUiThread {
+                            val avatar = findViewById<TextView>(R.id.profileAvatar)
+                            val roundedBmp = android.graphics.drawable.BitmapDrawable(resources, getRoundedBitmap(bmp))
+                            avatar.background = roundedBmp
+                            avatar.text = ""
+                        }
+                        // Сохраняем локально
+                        val path = saveBitmapToCache(bmp)
+                        android.preference.PreferenceManager.getDefaultSharedPreferences(this)
+                            .edit().putString("avatar_path", path).apply()
 
-                    // Сохраняем локально
-                    val path = saveBitmapToCache(bmp)
-                    android.preference.PreferenceManager.getDefaultSharedPreferences(this)
-                        .edit().putString("avatar_path", path).apply()
+                        // Отправляем на сервер через /update_profile
+                        val token = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
+                            .getString("token", "") ?: ""
+                        val baos = java.io.ByteArrayOutputStream()
+                        bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, baos)
+                        val bytes = baos.toByteArray()
 
-                    // Загружаем на сервер
-                    Thread {
-                        try {
-                            val baos = java.io.ByteArrayOutputStream()
-                            bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, baos)
-                            val bytes = baos.toByteArray()
-                            val url = java.net.URL("http://2.26.71.102:8000/upload?token=" + 
-                                android.preference.PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
-                                    .getString("token", "") + "&type=avatar")
-                            val conn = url.openConnection() as java.net.HttpURLConnection
-                            conn.requestMethod = "POST"
-                            conn.doOutput = true
-                            conn.setRequestProperty("Content-Type", "application/octet-stream")
-                            conn.outputStream.write(bytes)
-                            val response = conn.inputStream.bufferedReader().readText()
-                            // Сохраняем URL аватарки
-                            val json = org.json.JSONObject(response)
-                            val avatarUrl = json.optString("url", "")
-                            if (avatarUrl.isNotEmpty()) {
-                                android.preference.PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
-                                    .edit().putString("avatar_url", avatarUrl).apply()
-                            }
-                        } catch (_: Exception) {}
-                    }.start()
+                        val boundary = "Boundary-${System.currentTimeMillis()}"
+                        val url = java.net.URL("http://2.26.71.102:8000/update_profile?token=$token")
+                        val conn = url.openConnection() as java.net.HttpURLConnection
+                        conn.requestMethod = "POST"
+                        conn.doOutput = true
+                        conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
+
+                        val body = buildString {
+                            append("--$boundary\r\n")
+                            append("Content-Disposition: form-data; name=\"bio\"\r\n\r\n")
+                            append(android.preference.PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
+                                .getString("user_bio", "") ?: "")
+                            append("\r\n")
+                            append("--$boundary\r\n")
+                            append("Content-Disposition: form-data; name=\"status_text\"\r\n\r\n")
+                            append(android.preference.PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
+                                .getString("user_status", "") ?: "")
+                            append("\r\n")
+                            append("--$boundary\r\n")
+                            append("Content-Disposition: form-data; name=\"avatar\"; filename=\"avatar.jpg\"\r\n")
+                            append("Content-Type: image/jpeg\r\n\r\n")
+                        }
+                        conn.outputStream.write(body.toByteArray())
+                        conn.outputStream.write(bytes)
+                        conn.outputStream.write("\r\n--$boundary--\r\n".toByteArray())
+                        conn.outputStream.flush()
+                        conn.outputStream.close()
+
+                        val response = conn.inputStream.bufferedReader().readText()
+                        val json = org.json.JSONObject(response)
+                        val avatarUrl = json.optString("avatar_url", "")
+                        if (avatarUrl.isNotEmpty()) {
+                            android.preference.PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
+                                .edit().putString("avatar_url", avatarUrl).apply()
+                        }
+                    }
+                } catch (e: Exception) {
+                    runOnUiThread {
+                        Toast.makeText(this@ProfileActivity, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            } catch (e: Exception) {
-                Toast.makeText(this, "Не удалось загрузить фото", Toast.LENGTH_SHORT).show()
-            }
+            }.start()
         }
     }
 
