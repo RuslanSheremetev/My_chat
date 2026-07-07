@@ -1,14 +1,15 @@
 package com.mychat.app.activities
 
+import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.mychat.app.R
 
 class ProfileActivity : AppCompatActivity() {
+    private val PICK_AVATAR = 300
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
@@ -17,7 +18,28 @@ class ProfileActivity : AppCompatActivity() {
             val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
             val username = prefs.getString("username", "A") ?: "A"
 
-            findViewById<TextView>(R.id.profileAvatar).text = username.take(1).uppercase()
+            val avatar = findViewById<TextView>(R.id.profileAvatar)
+            avatar.text = username.take(1).uppercase()
+
+            // Загружаем сохранённый аватар
+            val savedAvatarPath = prefs.getString("avatar_path", "")
+            if (savedAvatarPath.isNotEmpty()) {
+                try {
+                    val bmp = BitmapFactory.decodeFile(savedAvatarPath)
+                    if (bmp != null) {
+                        val roundedBmp = android.graphics.drawable.BitmapDrawable(resources, getRoundedBitmap(bmp))
+                        avatar.background = roundedBmp
+                        avatar.text = ""
+                    }
+                } catch (_: Exception) {}
+            }
+
+            // Клик по аватарке — выбор фото
+            avatar.setOnClickListener {
+                val intent = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                startActivityForResult(intent, PICK_AVATAR)
+            }
+
             findViewById<TextView>(R.id.profileName).text = prefs.getString("user_name", username) ?: username
             findViewById<TextView>(R.id.profileUsername).text = "@$username"
 
@@ -36,41 +58,62 @@ class ProfileActivity : AppCompatActivity() {
                 finish()
             }
 
-            findViewById<Button>(R.id.btnClearCache).setOnClickListener {
-                Toast.makeText(this, "Кэш очищен", Toast.LENGTH_SHORT).show()
-            }
-
             findViewById<Button>(R.id.btnLogout).setOnClickListener {
                 prefs.edit().clear().apply()
+                val intent = Intent(this, com.mychat.app.MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                intent.putExtra("logout", true)
+                startActivity(intent)
                 finish()
             }
         } catch (e: Exception) {
-            logToServer("CRASH: ProfileActivity - " + (e.message ?: "unknown"))
             Toast.makeText(this, "Ошибка: " + e.message, Toast.LENGTH_LONG).show()
             finish()
         }
     }
 
-    private fun logToServer(msg: String) {
-        Thread {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_AVATAR && resultCode == RESULT_OK && data != null) {
+            val uri = data.data ?: return
             try {
-                val json = org.json.JSONObject().apply {
-                    put("logs", org.json.JSONArray().apply {
-                        put(org.json.JSONObject().apply {
-                            put("timestamp", java.text.SimpleDateFormat("HH:mm:ss").format(java.util.Date()))
-                            put("message", msg)
-                            put("level", "ERROR")
-                        })
-                    })
+                val inputStream = contentResolver.openInputStream(uri)
+                val bmp = BitmapFactory.decodeStream(inputStream)
+                inputStream?.close()
+                if (bmp != null) {
+                    val avatar = findViewById<TextView>(R.id.profileAvatar)
+                    val roundedBmp = android.graphics.drawable.BitmapDrawable(resources, getRoundedBitmap(bmp))
+                    avatar.background = roundedBmp
+                    avatar.text = ""
+
+                    // Сохраняем путь к аватарке локально
+                    val path = saveBitmapToCache(bmp)
+                    android.preference.PreferenceManager.getDefaultSharedPreferences(this)
+                        .edit().putString("avatar_path", path).apply()
                 }
-                val url = java.net.URL("http://2.26.71.102:8000/api/logs")
-                val conn = url.openConnection() as java.net.HttpURLConnection
-                conn.requestMethod = "POST"
-                conn.setRequestProperty("Content-Type", "application/json")
-                conn.doOutput = true
-                conn.outputStream.write(json.toString().toByteArray())
-                conn.responseCode
-            } catch (_: Exception) {}
-        }.start()
+            } catch (e: Exception) {
+                Toast.makeText(this, "Не удалось загрузить фото", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun getRoundedBitmap(bitmap: android.graphics.Bitmap): android.graphics.Bitmap {
+        val size = Math.min(bitmap.width, bitmap.height)
+        val output = android.graphics.Bitmap.createBitmap(size, size, android.graphics.Bitmap.Config.ARGB_8888)
+        val canvas = android.graphics.Canvas(output)
+        val paint = android.graphics.Paint().apply { isAntiAlias = true }
+        val rect = android.graphics.RectF(0f, 0f, size.toFloat(), size.toFloat())
+        canvas.drawOval(rect, paint)
+        paint.xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.SRC_IN)
+        canvas.drawBitmap(bitmap, null, rect, paint)
+        return output
+    }
+
+    private fun saveBitmapToCache(bitmap: android.graphics.Bitmap): String {
+        val file = java.io.File(cacheDir, "avatar_${System.currentTimeMillis()}.jpg")
+        java.io.FileOutputStream(file).use { out ->
+            bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, out)
+        }
+        return file.absolutePath
     }
 }
