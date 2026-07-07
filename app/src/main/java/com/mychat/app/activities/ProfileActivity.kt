@@ -86,10 +86,35 @@ class ProfileActivity : AppCompatActivity() {
                     avatar.background = roundedBmp
                     avatar.text = ""
 
-                    // Сохраняем путь к аватарке локально
+                    // Сохраняем локально
                     val path = saveBitmapToCache(bmp)
                     android.preference.PreferenceManager.getDefaultSharedPreferences(this)
                         .edit().putString("avatar_path", path).apply()
+
+                    // Загружаем на сервер
+                    Thread {
+                        try {
+                            val baos = java.io.ByteArrayOutputStream()
+                            bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, baos)
+                            val bytes = baos.toByteArray()
+                            val url = java.net.URL("http://2.26.71.102:8000/upload?token=" + 
+                                android.preference.PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
+                                    .getString("token", "") + "&type=avatar")
+                            val conn = url.openConnection() as java.net.HttpURLConnection
+                            conn.requestMethod = "POST"
+                            conn.doOutput = true
+                            conn.setRequestProperty("Content-Type", "application/octet-stream")
+                            conn.outputStream.write(bytes)
+                            val response = conn.inputStream.bufferedReader().readText()
+                            // Сохраняем URL аватарки
+                            val json = org.json.JSONObject(response)
+                            val avatarUrl = json.optString("url", "")
+                            if (avatarUrl.isNotEmpty()) {
+                                android.preference.PreferenceManager.getDefaultSharedPreferences(this@ProfileActivity)
+                                    .edit().putString("avatar_url", avatarUrl).apply()
+                            }
+                        } catch (_: Exception) {}
+                    }.start()
                 }
             } catch (e: Exception) {
                 Toast.makeText(this, "Не удалось загрузить фото", Toast.LENGTH_SHORT).show()
