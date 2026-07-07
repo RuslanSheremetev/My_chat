@@ -144,6 +144,29 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
+
+    private fun loadAvatarFromServer(avatar: TextView, prefs: android.content.SharedPreferences) {
+        val avatarUrl = prefs.getString("avatar_url", "") ?: ""
+        if (avatarUrl.isEmpty()) return
+        Thread {
+            try {
+                val fullUrl = if (avatarUrl.startsWith("http")) avatarUrl else "http://2.26.71.102:8000$avatarUrl"
+                val url = java.net.URL(fullUrl)
+                val bmp = BitmapFactory.decodeStream(url.openStream())
+                if (bmp != null) {
+                    val path = java.io.File(cacheDir, "avatar_${System.currentTimeMillis()}.jpg").also { f ->
+                        java.io.FileOutputStream(f).use { bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, it) }
+                    }.absolutePath
+                    prefs.edit().putString("avatar_path", path).apply()
+                    runOnUiThread {
+                        avatar.background = android.graphics.drawable.BitmapDrawable(resources, getRoundedBitmap(bmp))
+                        avatar.text = ""
+                    }
+                }
+            } catch (_: Exception) {}
+        }.start()
+    }
+
     private fun getRoundedBitmap(bitmap: android.graphics.Bitmap): android.graphics.Bitmap {
         val size = Math.min(bitmap.width, bitmap.height)
         val output = android.graphics.Bitmap.createBitmap(size, size, android.graphics.Bitmap.Config.ARGB_8888)
