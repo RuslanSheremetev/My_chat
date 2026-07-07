@@ -44,7 +44,7 @@ class ChatAdapter(
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val old = oldList[oldItemPosition]
             val new = newList[newItemPosition]
-            return old.lastMessage == new.lastMessage &&
+            return old.lastTime == new.lastTime &&
                    old.lastTime == new.lastTime &&
                    old.unread == new.unread &&
                    old.online == new.online &&
