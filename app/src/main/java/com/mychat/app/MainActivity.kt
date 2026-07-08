@@ -1276,7 +1276,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             val f = o.getJSONObject("file")
                             fi = FileInfo(f.optString("name"), f.optString("url"), f.optLong("size"))
                         } else { fi = null }
-                        if (o.has("location")) continue
+                        // continue removed
                         nm.add(
                             ChatMessage(
                                 o.optString("id"),
@@ -1362,7 +1362,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             val f = o.getJSONObject("file")
                             fi = FileInfo(f.optString("name"), f.optString("url"), f.optLong("size"))
                         } else { fi = null }
-                        if (o.has("location")) continue
+                        // continue removed
                         nm.add(
                             ChatMessage(
                                 o.optString("id"),
