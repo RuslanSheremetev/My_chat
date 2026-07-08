@@ -197,6 +197,13 @@ class ChatAdapter(
                 lastMessage.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_photo_preview, 0, 0, 0)
                 lastMessage.compoundDrawablePadding = 6
                 lastMessage.text = "Фото"
+            } else if (user.lastMsgType == "video" || user.lastMsg.contains("🎬 Видео") || user.lastMsg.contains("Видео")) {
+                voicePreview.visibility = View.GONE
+                filePreview.visibility = View.GONE
+                lastMessage.visibility = View.VISIBLE
+                lastMessage.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_video_preview, 0, 0, 0)
+                lastMessage.compoundDrawablePadding = 6
+                lastMessage.text = "Видео"
             } else if (user.lastMsgType == "file" && fileExt != null) {
                 voicePreview.visibility = View.GONE
                 filePreview.visibility = View.VISIBLE
