@@ -2076,6 +2076,7 @@ private fun sendMessageTo(to: String, text: String) {
                                     reactions[key] = list
                                 }
                                 msgAdapter.setReactions(msgId, reactions)
+                                loadedReactions.add(msgId)
                                 val jsonStr = org.json.JSONObject(reactions as Map<*, *>).toString()
                                 thread { db.messageDao().updateReactions(msgId, jsonStr) }
                             }
@@ -2701,6 +2702,7 @@ private fun sendMessageTo(to: String, text: String) {
     private var isMuted = false
     private var isLiveLocation = false
     private var liveLocationTimer: java.util.Timer? = null
+    private val loadedReactions = mutableSetOf<String>()
     private var isBlocked = false
     
     private fun toggleMute() {
