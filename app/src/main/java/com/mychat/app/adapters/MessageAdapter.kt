@@ -113,7 +113,19 @@ class MessageAdapter(
                 holder.dateText.text = item
             }
             item is ChatMessage && holder is InViewHolder -> {
-                holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
+                // Полный сброс View перед bind
+        holder.text.visibility = View.VISIBLE
+        holder.text.text = ""
+        holder.text.isClickable = false
+        holder.text.setOnClickListener(null)
+        holder.text.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+        holder.itemView.findViewById<LinearLayout>(R.id.fileIconContainer)?.visibility = View.GONE
+        holder.itemView.findViewById<com.google.android.exoplayer2.ui.PlayerView>(R.id.videoPreview)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.locationContainer)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.linkPreview)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.forwardBlock)?.visibility = View.GONE
+        holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
                 holder.selectCheck.isChecked = selectedIds.contains(item.id)
                 holder.selectCheck.setOnCheckedChangeListener { _, checked ->
                     if (checked) selectedIds.add(item.id) else selectedIds.remove(item.id)
@@ -123,7 +135,19 @@ class MessageAdapter(
                         holder.selectCheck.isChecked = !holder.selectCheck.isChecked
                     }
                 }
-                holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
+                // Полный сброс View перед bind
+        holder.text.visibility = View.VISIBLE
+        holder.text.text = ""
+        holder.text.isClickable = false
+        holder.text.setOnClickListener(null)
+        holder.text.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+        holder.itemView.findViewById<LinearLayout>(R.id.fileIconContainer)?.visibility = View.GONE
+        holder.itemView.findViewById<com.google.android.exoplayer2.ui.PlayerView>(R.id.videoPreview)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.locationContainer)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.linkPreview)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.forwardBlock)?.visibility = View.GONE
+        holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
                 holder.selectCheck.isChecked = selectedIds.contains(item.id)
                 holder.selectCheck.setOnCheckedChangeListener { _, checked ->
                     if (checked) selectedIds.add(item.id) else selectedIds.remove(item.id)
@@ -235,7 +259,19 @@ class MessageAdapter(
                 holder.reactionsText.visibility = if (reactionsStr.isNotEmpty()) View.VISIBLE else View.GONE
             }
             item is ChatMessage && holder is OutViewHolder -> {
-                holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
+                // Полный сброс View перед bind
+        holder.text.visibility = View.VISIBLE
+        holder.text.text = ""
+        holder.text.isClickable = false
+        holder.text.setOnClickListener(null)
+        holder.text.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+        holder.itemView.findViewById<LinearLayout>(R.id.fileIconContainer)?.visibility = View.GONE
+        holder.itemView.findViewById<com.google.android.exoplayer2.ui.PlayerView>(R.id.videoPreview)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.locationContainer)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.linkPreview)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.forwardBlock)?.visibility = View.GONE
+        holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
                 holder.selectCheck.isChecked = selectedIds.contains(item.id)
                 holder.selectCheck.setOnCheckedChangeListener { _, checked ->
                     if (checked) selectedIds.add(item.id) else selectedIds.remove(item.id)
