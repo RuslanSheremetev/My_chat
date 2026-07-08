@@ -241,7 +241,7 @@
                     android:layout_height="30dp"
                     android:text="Очистить"
                     android:textSize="13sp"
-                    android:textColor="#ff5e8e"
+                    android:textColor="#2ea0ff"
                     android:background="@drawable/btn_mini_bg"
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp"/>

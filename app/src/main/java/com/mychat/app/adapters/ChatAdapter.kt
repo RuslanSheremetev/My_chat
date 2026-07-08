@@ -138,7 +138,7 @@ class ChatAdapter(
                 user.isGroup -> {
                     badge.visibility = View.VISIBLE
                     badge.text = "группа"
-                    badge.setTextColor(0xffff5e8e.toInt())
+                    badge.setTextColor(0xff2ea0ff.toInt())
                     badge.background = android.graphics.drawable.GradientDrawable().apply {
                         shape = android.graphics.drawable.GradientDrawable.RECTANGLE
                         cornerRadius = 20f * itemView.resources.displayMetrics.density

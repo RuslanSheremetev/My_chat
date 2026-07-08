@@ -22,7 +22,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_back"
-            android:tint="#f06292"
+            android:tint="#2ea0ff"
             android:padding="8dp"
             android:clickable="true"
             android:focusable="true"/>
@@ -31,7 +31,7 @@
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@drawable/ic_heart_simple"
-            android:tint="#f06292"
+            android:tint="#2ea0ff"
             android:layout_marginStart="4dp"/>
 
         <TextView
@@ -215,13 +215,13 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_heart_simple"
-                android:tint="#f06292"/>
+                android:tint="#2ea0ff"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Избранное"
                 android:textSize="11sp"
-                android:textColor="#f06292"/>
+                android:textColor="#2ea0ff"/>
         </LinearLayout>
 
         <LinearLayout

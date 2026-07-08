@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:text="Открыть в картах"
                 android:textSize="12sp"
-                android:textColor="#ff5e8e"
+                android:textColor="#2ea0ff"
                 android:padding="8dp"/>
         </LinearLayout>
         <com.google.android.exoplayer2.ui.PlayerView
