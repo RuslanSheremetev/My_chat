@@ -2418,6 +2418,7 @@ private fun sendMessageTo(to: String, text: String) {
                             )
                             messagesList.adapter = msgAdapter
                             messagesList.scrollToPosition(msgAdapter.itemCount - 1)
+                            loadReactions(messages)
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
