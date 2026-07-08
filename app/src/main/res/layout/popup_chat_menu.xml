@@ -60,7 +60,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Без звука"
+            android:id="@+id/menuMuteText"
+                    android:text="Без звука"
             android:textSize="15sp"
             android:textColor="#fff"/>
     </LinearLayout>
