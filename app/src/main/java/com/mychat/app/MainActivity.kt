@@ -803,6 +803,16 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             } catch (_: Exception) {}
         }
         val u = users.find { it.username == id }
+        // Сбрасываем unread при открытии чата
+        if (u != null && u.unread > 0) {
+            u.unread = 0
+            chatAdapter.notifyDataSetChanged()
+            thread {
+                val ck = chatKey(me, id)
+                val settings = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
+                db.messageDao().saveChatSettings(settings.copy(unread = 0))
+            }
+        }
         val name = u?.name ?: id
         chatTitle.text = name
         findViewById<ImageView>(R.id.chatMuteIcon)?.visibility = if (isMuted) View.VISIBLE else View.GONE
