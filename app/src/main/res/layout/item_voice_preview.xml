@@ -11,7 +11,8 @@
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
     android:layout_marginTop="4dp"
-    android:visibility="gone">
+    android:visibility="gone"
+    android:background="@drawable/bg_voice_preview">
 
     <TextView
         android:id="@+id/voicePlayIcon"
