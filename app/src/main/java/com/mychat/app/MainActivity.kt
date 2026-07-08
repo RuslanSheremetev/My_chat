@@ -2414,7 +2414,6 @@ private fun sendMessageTo(to: String, text: String) {
                                 reactions = reactions
                             ))
                         }
-                            loadReactions(messages)
                         runOnUiThread {
                             msgAdapter = MessageAdapter(
                                 me = me,
