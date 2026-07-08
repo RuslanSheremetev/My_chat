@@ -378,13 +378,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             popup.elevation = 20f
             
             view.findViewById<LinearLayout>(R.id.menuInfo).setOnClickListener { popup.dismiss(); showUserInfo() }
-            view.findViewById<LinearLayout>(R.id.menuMute).setOnClickListener {
+            val muteText = view.findViewById<TextView>(R.id.menuMuteText)
+        muteText?.text = if (isMuted) "Включить звук" else "Без звука"
+        view.findViewById<LinearLayout>(R.id.menuMute).setOnClickListener {
             popup.dismiss()
             toggleMute()
-        }
-        val muteText = view.findViewById<TextView>(R.id.menuMuteText)
-        if (muteText != null) {
-            muteText.text = if (isMuted) "Включить звук" else "Без звука"
         }
             view.findViewById<LinearLayout>(R.id.menuSearch).setOnClickListener { popup.dismiss(); showSearchOverlay() }
             view.findViewById<LinearLayout>(R.id.menuClear).setOnClickListener {
