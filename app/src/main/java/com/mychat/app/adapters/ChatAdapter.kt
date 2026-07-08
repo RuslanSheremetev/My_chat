@@ -103,7 +103,7 @@ class ChatAdapter(
         private val msgStatusIcon: ImageView = itemView.findViewById(R.id.msgStatusIcon)
         private val unreadBadge: TextView = itemView.findViewById(R.id.unreadBadge)
         private val muteIcon: ImageView = itemView.findViewById(R.id.muteIcon)
-        private val voicePreview: LinearLayout = itemView.findViewById(R.id.voicePreview)
+        private val voicePreview: View = itemView.findViewById(R.id.voicePreview)
         private val waveformView: WaveformView = itemView.findViewById(R.id.waveformView)
         private val voiceDuration: TextView = itemView.findViewById(R.id.voiceDuration)
         private val voicePlayIcon: TextView = itemView.findViewById(R.id.voicePlayIcon)
