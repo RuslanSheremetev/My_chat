@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             android:text="MyChat"
             android:textSize="24sp"
-            android:textColor="#2ea0ff"
+            android:textColor="#f06292"
             android:textStyle="bold"
             android:layout_marginBottom="24dp"/>
 
@@ -353,13 +353,13 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_heart_simple"
-                android:tint="#2ea0ff"/>
+                android:tint="#f06292"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Избранное"
                 android:textSize="10sp"
-                android:textColor="#2ea0ff"/>
+                android:textColor="#f06292"/>
             </LinearLayout>
 
         <LinearLayout
@@ -407,7 +407,7 @@
                 android:layout_height="40dp"
                 android:src="@drawable/ic_back"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:tint="#2ea0ff"/>
+                android:tint="#f06292"/>
 
             <TextView
                 android:id="@+id/chatAvatar"

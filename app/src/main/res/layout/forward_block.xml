@@ -3,7 +3,7 @@
     android:id="@+id/forwardBlock" android:layout_width="match_parent" android:layout_height="wrap_content"
     android:orientation="vertical" android:background="#1Aff5e8e" android:padding="8dp"
     android:layout_marginTop="4dp" android:visibility="gone">
-    <TextView android:id="@+id/forwardFrom" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#2ea0ff" android:textStyle="bold"/>
+    <TextView android:id="@+id/forwardFrom" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#f06292" android:textStyle="bold"/>
     <TextView android:id="@+id/forwardText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="13sp" android:textColor="#ffffff" android:maxLines="3" android:ellipsize="end"/>
     <TextView android:id="@+id/forwardFileName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#ffcccc" android:visibility="gone"/>
 </LinearLayout>
