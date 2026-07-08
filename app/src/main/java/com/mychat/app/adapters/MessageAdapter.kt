@@ -173,7 +173,14 @@ class MessageAdapter(
                     val name = item.file?.name ?: ""
                     holder.text.visibility = View.GONE
                     val isImage = name.endsWith(".jpg", true) || name.endsWith(".jpeg", true) || name.endsWith(".png", true) || name.endsWith(".gif", true) || name.endsWith(".webp", true) || name.endsWith(".bmp", true)
-                    if (!isImage) {
+                    val isVideo = name.endsWith(".mp4", true) || name.endsWith(".avi", true) || name.endsWith(".mov", true) || name.endsWith(".mkv", true) || name.endsWith(".webm", true) || name.endsWith(".flv", true) || name.endsWith(".wmv", true) || name.endsWith(".3gp", true)
+                    if (isVideo) {
+                        val pv = holder.itemView.findViewById<com.google.android.exoplayer2.ui.PlayerView>(R.id.videoPreview)
+                        if (pv != null) {
+                            pv.visibility = View.VISIBLE
+                            showVideo(item, pv)
+                        }
+                    } else if (!isImage) {
                         showFileIcon(holder.itemView, item)
                     }
                     holder.text.visibility = View.GONE
@@ -275,7 +282,14 @@ class MessageAdapter(
                     val name = item.file?.name ?: ""
                     holder.text.visibility = View.GONE
                     val isImage = name.endsWith(".jpg", true) || name.endsWith(".jpeg", true) || name.endsWith(".png", true) || name.endsWith(".gif", true) || name.endsWith(".webp", true) || name.endsWith(".bmp", true)
-                    if (!isImage) {
+                    val isVideo = name.endsWith(".mp4", true) || name.endsWith(".avi", true) || name.endsWith(".mov", true) || name.endsWith(".mkv", true) || name.endsWith(".webm", true) || name.endsWith(".flv", true) || name.endsWith(".wmv", true) || name.endsWith(".3gp", true)
+                    if (isVideo) {
+                        val pv = holder.itemView.findViewById<com.google.android.exoplayer2.ui.PlayerView>(R.id.videoPreview)
+                        if (pv != null) {
+                            pv.visibility = View.VISIBLE
+                            showVideo(item, pv)
+                        }
+                    } else if (!isImage) {
                         showFileIcon(holder.itemView, item)
                     }
                     holder.text.visibility = View.GONE
