@@ -2394,13 +2394,24 @@ private fun sendMessageTo(to: String, text: String) {
                             val fileType = obj.optString("file_type", "")
                             val fileName = obj.optString("file_name", "")
                             val file = if (fileId.isNotEmpty()) FileInfo(fileName, fileId) else null
-                            messages.add(ChatMessage(
+                            val reactionsJson = obj.optJSONObject("reactions")
+                        val reactions = mutableMapOf<String, MutableList<String>>()
+                        if (reactionsJson != null && reactionsJson.length() > 0) {
+                            reactionsJson.keys().forEach { key ->
+                                val arr = reactionsJson.getJSONArray(key)
+                                val list = mutableListOf<String>()
+                                for (j in 0 until arr.length()) list.add(arr.getString(j))
+                                reactions[key] = list
+                            }
+                        }
+                        messages.add(ChatMessage(
                                 id = obj.optString("id"),
                                 from = obj.optString("from"),
                                 to = obj.optString("to"),
                                 text = obj.optString("text"),
                                 time = obj.optString("time"),
-                                file = file
+                                file = file,
+                                reactions = reactions
                             ))
                         }
                         runOnUiThread {
