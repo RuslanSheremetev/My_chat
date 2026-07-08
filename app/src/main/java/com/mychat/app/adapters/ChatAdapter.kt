@@ -100,7 +100,7 @@ class ChatAdapter(
         private val lastMessage: TextView = itemView.findViewById(R.id.lastMessage)
         private val lastTime: TextView = itemView.findViewById(R.id.lastTime)
         private val onlineDot: View = itemView.findViewById(R.id.onlineDot)
-        private val msgStatusIcon: ImageView = itemView.findViewById(R.id.msgStatusIcon)
+        private val check: ImageView = itemView.findViewById(R.id.check)
         private val unreadBadge: TextView = itemView.findViewById(R.id.unreadBadge)
         private val muteIcon: ImageView = itemView.findViewById(R.id.muteIcon)
         private val voicePreview: View = itemView.findViewById(R.id.voicePreview)
@@ -281,9 +281,9 @@ class ChatAdapter(
             }
             
             when (user.lastMsgStatus) {
-                "read" -> { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_read); msgStatusIcon.setColorFilter(0xff34c759.toInt()) }
-                "sent", "delivered" -> { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_sent); msgStatusIcon.setColorFilter(0xff8e8e93.toInt()) }
-                else -> { if (user.lastMsg.isNotEmpty()) { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_sent); msgStatusIcon.setColorFilter(0xff8e8e93.toInt()) } else { msgStatusIcon.visibility = View.GONE } }
+                "read" -> { check.visibility = View.VISIBLE; check.setImageResource(R.drawable.ic_check_read); check.setColorFilter(0xff34c759.toInt()) }
+                "sent", "delivered" -> { check.visibility = View.VISIBLE; check.setImageResource(R.drawable.ic_check_sent); check.setColorFilter(0xff8e8e93.toInt()) }
+                else -> { if (user.lastMsg.isNotEmpty()) { check.visibility = View.VISIBLE; check.setImageResource(R.drawable.ic_check_sent); check.setColorFilter(0xff8e8e93.toInt()) } else { check.visibility = View.GONE } }
             }
             
             onlineDot.visibility = if (user.online && !user.isGroup && !user.isFeed && !user.isBot) View.VISIBLE else View.GONE
