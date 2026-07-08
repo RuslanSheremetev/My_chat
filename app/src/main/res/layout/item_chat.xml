@@ -70,37 +70,9 @@
                     android:visibility="gone"
                     android:layout_marginStart="6dp"/>
             </LinearLayout>
-            <LinearLayout
+            <include
                 android:id="@+id/voicePreview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:visibility="gone"
-                android:layout_marginTop="4dp">
-                <TextView
-                    android:id="@+id/voicePlayIcon"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:gravity="center"
-                    android:text="▶"
-                    android:textSize="8sp"
-                    android:textColor="#fff"
-                    android:background="@drawable/av_pink_circle"/>
-                <com.mychat.app.views.WaveformView
-                    android:id="@+id/waveformView"
-                    android:layout_width="0dp"
-                    android:layout_height="16dp"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"/>
-                <TextView
-                    android:id="@+id/voiceDuration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="11sp"
-                    android:textColor="#777777"/>
-            </LinearLayout>
+                layout="@layout/item_voice_preview"/>
             <LinearLayout
                 android:id="@+id/filePreview"
                 android:layout_width="match_parent"
