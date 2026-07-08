@@ -805,6 +805,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         val u = users.find { it.username == id }
         val name = u?.name ?: id
         chatTitle.text = name
+        findViewById<ImageView>(R.id.chatMuteIcon)?.visibility = if (isMuted) View.VISIBLE else View.GONE
         chatAvatar.text = name.take(1).uppercase()
         chatAvatar.background = circleBg(u?.avatarColor ?: "#2AABEE")
         chatStatus.text = if (u?.online == true) "online" else "offline"
