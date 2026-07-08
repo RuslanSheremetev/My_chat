@@ -163,6 +163,7 @@ class MessageAdapter(
                     // Скрываем иконку файла для обычных сообщений
                     val fc = holder.itemView.findViewById<LinearLayout>(R.id.fileIconContainer)
                     if (fc != null) fc.visibility = View.GONE
+                    holder.text.visibility = View.VISIBLE
                     if (item.file == null) showLinkPreview(holder.itemView, item.text)
                     val vp = holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)
                     if (vp != null) vp.visibility = View.GONE
@@ -170,6 +171,7 @@ class MessageAdapter(
                 // Если это файл — делаем кликабельным
                 if (item.file != null && !item.text.contains("🎤 Голосовое")) {
                     val name = item.file?.name ?: ""
+                    holder.text.visibility = View.GONE
                     val isImage = name.endsWith(".jpg", true) || name.endsWith(".jpeg", true) || name.endsWith(".png", true) || name.endsWith(".gif", true) || name.endsWith(".webp", true) || name.endsWith(".bmp", true)
                     if (!isImage) {
                         showFileIcon(holder.itemView, item)
@@ -271,6 +273,7 @@ class MessageAdapter(
                 // Если это файл — делаем кликабельным
                 if (item.file != null && !item.text.contains("🎤 Голосовое")) {
                     val name = item.file?.name ?: ""
+                    holder.text.visibility = View.GONE
                     val isImage = name.endsWith(".jpg", true) || name.endsWith(".jpeg", true) || name.endsWith(".png", true) || name.endsWith(".gif", true) || name.endsWith(".webp", true) || name.endsWith(".bmp", true)
                     if (!isImage) {
                         showFileIcon(holder.itemView, item)
