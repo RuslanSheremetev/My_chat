@@ -813,23 +813,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                 put("from", id)
             }.toString())
         }
-        // Сбрасываем unread при открытии чата
-        if (u != null && u.unread > 0) {
-            u.unread = 0
-            chatAdapter.notifyDataSetChanged()
-            thread {
-                val ck = chatKey(me, id)
-                val settings = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
-                db.messageDao().saveChatSettings(settings.copy(unread = 0))
-                // Сбрасываем на сервере
-                try {
-                    val url = java.net.URL("$server/api/mark_read/$id?token=$token")
-                    val conn = url.openConnection() as java.net.HttpURLConnection
-                    conn.requestMethod = "POST"
-                    conn.responseCode
-                } catch (_: Exception) {}
-            }
-        }
+        // unread сбрасывается сервером через mark_read
         val name = u?.name ?: id
         chatTitle.text = name
         findViewById<ImageView>(R.id.chatMuteIcon)?.visibility = if (isMuted) View.VISIBLE else View.GONE
