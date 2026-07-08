@@ -1058,7 +1058,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                 val sender = j.optString("from", "")
                                 if (sender.isNotEmpty() && sender != me) {
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        val settings = db.messageDao().getChatSettings(sender)
+                                        val settings = db.messageDao().getChatSettings(chatKey(me, sender))
                                         val currentUnread = settings?.unread ?: 0
                                         db.messageDao().updateUnread(sender, currentUnread + 1)
                                     }
@@ -1127,7 +1127,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     
                     // Загружаем isMuted и unread из Room для основного списка
                     for (u in userList) {
-                        val s = db.messageDao().getChatSettings(u.username)
+                        val s = db.messageDao().getChatSettings(chatKey(me, u.username))
                         if (s != null) {
                             u.isMuted = s.isMuted
                             u.unread = s.unread
@@ -1236,7 +1236,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     }
                     // Загружаем isMuted и unread из Room для результатов поиска
                             for (u in res) {
-                                val s = db.messageDao().getChatSettings(u.username)
+                                val s = db.messageDao().getChatSettings(chatKey(me, u.username))
                                 if (s != null) {
                                     u.isMuted = s.isMuted
                                     u.unread = s.unread
