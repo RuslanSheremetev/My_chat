@@ -271,10 +271,7 @@ class MainActivity : AppCompatActivity() {
                 bottomChild?.alpha = if (recyclerView.canScrollVertically(1)) 0.7f else 1.0f
             }
         })
-        messagesList.itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator().apply {
-            removeDuration = 250
-            addDuration = 300
-        }
+        messagesList.itemAnimator = null; //
         
         findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
         findViewById<Button>(R.id.btnRegister).setOnClickListener { register() }
