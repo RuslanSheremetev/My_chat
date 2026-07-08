@@ -1,12 +1,11 @@
 package com.mychat.app.data
-
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-
 @Entity(tableName = "chat_settings")
 data class ChatSettings(
     @PrimaryKey val chatKey: String,
     val isMuted: Boolean = false,
     val isBlocked: Boolean = false,
-    val unread: Int = 0
+    val unread: Int = 0,
+    val lastMsgStatus: String = ""
 )

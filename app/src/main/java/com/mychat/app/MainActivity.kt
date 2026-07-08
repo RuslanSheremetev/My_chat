@@ -805,6 +805,13 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             } catch (_: Exception) {}
         }
         val u = users.find { it.username == id }
+        // Отправляем статус прочтения
+        if (u != null) {
+            ws?.send(JSONObject().apply {
+                put("type", "read")
+                put("from", id)
+            }.toString())
+        }
         // Сбрасываем unread при открытии чата
         if (u != null && u.unread > 0) {
             u.unread = 0
@@ -1064,6 +1071,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         if (u != null) {
                             u.lastMsgStatus = "read"
                             runOnUiThread { chatAdapter.update(users) }
+                            thread {
+                                val ck = chatKey(me, from)
+                                val s = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
+                                db.messageDao().saveChatSettings(s.copy(lastMsgStatus = "read"))
+                            }
                         }
                         return
                     }
