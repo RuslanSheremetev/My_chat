@@ -190,7 +190,14 @@ class ChatAdapter(
                 }
             }
             
-            if (user.lastMsgType == "file" && fileExt != null) {
+            if (user.lastMsgType == "photo" || user.lastMsgType == "image" || user.lastMsg.contains("📷") || user.lastMsg.contains("Фото")) {
+                voicePreview.visibility = View.GONE
+                filePreview.visibility = View.GONE
+                lastMessage.visibility = View.VISIBLE
+                lastMessage.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_photo_preview, 0, 0, 0)
+                lastMessage.compoundDrawablePadding = 6
+                lastMessage.text = "Фото"
+            } else if (user.lastMsgType == "file" && fileExt != null) {
                 voicePreview.visibility = View.GONE
                 filePreview.visibility = View.VISIBLE
                 lastMessage.visibility = View.GONE
