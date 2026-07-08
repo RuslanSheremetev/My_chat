@@ -773,6 +773,15 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             // Продолжаем открытие чата
         }
         selId = id
+        // Сбрасываем счётчик непрочитанных
+        thread {
+            try {
+                val url = java.net.URL("$server/api/mark_read/$id?token=$token")
+                val conn = url.openConnection() as java.net.HttpURLConnection
+                conn.requestMethod = "POST"
+                conn.responseCode
+            } catch (_: Exception) {}
+        }
         val u = users.find { it.username == id }
         val name = u?.name ?: id
         chatTitle.text = name
