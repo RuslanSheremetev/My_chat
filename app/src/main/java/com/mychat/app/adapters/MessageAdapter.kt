@@ -573,18 +573,34 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
                 val cached = com.mychat.app.utils.FileCache.getCachedFile(cacheKey)
                 if (cached != null) {
                     val bmp = android.graphics.BitmapFactory.decodeFile(cached.absolutePath)
-                    mapImg.post { mapImg.setImageBitmap(bmp) }
+                    if (bmp != null) {
+                mapImg.post {
+                    mapImg.setImageBitmap(bmp)
+                    mapImg.setBackgroundColor(0x00000000.toInt())
+                }
+                val baos = java.io.ByteArrayOutputStream()
+                bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, baos)
+                com.mychat.app.utils.FileCache.saveToCache(cacheKey, baos.toByteArray())
+            }
                     return@thread
                 }
                 // Загружаем и кэшируем
                 val mapUrl = "https://staticmap.openstreetmap.de/staticmap.php?center=$lat,$lon&zoom=15&size=400x400&markers=$lat,$lon,red-pushpin"
-        val mapUrl2 = "https://tile.openstreetmap.org/15/${(lon * 100000).toInt()}/${(lat * 100000).toInt()}.png" // fallback
-                val bmp = android.graphics.BitmapFactory.decodeStream(URL(mapUrl).openStream())
-                mapImg.post { mapImg.setImageBitmap(bmp) }
-                // Сохраняем в кэш
+        val mapUrl3 = "https://tile.openstreetmap.org/15/${(lon * 100000).toInt()}/${(lat * 100000).toInt()}.png"
+        
+                var bmp: android.graphics.Bitmap? = null
+        try { bmp = android.graphics.BitmapFactory.decodeStream(URL(mapUrl).openStream()) } catch (_: Exception) {}
+        if (bmp == null) { try { bmp = android.graphics.BitmapFactory.decodeStream(URL(mapUrl3).openStream()) } catch (_: Exception) {} }
+                if (bmp != null) {
+                mapImg.post {
+                    mapImg.setImageBitmap(bmp)
+                    mapImg.setBackgroundColor(0x00000000.toInt())
+                }
                 val baos = java.io.ByteArrayOutputStream()
                 bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, baos)
                 com.mychat.app.utils.FileCache.saveToCache(cacheKey, baos.toByteArray())
+            }
+                
             } catch (_: Exception) {}
         }
         mapImg.setOnClickListener {
