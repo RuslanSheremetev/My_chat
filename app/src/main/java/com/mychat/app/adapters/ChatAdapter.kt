@@ -275,7 +275,8 @@ class ChatAdapter(
             
             when (user.lastMsgStatus) {
                 "read" -> { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_read); msgStatusIcon.setColorFilter(0xff34c759.toInt()) }
-                else -> msgStatusIcon.visibility = View.GONE
+                "sent", "delivered" -> { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_sent); msgStatusIcon.setColorFilter(0xff8e8e93.toInt()) }
+                else -> { if (user.lastMsg.isNotEmpty()) { msgStatusIcon.visibility = View.VISIBLE; msgStatusIcon.setImageResource(R.drawable.ic_check_sent); msgStatusIcon.setColorFilter(0xff8e8e93.toInt()) } else { msgStatusIcon.visibility = View.GONE } }
             }
             
             onlineDot.visibility = if (user.online && !user.isGroup && !user.isFeed && !user.isBot) View.VISIBLE else View.GONE
