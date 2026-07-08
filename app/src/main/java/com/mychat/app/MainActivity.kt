@@ -396,7 +396,21 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             }
             view.findViewById<LinearLayout>(R.id.menuReport).setOnClickListener {
             popup.dismiss()
-            t("Жалоба отправлена")
+            thread {
+                try {
+                    val json = JSONObject().apply {
+                        put("reported_user", selId)
+                        put("reason", "spam")
+                        put("message_id", "")
+                        put("token", token)
+                    }
+                    val body = json.toString().toRequestBody("application/json".toMediaType())
+                    client.newCall(Request.Builder().url("$server/api/report").post(body).build()).execute()
+                    runOnUiThread { t("Жалоба отправлена") }
+                } catch (e: Exception) {
+                    runOnUiThread { t("Ошибка отправки жалобы") }
+                }
+            }
         }
         view.findViewById<LinearLayout>(R.id.menuBlock).setOnClickListener { popup.dismiss(); blockUser() }
             
