@@ -2598,7 +2598,7 @@ private fun sendMessageTo(to: String, text: String) {
             // Синхронизация с сервером
             try {
                 val body = JSONObject().apply {
-                    put("chat_key", selId)
+                    put("chat_key", chatKey(me, selId))
                     put("is_blocked", true)
                 }.toString().toRequestBody("application/json".toMediaType())
                 client.newCall(Request.Builder().url("$server/chat_settings?token=$token").post(body).build()).execute()
@@ -2688,7 +2688,7 @@ private fun sendMessageTo(to: String, text: String) {
             // Синхронизация с MongoDB
             try {
                 val json = JSONObject().apply {
-                    put("chat_key", selId)
+                    put("chat_key", chatKey(me, selId))
                     put("is_muted", isMuted)
                 }
                 val body = json.toString().toRequestBody("application/json".toMediaType())
