@@ -2,29 +2,39 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/voicePreview"
     android:layout_width="wrap_content"
-    android:layout_height="20dp"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
+    android:background="#1e1e1e"
+    android:paddingStart="6dp"
+    android:paddingEnd="12dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    android:layout_marginTop="4dp"
     android:visibility="gone">
-    
-    <ImageView
+
+    <TextView
         android:id="@+id/voicePlayIcon"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:src="@drawable/ic_play_small"
-        android:tint="#ff5e8e" />
-    
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:gravity="center"
+        android:text="▶"
+        android:textSize="10sp"
+        android:textColor="#fff"
+        android:background="@drawable/circle_play_bg"/>
+
     <com.mychat.app.views.WaveformView
         android:id="@+id/waveformView"
-        android:layout_width="80dp"
-        android:layout_height="16dp"
-        android:layout_marginStart="6dp"
-        android:layout_marginEnd="6dp" />
-    
+        android:layout_width="0dp"
+        android:layout_height="14dp"
+        android:layout_weight="1"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"/>
+
     <TextView
-        android:id="@+id/voiceDurationText"
+        android:id="@+id/voiceDuration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#888"
-        android:textSize="11sp" />
+        android:textSize="11sp"
+        android:textColor="#777777"/>
 </LinearLayout>
