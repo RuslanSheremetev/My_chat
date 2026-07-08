@@ -394,7 +394,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     .setPositiveButton("Очистить") { _, _ -> clearHistory() }
                     .setNegativeButton("Отмена", null).show()
             }
-            view.findViewById<LinearLayout>(R.id.menuBlock).setOnClickListener { popup.dismiss(); blockUser() }
+            view.findViewById<LinearLayout>(R.id.menuReport).setOnClickListener {
+            popup.dismiss()
+            t("Жалоба отправлена")
+        }
+        view.findViewById<LinearLayout>(R.id.menuBlock).setOnClickListener { popup.dismiss(); blockUser() }
             
             popup.showAsDropDown(anchor, -180.dpToPx(), 8.dpToPx())
         }
