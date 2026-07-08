@@ -1296,7 +1296,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     }
                     // Обновляем статусы на sent
                     thread { db.messageDao().markSent(selId) }
-                    handler.post { msgAdapter.update(msgs); loadReactions(msgs) }
+                    handler.post { msgAdapter.update(msgs) }
                 }
             } catch (e: Exception) {}
         }
