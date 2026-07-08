@@ -385,6 +385,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             toggleMute()
         }
             view.findViewById<LinearLayout>(R.id.menuSearch).setOnClickListener { popup.dismiss(); showSearchOverlay() }
+        view.findViewById<LinearLayout>(R.id.menuWallpaper).setOnClickListener { popup.dismiss(); t("Выбор обоев") }
+        view.findViewById<LinearLayout>(R.id.menuVideoCall).setOnClickListener { popup.dismiss(); t("Видеозвонок") }
             view.findViewById<LinearLayout>(R.id.menuClear).setOnClickListener {
                 popup.dismiss()
                 AlertDialog.Builder(this).setTitle("Очистить историю")
