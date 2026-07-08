@@ -813,6 +813,13 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                 val ck = chatKey(me, id)
                 val settings = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
                 db.messageDao().saveChatSettings(settings.copy(unread = 0))
+                // Сбрасываем на сервере
+                try {
+                    val url = java.net.URL("$server/api/mark_read/$id?token=$token")
+                    val conn = url.openConnection() as java.net.HttpURLConnection
+                    conn.requestMethod = "POST"
+                    conn.responseCode
+                } catch (_: Exception) {}
             }
         }
         val name = u?.name ?: id
