@@ -795,6 +795,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             // Продолжаем открытие чата
         }
         selId = id
+        msgAdapter.update(emptyList())
         // Сбрасываем счётчик непрочитанных
         thread {
             try {
