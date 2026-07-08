@@ -840,7 +840,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             findViewById<View>(R.id.btnCall)?.visibility = View.VISIBLE
         }
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        isMuted = prefs.getBoolean("mute_$id", false)
+        val ck2 = chatKey(me, id)
+            isMuted = prefs.getBoolean("mute_$ck2", false)
         // Восстанавливаем блокировку из Room
         thread {
             val settings = db.messageDao().getChatSettings(id)
@@ -1955,7 +1956,7 @@ private fun sendMessageTo(to: String, text: String) {
             chatAdapter.selectedPosition = index
             chatAdapter.notifyDataSetChanged()
         // Сохраняем в SharedPreferences для быстрой загрузки
-        val p = PreferenceManager.getDefaultSharedPreferences(this); p.edit().putBoolean("mute_$selId", isMuted).apply()
+        val p = PreferenceManager.getDefaultSharedPreferences(this); val ck3 = chatKey(me, selId); p.edit().putBoolean("mute_$ck3", isMuted).apply()
         }
         
         // Показываем меню с анимацией
@@ -2591,7 +2592,8 @@ private fun sendMessageTo(to: String, text: String) {
         ws?.send(json.toString())
         // Сохраняем в Room
         thread {
-            val settings = db.messageDao().getChatSettings(selId) ?: ChatSettings(selId)
+            val ck = chatKey(me, selId)
+            val settings = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
             db.messageDao().saveChatSettings(settings.copy(isBlocked = true))
             // Синхронизация с сервером
             try {
@@ -2680,7 +2682,8 @@ private fun sendMessageTo(to: String, text: String) {
         chatAdapter.notifyDataSetChanged()
         // Сохраняем в Room
         thread {
-            val settings = db.messageDao().getChatSettings(selId) ?: ChatSettings(selId)
+            val ck = chatKey(me, selId)
+            val settings = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
             db.messageDao().saveChatSettings(settings.copy(isMuted = isMuted))
             // Синхронизация с MongoDB
             try {
