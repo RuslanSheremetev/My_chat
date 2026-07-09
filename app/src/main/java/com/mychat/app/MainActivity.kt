@@ -1134,7 +1134,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         val isBot = o.optBoolean("is_bot", false)
                         val online = o.optBoolean("online", false)
                         
-                        val serverUnread = o.optInt("unread", 0)
+                        val serverUnread = if (username == currentChat) 0 else o.optInt("unread", 0)
                         userList.add(
                                 User(
                                     username = username,
