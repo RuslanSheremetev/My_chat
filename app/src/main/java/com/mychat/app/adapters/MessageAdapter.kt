@@ -382,10 +382,13 @@ class MessageAdapter(
                 }
                 // Галочка прочтения (только для своих сообщений)
                 if (item.from == me) {
+                    val density = holder.itemView.context.resources.displayMetrics.density
+                    val size = (16 * density).toInt()
+                    val margin = (4 * density).toInt()
                     val msgCheck = ImageView(holder.itemView.context)
-                    msgCheck.layoutParams = LinearLayout.LayoutParams(16.dp, 16.dp).apply {
-                        marginStart = 4.dp
-                    }
+                    val params = LinearLayout.LayoutParams(size, size)
+                    params.marginStart = margin
+                    msgCheck.layoutParams = params
                     if (item.read == true) {
                         msgCheck.setImageResource(R.drawable.ic_check_read)
                         msgCheck.setColorFilter(0xff34c759.toInt())
