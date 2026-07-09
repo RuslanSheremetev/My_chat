@@ -1151,6 +1151,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         val online = o.optBoolean("online", false)
                         
                         val serverUnread = o.optInt("unread", 0)
+                        val lastMsgFrom = o.optString("lastMsgFrom", "")
+                        val lastMsgFromMe = (lastMsgFrom == me)
                         userList.add(
                                 User(
                                     username = username,
@@ -1163,13 +1165,15 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     isFeed = isFeed,
                                     isBot = isBot,
                                     name = finalName,
-                                    unread = serverUnread
+                                    unread = serverUnread,
+                                    lastMsgFromMe = lastMsgFromMe
                                 )
                             )
                         // Всегда сохраняем unread в Room
                         val ck = chatKey(me, username)
                         val settings = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
-                        db.messageDao().saveChatSettings(settings.copy(unread = serverUnread))
+                        db.messageDao().saveChatSettings(settings.copy(unread = serverUnread,
+                                    lastMsgFromMe = lastMsgFromMe))
                     }
                     
                     // Загружаем isMuted и unread из Room для основного списка
