@@ -14,6 +14,7 @@ data class MessageEntity(
     val isRead: Boolean = false,
     val status: String = "sent",
     val delivered: Boolean = false,
+    val read: Boolean = false,
     val reactionsJson: String = "{}",
     val deleted: Boolean = false
 )
