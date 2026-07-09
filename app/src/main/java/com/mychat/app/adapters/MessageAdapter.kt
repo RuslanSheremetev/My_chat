@@ -382,34 +382,23 @@ class MessageAdapter(
                 }
                 // Галочка прочтения (только для своих сообщений)
                 if (item.from == me) {
-                    // Удаляем старую галочку если есть
-                    val oldCheck = holder.itemView.findViewWithTag<ImageView>("msgCheck")
-                    if (oldCheck != null) {
-                        (holder.itemView as? LinearLayout)?.removeView(oldCheck)
-                    }
-                    val density = holder.itemView.context.resources.displayMetrics.density
-                    val size = (16 * density).toInt()
-                    val margin = (4 * density).toInt()
-                    val msgCheck = ImageView(holder.itemView.context)
-                    msgCheck.tag = "msgCheck"
-                    val params = LinearLayout.LayoutParams(size, size)
-                    params.marginStart = margin
-                    msgCheck.layoutParams = params
+                    holder.msgCheck.visibility = View.VISIBLE
                     when {
                         item.read == true -> {
-                            msgCheck.setImageResource(R.drawable.ic_check_read)
-                            msgCheck.setColorFilter(0xff34c759.toInt())
+                            holder.msgCheck.setImageResource(R.drawable.ic_check_read)
+                            holder.msgCheck.setColorFilter(0xff34c759.toInt())
                         }
                         item.delivered == true -> {
-                            msgCheck.setImageResource(R.drawable.ic_check_delivered)
-                            msgCheck.setColorFilter(0xff8e8e93.toInt())
+                            holder.msgCheck.setImageResource(R.drawable.ic_check_delivered)
+                            holder.msgCheck.setColorFilter(0xff8e8e93.toInt())
                         }
                         else -> {
-                            msgCheck.setImageResource(R.drawable.ic_check_sent)
-                            msgCheck.setColorFilter(0xff8e8e93.toInt())
+                            holder.msgCheck.setImageResource(R.drawable.ic_check_sent)
+                            holder.msgCheck.setColorFilter(0xff8e8e93.toInt())
                         }
                     }
-                    (holder.itemView as? LinearLayout)?.addView(msgCheck)
+                } else {
+                    holder.msgCheck.visibility = View.GONE
                 }
                 holder.time.text = timeFormat.format(
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.time) ?: Date()
