@@ -818,16 +818,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             handler.postDelayed({ loadUsers() }, 1500)
         }
         val u = users.find { it.username == id }
-        // Отправляем статус прочтения с ID последнего сообщения
+        // Отправляем статус прочтения
         if (u != null) {
-            val msgs = msgAdapter.getMessages()
-            val lastMsg = msgs.lastOrNull()
             ws?.send(JSONObject().apply {
                 put("type", "read")
                 put("to", id)
-                if (lastMsg != null) {
-                    put("msg_id", lastMsg.id)
-                }
             }.toString())
         }
         // unread сбрасывается сервером через mark_read
