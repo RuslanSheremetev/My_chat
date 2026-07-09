@@ -382,10 +382,16 @@ class MessageAdapter(
                 }
                 // Галочка прочтения (только для своих сообщений)
                 if (item.from == me) {
+                    // Удаляем старую галочку если есть
+                    val oldCheck = holder.itemView.findViewWithTag<ImageView>("msgCheck")
+                    if (oldCheck != null) {
+                        (holder.itemView as? LinearLayout)?.removeView(oldCheck)
+                    }
                     val density = holder.itemView.context.resources.displayMetrics.density
                     val size = (16 * density).toInt()
                     val margin = (4 * density).toInt()
                     val msgCheck = ImageView(holder.itemView.context)
+                    msgCheck.tag = "msgCheck"
                     val params = LinearLayout.LayoutParams(size, size)
                     params.marginStart = margin
                     msgCheck.layoutParams = params
