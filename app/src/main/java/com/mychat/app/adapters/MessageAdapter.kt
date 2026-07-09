@@ -380,7 +380,20 @@ class MessageAdapter(
                         }
                     }
                 }
-                // msgStatus removed
+                // Галочка прочтения
+                val msgCheck = holder.itemView.findViewById<ImageView>(R.id.msgCheck)
+                if (msgCheck != null) {
+                    msgCheck.visibility = if (item.from == me) View.VISIBLE else View.GONE
+                    if (item.from == me) {
+                        if (item.read == true) {
+                            msgCheck.setImageResource(R.drawable.ic_check_read)
+                            msgCheck.setColorFilter(0xff34c759.toInt())
+                        } else {
+                            msgCheck.setImageResource(R.drawable.ic_check_sent)
+                            msgCheck.setColorFilter(0xff8e8e93.toInt())
+                        }
+                    }
+                }
                 holder.time.text = timeFormat.format(
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.time) ?: Date()
                 )
