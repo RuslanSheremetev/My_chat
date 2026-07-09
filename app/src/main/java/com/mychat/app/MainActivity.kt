@@ -804,6 +804,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                 conn.requestMethod = "POST"
                 conn.responseCode
             } catch (_: Exception) {}
+            handler.post { loadUsers() }
         }
         val u = users.find { it.username == id }
         // Отправляем статус прочтения
