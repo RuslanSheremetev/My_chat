@@ -1155,7 +1155,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         val s = db.messageDao().getChatSettings(chatKey(me, u.username))
                         if (s != null) {
                             u.isMuted = s.isMuted
-                            u.isMuted = s.isMuted
+                            u.unread = s.unread
                         }
                     }
                     for (user in userList) {
@@ -1264,7 +1264,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                 val s = db.messageDao().getChatSettings(chatKey(me, u.username))
                                 if (s != null) {
                                     u.isMuted = s.isMuted
-                                    u.isMuted = s.isMuted
+                                    u.unread = s.unread
                                 }
                             }
                         handler.post { chatAdapter.update(res) }
