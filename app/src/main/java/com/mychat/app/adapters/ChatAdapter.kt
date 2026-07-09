@@ -289,7 +289,8 @@ class ChatAdapter(
             
             when (user.lastMsgStatus) {
                 "read" -> { check.visibility = View.VISIBLE; check.setImageResource(R.drawable.ic_check_read); check.setColorFilter(0xff34c759.toInt()) }
-                "sent", "delivered" -> { check.visibility = View.VISIBLE; check.setImageResource(R.drawable.ic_check_sent); check.setColorFilter(0xff8e8e93.toInt()) }
+                "delivered" -> { check.visibility = View.VISIBLE; check.setImageResource(R.drawable.ic_check_delivered); check.setColorFilter(0xff8e8e93.toInt()) }
+                "sent" -> { check.visibility = View.VISIBLE; check.setImageResource(R.drawable.ic_check_sent); check.setColorFilter(0xff8e8e93.toInt()) }
                 else -> { if (user.lastMsg.isNotEmpty()) { check.visibility = View.VISIBLE; check.setImageResource(R.drawable.ic_check_sent); check.setColorFilter(0xff8e8e93.toInt()) } else { check.visibility = View.GONE } }
             }
             

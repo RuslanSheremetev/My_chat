@@ -389,12 +389,19 @@ class MessageAdapter(
                     val params = LinearLayout.LayoutParams(size, size)
                     params.marginStart = margin
                     msgCheck.layoutParams = params
-                    if (item.read == true) {
-                        msgCheck.setImageResource(R.drawable.ic_check_read)
-                        msgCheck.setColorFilter(0xff34c759.toInt())
-                    } else {
-                        msgCheck.setImageResource(R.drawable.ic_check_sent)
-                        msgCheck.setColorFilter(0xff8e8e93.toInt())
+                    when {
+                        item.read == true -> {
+                            msgCheck.setImageResource(R.drawable.ic_check_read)
+                            msgCheck.setColorFilter(0xff34c759.toInt())
+                        }
+                        item.delivered == true -> {
+                            msgCheck.setImageResource(R.drawable.ic_check_delivered)
+                            msgCheck.setColorFilter(0xff8e8e93.toInt())
+                        }
+                        else -> {
+                            msgCheck.setImageResource(R.drawable.ic_check_sent)
+                            msgCheck.setColorFilter(0xff8e8e93.toInt())
+                        }
                     }
                     (holder.itemView as? LinearLayout)?.addView(msgCheck)
                 }
