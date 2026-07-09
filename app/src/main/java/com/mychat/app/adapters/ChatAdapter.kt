@@ -298,7 +298,6 @@ class ChatAdapter(
             } else {
                 check.visibility = View.GONE
             }
-            }
             
             onlineDot.visibility = if (user.online && !user.isGroup && !user.isFeed && !user.isBot) View.VISIBLE else View.GONE
         
