@@ -796,7 +796,13 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         }
         selId = id
         msgAdapter.update(emptyList())
-        // Сбрасываем счётчик непрочитанных
+        // Оптимистично сбрасываем бейдж сразу в UI
+        val idx = chatList.indexOfFirst { it.username == id }
+        if (idx >= 0) {
+            chatList[idx].unread = 0
+            chatAdapter.notifyItemChanged(idx)
+        }
+        // Сбрасываем счётчик на сервере
         thread {
             try {
                 val url = java.net.URL("$server/api/mark_read/$id?token=$token")
@@ -804,7 +810,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                 conn.requestMethod = "POST"
                 conn.responseCode
             } catch (_: Exception) {}
-            handler.post { loadUsers() }
+            // loadUsers с задержкой — чтобы сервер точно обновился
+            handler.postDelayed({ loadUsers() }, 1500)
         }
         val u = users.find { it.username == id }
         // Отправляем статус прочтения
@@ -1100,6 +1107,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
     }
 
     private fun loadUsers() {
+        val currentChat = selId  // сохраняем, какой чат открыт
         log("HTTP: loadUsers")
         thread {
             try {
