@@ -1085,6 +1085,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                 }
                                 msgAdapter.notifyDataSetChanged()
                             }
+                            // Сохраняем в Room
+                            thread {
+                                val ck = chatKey(me, from)
+                                db.messageDao().markMessagesRead(ck, me)
+                            }
                         }
                         return
                     }
