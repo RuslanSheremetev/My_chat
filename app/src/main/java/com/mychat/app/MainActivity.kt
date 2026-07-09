@@ -820,7 +820,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         val u = users.find { it.username == id }
         // Отправляем статус прочтения с ID последнего сообщения
         if (u != null) {
-            val lastMsg = messages.lastOrNull()
+            val msgs = msgAdapter.getMessages()
+            val lastMsg = msgs.lastOrNull()
             ws?.send(JSONObject().apply {
                 put("type", "read")
                 put("to", id)
