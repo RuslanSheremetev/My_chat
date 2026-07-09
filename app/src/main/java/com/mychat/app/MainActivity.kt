@@ -1074,6 +1074,18 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                 db.messageDao().saveChatSettings(s.copy(lastMsgStatus = "read"))
                             }
                         }
+                        // Обновляем галочки в открытом диалоге
+                        if (selId == from) {
+                            runOnUiThread {
+                                val msgs = msgAdapter.getItems()
+                                for (m in msgs) {
+                                    if (m is ChatMessage && m.from == me) {
+                                        m.read = true
+                                    }
+                                }
+                                msgAdapter.notifyDataSetChanged()
+                            }
+                        }
                         return
                     }
                             if (isBlocked) return
