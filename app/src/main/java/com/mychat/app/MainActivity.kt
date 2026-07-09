@@ -797,21 +797,14 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         selId = id
         msgAdapter.update(emptyList())
         // Оптимистично сбрасываем бейдж сразу в UI
-        // Обнуляем unread и в локальном списке, и в адаптере
-        val adapterUsers = chatAdapter.getUsers()
-        var idx = -1
-        for (i in adapterUsers.indices) {
-            if (adapterUsers[i].username == id) {
-                idx = i
-                adapterUsers[i].unread = 0
-                break
-            }
-        }
-        // Синхронизируем с основным списком
+        // Обнуляем unread в адаптере и в локальном списке
         val mainUser = users.find { it.username == id }
         if (mainUser != null) mainUser.unread = 0
-        if (idx >= 0) {
-            chatAdapter.notifyItemChanged(idx)
+        for (i in 0 until chatAdapter.itemCount) {
+            if (chatAdapter.getItem(i).username == id) {
+                chatAdapter.resetUnread(i)
+                break
+            }
         }
         // Сбрасываем счётчик на сервере
         thread {

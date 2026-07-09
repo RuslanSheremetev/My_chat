@@ -84,6 +84,13 @@ class ChatAdapter(
     }
     
     fun getUsers(): List<User> = users.toList()
+    fun resetUnread(position: Int) {
+        if (position in users.indices) {
+            users[position].unread = 0
+            notifyItemChanged(position)
+        }
+    }
+
     
     fun stopVoice() {
         mediaPlayer?.apply {
