@@ -1385,6 +1385,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     time = msg.time,
                                     fileUrl = msg.file?.url ?: "",
                                     fileName = msg.file?.name ?: "",
+                                    isRead = msg.read,
                                     reactionsJson = org.json.JSONObject(msg.reactions as Map<*, *>).toString()
                                 )
                             }
@@ -1474,6 +1475,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     time = msg.time,
                                     fileUrl = msg.file?.url ?: "",
                                     fileName = msg.file?.name ?: "",
+                                    isRead = msg.read,
                                     reactionsJson = org.json.JSONObject(msg.reactions as Map<*, *>).toString()
                                 )
                             }
