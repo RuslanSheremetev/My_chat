@@ -1172,8 +1172,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         // Всегда сохраняем unread в Room
                         val ck = chatKey(me, username)
                         val settings = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
-                        db.messageDao().saveChatSettings(settings.copy(unread = serverUnread,
-                                    lastMsgFromMe = lastMsgFromMe))
+                        db.messageDao().saveChatSettings(settings.copy(unread = serverUnread))
                     }
                     
                     // Загружаем isMuted и unread из Room для основного списка
