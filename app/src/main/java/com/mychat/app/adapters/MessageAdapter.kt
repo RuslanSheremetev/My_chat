@@ -125,6 +125,10 @@ class MessageAdapter(
         holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)?.visibility = View.GONE
         holder.itemView.findViewById<LinearLayout>(R.id.linkPreview)?.visibility = View.GONE
         holder.itemView.findViewById<LinearLayout>(R.id.forwardBlock)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.linkPreview)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.ytPreview)?.visibility = View.GONE
+        holder.itemView.findViewById<ImageView>(R.id.imageMsg)?.visibility = View.GONE
+        holder.itemView.findViewById<ImageView>(R.id.previewImage)?.visibility = View.GONE
         holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
                 holder.selectCheck.isChecked = selectedIds.contains(item.id)
                 holder.selectCheck.setOnCheckedChangeListener { _, checked ->
@@ -147,6 +151,10 @@ class MessageAdapter(
         holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)?.visibility = View.GONE
         holder.itemView.findViewById<LinearLayout>(R.id.linkPreview)?.visibility = View.GONE
         holder.itemView.findViewById<LinearLayout>(R.id.forwardBlock)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.linkPreview)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.ytPreview)?.visibility = View.GONE
+        holder.itemView.findViewById<ImageView>(R.id.imageMsg)?.visibility = View.GONE
+        holder.itemView.findViewById<ImageView>(R.id.previewImage)?.visibility = View.GONE
         holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
                 holder.selectCheck.isChecked = selectedIds.contains(item.id)
                 holder.selectCheck.setOnCheckedChangeListener { _, checked ->
@@ -271,6 +279,10 @@ class MessageAdapter(
         holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)?.visibility = View.GONE
         holder.itemView.findViewById<LinearLayout>(R.id.linkPreview)?.visibility = View.GONE
         holder.itemView.findViewById<LinearLayout>(R.id.forwardBlock)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.linkPreview)?.visibility = View.GONE
+        holder.itemView.findViewById<LinearLayout>(R.id.ytPreview)?.visibility = View.GONE
+        holder.itemView.findViewById<ImageView>(R.id.imageMsg)?.visibility = View.GONE
+        holder.itemView.findViewById<ImageView>(R.id.previewImage)?.visibility = View.GONE
         holder.selectCheck.visibility = if (selectMode) android.view.View.VISIBLE else android.view.View.GONE
                 holder.selectCheck.isChecked = selectedIds.contains(item.id)
                 holder.selectCheck.setOnCheckedChangeListener { _, checked ->
