@@ -798,14 +798,14 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         msgAdapter.update(emptyList())
         // Оптимистично сбрасываем бейдж сразу в UI
         var idx = -1
-        for (i in chatList.indices) {
-            if (chatList[i].username == id) {
+        for (i in users.indices) {
+            if (users[i].username == id) {
                 idx = i
                 break
             }
         }
         if (idx >= 0) {
-            chatList[idx].unread = 0
+            users[idx].unread = 0
             chatAdapter.notifyItemChanged(idx)
         }
         // Сбрасываем счётчик на сервере
