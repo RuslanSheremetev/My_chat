@@ -885,6 +885,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
             val d = view.context.resources.displayMetrics.density
             layoutParams = LinearLayout.LayoutParams((16*d).toInt(), (16*d).toInt()).apply { marginStart = (4*d).toInt() }
             visibility = View.GONE
+            (view as? LinearLayout)?.addView(this)
         }
     }
 }
