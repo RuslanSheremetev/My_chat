@@ -54,3 +54,6 @@ interface MessageDao {
     @Query("UPDATE chat_settings SET unread = 0 WHERE chatKey = :chatKey")
     fun resetUnread(chatKey: String)
 }
+
+    @Query("UPDATE messages SET read = 1 WHERE chatKey = :chatKey AND fromUser = :fromUser AND read = 0")
+    fun markMessagesRead(chatKey: String, fromUser: String)
