@@ -797,7 +797,13 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         selId = id
         msgAdapter.update(emptyList())
         // Оптимистично сбрасываем бейдж сразу в UI
-        val idx = chatList.indexOfFirst { it.username == id }
+        var idx = -1
+        for (i in chatList.indices) {
+            if (chatList[i].username == id) {
+                idx = i
+                break
+            }
+        }
         if (idx >= 0) {
             chatList[idx].unread = 0
             chatAdapter.notifyItemChanged(idx)
