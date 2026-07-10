@@ -1085,7 +1085,13 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             u.lastMsgStatus = "read"
                             runOnUiThread {
                                 if (selId == null || chatLayout.visibility != View.VISIBLE) {
-                                    chatAdapter.update(users)
+                                    if (selId == null || chatLayout.visibility != View.VISIBLE) {
+                            if (selId == null || chatLayout.visibility != View.VISIBLE) {
+                            if (selId == null || chatLayout.visibility != View.VISIBLE) {
+                            chatAdapter.update(users)
+                        }
+                        }
+                        }
                                 }
                             }
                             thread {
@@ -1261,7 +1267,9 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         val unique = users.distinctBy { it.username }
                         users.clear()
                         users.addAll(unique)
-                        chatAdapter.update(users)
+                        if (selId == null || chatLayout.visibility != View.VISIBLE) {
+                            chatAdapter.update(users)
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -1317,7 +1325,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     u.unread = s.unread
                                 }
                             }
-                        handler.post { chatAdapter.update(res) }
+                        handler.post {
+                            if (selId == null || chatLayout.visibility != View.VISIBLE) {
+                                chatAdapter.update(res)
+                            }
+                        }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -2380,7 +2392,9 @@ private fun sendMessageTo(to: String, text: String) {
                         val unique = users.distinctBy { it.username }
                         users.clear()
                         users.addAll(unique)
-                        chatAdapter.update(users)
+                        if (selId == null || chatLayout.visibility != View.VISIBLE) {
+                            chatAdapter.update(users)
+                        }
                         }
                         t("Чат удалён")
                     } else {
