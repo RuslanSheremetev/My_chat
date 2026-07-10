@@ -922,46 +922,21 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         )
         reactions.forEach { (id, emoji) ->
             view.findViewById<TextView>(id)?.setOnClickListener {
-                // Отправляем реакцию через HTTP API
-                val jsonBody = JSONObject().apply {
-                    put("message_id", msg.id)
-                    put("user_id", currentUserId)
+                // Отправляем реакцию через WebSocket
+                ws?.send(JSONObject().apply {
+                    put("type", "reaction_add")
+                    put("msg_id", msg.id)
                     put("emoji", emoji)
+                }.toString())
+                // Обновляем UI сразу
+                msgAdapter.addReaction(msg.id, emoji, currentUserPhone)
+                // Сохраняем в Room
+                thread {
+                    val reactionsMap = mapOf(emoji to listOf(currentUserPhone))
+                    val reactionsJson = JSONObject(reactionsMap as Map<*, *>).toString()
+                    db.messageDao().updateReactions(msg.id, reactionsJson)
+                    log("Saved to Room: ${msg.id} -> $reactionsJson")
                 }
-                val bodyStr = jsonBody.toString()
-                log("Request body: $bodyStr")
-                val body = bodyStr.toRequestBody("application/json".toMediaType())
-                val request = Request.Builder()
-                    .url("$server/api/messages/reaction?token=$token")
-                    .post(body)
-                    .build()
-                log("HTTP: request"); client.newCall(request).enqueue(object : Callback {
-                    override fun onFailure(call: Call, e: IOException) {
-                        android.util.Log.e("REACTION", "Network error: ${e.message}")
-                        log("Network error: ${e.message}")
-                        runOnUiThread { t("Ошибка реакции") }
-                    }
-                    override fun onResponse(call: Call, response: Response) {
-                        runOnUiThread {
-                            android.util.Log.d("REACTION", "Server response: isSuccessful=${response.isSuccessful}, code=${response.code}")
-                            log("Server response: OK, code=${response.code}")
-                            if (response.isSuccessful) {
-                                android.util.Log.d("REACTION", "Calling addReaction: msgId=${msg.id}, emoji=$emoji, phone=$currentUserPhone")
-                                log("addReaction: msgId=${msg.id}, emoji=$emoji, phone=$currentUserPhone")
-                                log("Reaction: $emoji on ${msg.id}")
-                                msgAdapter.addReaction(msg.id, emoji, currentUserPhone)
-                                // Сохраняем реакции в Room
-                                val reactionsMap = mapOf(emoji to listOf(currentUserPhone))
-                                val reactionsJson = JSONObject(reactionsMap as Map<*, *>).toString()
-                                Thread {
-                                    db.messageDao().updateReactions(msg.id, reactionsJson)
-                                    log("Saved to Room: ${msg.id} -> $reactionsJson")
-                                }.start()
-                                t("$emoji")
-                            }
-                        }
-                    }
-                })
                 bottomSheet.dismiss()
             }
         }
