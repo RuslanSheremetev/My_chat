@@ -1073,12 +1073,33 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             }
                             msgAdapter.notifyDataSetChanged()
                         }
-                        // Сохраняем delivered в ChatSettings
+                        // Сохраняем delivered в Room для текущего чата
                         val ck = chatKey(me, selId)
                         if (ck.isNotEmpty()) {
                             thread {
-                                val s = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
-                                db.messageDao().saveChatSettings(s.copy(isDelivered = true))
+                                try {
+                                    val entities = msgAdapter.getItems().filterIsInstance<ChatMessage>().map { msg ->
+                                        MessageEntity(
+                                            id = msg.id,
+                                            chatKey = ck,
+                                            fromUser = msg.from,
+                                            toUser = msg.to,
+                                            text = msg.text,
+                                            time = msg.time,
+                                            fileUrl = msg.file?.url ?: "",
+                                            fileName = msg.file?.name ?: "",
+                                            delivered = msg.delivered,
+                                            isRead = msg.read,
+                                            reactionsJson = org.json.JSONObject((msg.reactions as? Map<*, *>) ?: emptyMap<String, Any>()).toString()
+                                        )
+                                    }
+                                    if (entities.isNotEmpty()) {
+                                        db.messageDao().insertMessages(entities)
+                                        log("WS: delivered saved to Room, ${entities.size} msgs")
+                                    }
+                                } catch (e: Exception) {
+                                    log("WS: delivered Room save failed: ${e.message}")
+                                }
                             }
                         }
                         return
