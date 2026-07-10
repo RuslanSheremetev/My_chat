@@ -1073,9 +1073,13 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             }
                             msgAdapter.notifyDataSetChanged()
                         }
-                        // Сохраняем delivered в Room
-                        thread {
-                            try { db.messageDao().markDelivered(me); log("WS: delivered saved to Room") } catch (e: Exception) { log("WS: delivered Room save failed: ${e.message}") }
+                        // Сохраняем delivered в ChatSettings
+                        val ck = chatKey(me, selId)
+                        if (ck.isNotEmpty()) {
+                            thread {
+                                val s = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
+                                db.messageDao().saveChatSettings(s.copy(isDelivered = true))
+                            }
                         }
                         return
                     }

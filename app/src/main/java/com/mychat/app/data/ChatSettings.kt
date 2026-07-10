@@ -7,5 +7,6 @@ data class ChatSettings(
     val isMuted: Boolean = false,
     val isBlocked: Boolean = false,
     val unread: Int = 0,
-    val lastMsgStatus: String = ""
+    val lastMsgStatus: String = "",
+    val isDelivered: Boolean = false
 )
