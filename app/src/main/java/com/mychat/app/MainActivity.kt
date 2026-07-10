@@ -1447,12 +1447,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     fileName = msg.file?.name ?: "",
                                     delivered = msg.delivered,
                                     isRead = msg.read,
-                                    val existingEntity = db.messageDao().getMessages(chatKey(me, selId)).find { it.id == msg.id }
-                                    reactionsJson = if (msg.reactions != null && (msg.reactions as? Map<*,*>)?.isNotEmpty() == true) {
-                                        org.json.JSONObject(msg.reactions as Map<*, *>).toString()
-                                    } else {
-                                        existingEntity?.reactionsJson ?: "{}"
-                                    }
+                                    reactionsJson = org.json.JSONObject((msg.reactions as? Map<*, *>) ?: emptyMap<String, Any>()).toString()
                                 )
                             }
                             db.messageDao().insertMessages(entities)
@@ -1555,12 +1550,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     fileName = msg.file?.name ?: "",
                                     delivered = msg.delivered,
                                     isRead = msg.read,
-                                    val existingEntity = db.messageDao().getMessages(chatKey(me, selId)).find { it.id == msg.id }
-                                    reactionsJson = if (msg.reactions != null && (msg.reactions as? Map<*,*>)?.isNotEmpty() == true) {
-                                        org.json.JSONObject(msg.reactions as Map<*, *>).toString()
-                                    } else {
-                                        existingEntity?.reactionsJson ?: "{}"
-                                    }
+                                    reactionsJson = org.json.JSONObject((msg.reactions as? Map<*, *>) ?: emptyMap<String, Any>()).toString()
                                 )
                             }
                             db.messageDao().insertMessages(entities)
