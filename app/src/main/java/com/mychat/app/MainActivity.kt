@@ -1422,7 +1422,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     fileName = msg.file?.name ?: "",
                                     delivered = msg.delivered,
                                     isRead = msg.read,
-                                    reactionsJson = org.json.JSONObject((msg.reactions as? Map<*, *>) ?: emptyMap<String, Any>()).toString()
+                                    reactionsJson = "{}"  // реакции только через updateReactions
                                 )
                             }
                             db.messageDao().insertMessages(entities)
@@ -1525,7 +1525,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     fileName = msg.file?.name ?: "",
                                     delivered = msg.delivered,
                                     isRead = msg.read,
-                                    reactionsJson = org.json.JSONObject((msg.reactions as? Map<*, *>) ?: emptyMap<String, Any>()).toString()
+                                    reactionsJson = "{}"  // реакции только через updateReactions
                                 )
                             }
                             db.messageDao().insertMessages(entities)
