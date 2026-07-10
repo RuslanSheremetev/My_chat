@@ -1439,15 +1439,16 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             val entities = nm.map { msg ->
                                 MessageEntity(
                                     id = msg.id,
-                                    chatKey = selId,
+                                    chatKey = chatKey(me, selId),
                                     fromUser = msg.from,
                                     toUser = msg.to,
                                     text = msg.text,
                                     time = msg.time,
                                     fileUrl = msg.file?.url ?: "",
                                     fileName = msg.file?.name ?: "",
+                                    delivered = msg.delivered,
                                     isRead = msg.read,
-                                    reactionsJson = org.json.JSONObject(msg.reactions as Map<*, *>).toString()
+                                    reactionsJson = org.json.JSONObject((msg.reactions as? Map<*, *>) ?: emptyMap<String, Any>()).toString()
                                 )
                             }
                             db.messageDao().insertMessages(entities)
@@ -1538,15 +1539,16 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             val entities = nm.map { msg ->
                                 MessageEntity(
                                     id = msg.id,
-                                    chatKey = selId,
+                                    chatKey = chatKey(me, selId),
                                     fromUser = msg.from,
                                     toUser = msg.to,
                                     text = msg.text,
                                     time = msg.time,
                                     fileUrl = msg.file?.url ?: "",
                                     fileName = msg.file?.name ?: "",
+                                    delivered = msg.delivered,
                                     isRead = msg.read,
-                                    reactionsJson = org.json.JSONObject(msg.reactions as Map<*, *>).toString()
+                                    reactionsJson = org.json.JSONObject((msg.reactions as? Map<*, *>) ?: emptyMap<String, Any>()).toString()
                                 )
                             }
                             db.messageDao().insertMessages(entities)
