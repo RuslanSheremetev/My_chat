@@ -1083,7 +1083,11 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         val u = users.find { it.username == from }
                         if (u != null) {
                             u.lastMsgStatus = "read"
-                            runOnUiThread { chatAdapter.update(users) }
+                            runOnUiThread {
+                                if (selId == null || chatLayout.visibility != View.VISIBLE) {
+                                    chatAdapter.update(users)
+                                }
+                            }
                             thread {
                                 val ck = chatKey(me, from)
                                 val s = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
