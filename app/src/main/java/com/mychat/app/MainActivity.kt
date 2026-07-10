@@ -1075,7 +1075,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         }
                         // Сохраняем delivered в Room
                         thread {
-                            db.messageDao().markDelivered(me)
+                            try { db.messageDao().markDelivered(me); log("WS: delivered saved to Room") } catch (e: Exception) { log("WS: delivered Room save failed: ${e.message}") }
                         }
                         return
                     }
