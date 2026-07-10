@@ -1073,13 +1073,14 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             }
                             msgAdapter.notifyDataSetChanged()
                         }
-                        // Обновляем lastMsgStatus в списке чатов — у себя
+                        // Обновляем lastMsgStatus в списке чатов
                         runOnUiThread {
-                            val u = users.find { it.username == selId }
-                            if (u != null) {
-                                u.lastMsgStatus = "delivered"
-                                chatAdapter.notifyDataSetChanged()
+                            for (u in users) {
+                                if (u.lastMsgFromMe == true && u.lastMsgStatus == "sent") {
+                                    u.lastMsgStatus = "delivered"
+                                }
                             }
+                            chatAdapter.notifyDataSetChanged()
                         }
                         // Сохраняем delivered в Room для текущего чата
                         val ck = chatKey(me, selId)
