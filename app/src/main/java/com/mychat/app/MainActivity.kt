@@ -1358,7 +1358,20 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     }
                     // Обновляем статусы на sent
                     thread { db.messageDao().markSent(selId) }
-                    handler.post { msgAdapter.update(msgs) }
+                    handler.post {
+                        // Сохраняем статусы delivered/read
+                        val oldItems = msgAdapter.getItems()
+                        for (m in msgs) {
+                            val old = oldItems.find { it.id == m.id }
+                            if (old != null) {
+                                if (old is ChatMessage && m is ChatMessage) {
+                                    m.delivered = old.delivered
+                                    m.read = old.read
+                                }
+                            }
+                        }
+                        msgAdapter.update(msgs)
+                    }
                 }
             } catch (e: Exception) {}
         }
@@ -1437,6 +1450,14 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     }
                     // Фильтруем удалённые сообщения
                     val filtered = nm.filter { it.text != "Сообщение удалено" }
+                    val oldItems2 = msgAdapter.getItems()
+                    for (m in filtered) {
+                        val old = oldItems2.find { it.id == m.id }
+                        if (old != null && m is ChatMessage && old is ChatMessage) {
+                            m.delivered = old.delivered
+                            m.read = old.read
+                        }
+                    }
                     msgAdapter.update(filtered)
                         if (nm.isNotEmpty()) {
                             messagesList.scrollToPosition(msgAdapter.itemCount - 1)
@@ -1527,6 +1548,14 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     }
                     // Фильтруем удалённые сообщения
                     val filtered = nm.filter { it.text != "Сообщение удалено" }
+                    val oldItems2 = msgAdapter.getItems()
+                    for (m in filtered) {
+                        val old = oldItems2.find { it.id == m.id }
+                        if (old != null && m is ChatMessage && old is ChatMessage) {
+                            m.delivered = old.delivered
+                            m.read = old.read
+                        }
+                    }
                     msgAdapter.update(filtered)
                             lastMessageCount = nm.size
                             if (wasAtBottom && nm.isNotEmpty()) {
