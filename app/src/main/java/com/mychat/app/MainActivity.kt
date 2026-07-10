@@ -1072,6 +1072,10 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             }
                             msgAdapter.notifyDataSetChanged()
                         }
+                        // Сохраняем delivered в Room
+                        thread {
+                            db.messageDao().markDelivered(selId, me)
+                        }
                         return
                     }
                     if (jtype == "read") {
@@ -1331,7 +1335,9 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             text = entity.text,
                             time = entity.time,
                             file = if (entity.fileUrl.isNotEmpty()) FileInfo(entity.fileName, entity.fileUrl) else null,
-                            reactions = parseReactions(entity.reactionsJson)
+                            reactions = parseReactions(entity.reactionsJson),
+                            delivered = entity.delivered,
+                            read = entity.isRead
                         )
                     }
                     // Обновляем статусы на sent
