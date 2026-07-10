@@ -1063,52 +1063,42 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     }
                     if (jtype == "ping") { webSocket.send("{\"type\":\"pong\"}"); return }
                     if (jtype == "delivered") {
-                        log("WS: delivered received, selId=$selId")
-                        runOnUiThread {
-                            val msgs = msgAdapter.getItems()
-                            for (m in msgs) {
-                                if (m is ChatMessage && m.from == me) {
-                                    m.delivered = true
+                        val to = j.optString("to", "")
+                        val u = users.find { it.username == to }
+                        if (u != null) {
+                            u.lastMsgStatus = "delivered"
+                            runOnUiThread {
+                                if (selId == null || chatLayout.visibility != View.VISIBLE) {
+                                    if (selId == null || chatLayout.visibility != View.VISIBLE) {
+                            if (selId == null || chatLayout.visibility != View.VISIBLE) {
+                            if (selId == null || chatLayout.visibility != View.VISIBLE) {
+                            chatAdapter.update(users)
+                        }
+                        }
+                        }
                                 }
                             }
-                            msgAdapter.notifyDataSetChanged()
-                        }
-                        // Обновляем lastMsgStatus в списке чатов
-                        runOnUiThread {
-                            for (u in users) {
-                                if (u.lastMsgFromMe == true && u.lastMsgStatus == "sent") {
-                                    u.lastMsgStatus = "delivered"
-                                }
-                            }
-                            chatAdapter.notifyDataSetChanged()
-                        }
-                        // Сохраняем delivered в Room для текущего чата
-                        val ck = chatKey(me, selId)
-                        if (ck.isNotEmpty()) {
                             thread {
-                                try {
-                                    val entities = msgAdapter.getItems().filterIsInstance<ChatMessage>().map { msg ->
-                                        MessageEntity(
-                                            id = msg.id,
-                                            chatKey = ck,
-                                            fromUser = msg.from,
-                                            toUser = msg.to,
-                                            text = msg.text,
-                                            time = msg.time,
-                                            fileUrl = msg.file?.url ?: "",
-                                            fileName = msg.file?.name ?: "",
-                                            delivered = msg.delivered,
-                                            isRead = msg.read,
-                                            reactionsJson = org.json.JSONObject((msg.reactions as? Map<*, *>) ?: emptyMap<String, Any>()).toString()
-                                        )
+                                val ck = chatKey(me, to)
+                                val s = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
+                                db.messageDao().saveChatSettings(s.copy(lastMsgStatus = "delivered"))
+                            }
+                        }
+                        // Обновляем галочки в открытом диалоге
+                        if (selId == to) {
+                            runOnUiThread {
+                                val msgs = msgAdapter.getItems()
+                                for (m in msgs) {
+                                    if (m is ChatMessage && m.to == me) {
+                                        m.read = true
                                     }
-                                    if (entities.isNotEmpty()) {
-                                        db.messageDao().insertMessages(entities)
-                                        log("WS: delivered saved to Room, ${entities.size} msgs")
-                                    }
-                                } catch (e: Exception) {
-                                    log("WS: delivered Room save failed: ${e.message}")
                                 }
+                                msgAdapter.notifyDataSetChanged()
+                            }
+                            // Сохраняем isRead в Room
+                            val ck = chatKey(me, to)
+                            thread {
+                                db.messageDao().markAsRead(ck, to)
                             }
                         }
                         return
