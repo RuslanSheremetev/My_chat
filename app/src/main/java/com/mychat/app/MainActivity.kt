@@ -1362,7 +1362,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         // Сохраняем статусы delivered/read
                         val oldItems = msgAdapter.getItems()
                         for (m in msgs) {
-                            val old = oldItems.find { it.id == m.id }
+                            val old = oldItems.find { (it as? ChatMessage)?.id == m.id }
                             if (old != null) {
                                 if (old is ChatMessage && m is ChatMessage) {
                                     m.delivered = old.delivered
@@ -1452,7 +1452,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     val filtered = nm.filter { it.text != "Сообщение удалено" }
                     val oldItems2 = msgAdapter.getItems()
                     for (m in filtered) {
-                        val old = oldItems2.find { it.id == m.id }
+                        val old = oldItems2.find { (it as? ChatMessage)?.id == m.id }
                         if (old != null && m is ChatMessage && old is ChatMessage) {
                             m.delivered = old.delivered
                             m.read = old.read
@@ -1550,7 +1550,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     val filtered = nm.filter { it.text != "Сообщение удалено" }
                     val oldItems2 = msgAdapter.getItems()
                     for (m in filtered) {
-                        val old = oldItems2.find { it.id == m.id }
+                        val old = oldItems2.find { (it as? ChatMessage)?.id == m.id }
                         if (old != null && m is ChatMessage && old is ChatMessage) {
                             m.delivered = old.delivered
                             m.read = old.read
