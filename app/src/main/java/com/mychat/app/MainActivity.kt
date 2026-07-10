@@ -1419,14 +1419,15 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         // continue removed
                         nm.add(
                             ChatMessage(
-                                o.optString("id"),
-                                o.optString("from"),
-                                o.optString("to"),
-                                o.optString("text"),
-                                o.optString("time"),
-                                fi,
-                                null,
-                                o.optBoolean("is_group")
+                                id = o.optString("id"),
+                                from = o.optString("from"),
+                                to = o.optString("to"),
+                                text = o.optString("text"),
+                                time = o.optString("time"),
+                                file = fi,
+                                isGroup = o.optBoolean("is_group"),
+                                delivered = o.optBoolean("delivered", false),
+                                read = o.optBoolean("read", false)
                             )
                         )
                     }
@@ -1514,14 +1515,15 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         // continue removed
                         nm.add(
                             ChatMessage(
-                                o.optString("id"),
-                                o.optString("from"),
-                                o.optString("to"),
-                                o.optString("text"),
-                                o.optString("time"),
-                                fi,
-                                null,
-                                o.optBoolean("is_group")
+                                id = o.optString("id"),
+                                from = o.optString("from"),
+                                to = o.optString("to"),
+                                text = o.optString("text"),
+                                time = o.optString("time"),
+                                file = fi,
+                                isGroup = o.optBoolean("is_group"),
+                                delivered = o.optBoolean("delivered", false),
+                                read = o.optBoolean("read", false)
                             )
                         )
                     }
