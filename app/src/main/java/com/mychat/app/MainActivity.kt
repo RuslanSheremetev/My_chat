@@ -1087,8 +1087,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             }
                             // Сохраняем isRead в Room
                             val ck = chatKey(me, from)
-                            kotlinx.coroutines.GlobalScope.launch {
-                                db.messageDao().markMessagesAsRead(ck, from)
+                            thread {
+                                db.messageDao().markAsRead(ck, from)
                             }
                         }
                         return
