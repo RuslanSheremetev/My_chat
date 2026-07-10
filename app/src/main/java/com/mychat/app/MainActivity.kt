@@ -1475,6 +1475,9 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         if (old != null && m is ChatMessage && old is ChatMessage) {
                             m.delivered = old.delivered
                             m.read = old.read
+                            if (old.reactions.isNotEmpty()) {
+                                m.reactions = old.reactions
+                            }
                         }
                     }
                     msgAdapter.update(filtered)
@@ -1580,6 +1583,9 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         if (old != null && m is ChatMessage && old is ChatMessage) {
                             m.delivered = old.delivered
                             m.read = old.read
+                            if (old.reactions.isNotEmpty()) {
+                                m.reactions = old.reactions
+                            }
                         }
                     }
                     msgAdapter.update(filtered)
