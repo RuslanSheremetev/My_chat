@@ -1449,7 +1449,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     reactionsJson = org.json.JSONObject(msg.reactions as Map<*, *>).toString()
                                 )
                             }
-                            // db.messageDao().insertMessages(entities)  // Отключено - вызывает прыжки
+                            db.messageDao().insertMessages(entities)
                             // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
                     }
@@ -1547,7 +1547,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     reactionsJson = org.json.JSONObject(msg.reactions as Map<*, *>).toString()
                                 )
                             }
-                            // db.messageDao().insertMessages(entities)  // Отключено - вызывает прыжки
+                            db.messageDao().insertMessages(entities)
                             // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
                     }
