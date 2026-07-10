@@ -1074,7 +1074,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         }
                         // Сохраняем delivered в Room
                         thread {
-                            db.messageDao().markDelivered(selId, me)
+                            db.messageDao().markDelivered(chatKey(me, selId), me)
                         }
                         return
                     }
