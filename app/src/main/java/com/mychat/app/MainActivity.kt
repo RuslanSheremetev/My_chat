@@ -1064,7 +1064,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     if (jtype == "ping") { webSocket.send("{\"type\":\"pong\"}"); return }
                     if (jtype == "delivered") {
                         val msgId = j.optString("msg_id", "")
-                        if (msgId.isNotEmpty() && selId.isNotEmpty()) {
+                        if (msgId.isNotEmpty()) {
                             runOnUiThread {
                                 val msgs = msgAdapter.getItems()
                                 for (m in msgs) {
