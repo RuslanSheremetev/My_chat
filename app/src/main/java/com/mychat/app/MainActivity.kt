@@ -1062,6 +1062,21 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         return
                     }
                     if (jtype == "ping") { webSocket.send("{\"type\":\"pong\"}"); return }
+                    if (jtype == "delivered") {
+                        val msgId = j.optString("msg_id", "")
+                        if (msgId.isNotEmpty() && selId.isNotEmpty()) {
+                            runOnUiThread {
+                                val msgs = msgAdapter.getItems()
+                                for (m in msgs) {
+                                    if (m is ChatMessage && m.id == msgId) {
+                                        m.delivered = true
+                                    }
+                                }
+                                msgAdapter.notifyDataSetChanged()
+                            }
+                        }
+                        return
+                    }
                     if (jtype == "read") {
                         val from = j.optString("from", "")
                         val u = users.find { it.username == from }
