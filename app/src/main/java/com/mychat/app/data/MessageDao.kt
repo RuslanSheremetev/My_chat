@@ -59,7 +59,6 @@ interface MessageDao {
     fun markAsRead(chatKey: String, fromUser: String)
 
 
-    @Query("UPDATE messages SET delivered = 1 WHERE chatKey = :chatKey AND fromUser = :fromUser")
     @Query("UPDATE messages SET delivered = 1 WHERE fromUser = :fromUser")
     fun markDelivered(fromUser: String)
 }
