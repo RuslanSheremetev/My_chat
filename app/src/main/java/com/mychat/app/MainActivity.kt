@@ -1447,7 +1447,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     fileName = msg.file?.name ?: "",
                                     delivered = msg.delivered,
                                     isRead = msg.read,
-                                    reactionsJson = (db.messageDao().getMessages(chatKey(me, selId)).find { it.id == msg.id })?.reactionsJson ?: "{}"
+                                    reactionsJson = "{}"  // реакции обновляются отдельно
                                 )
                             }
                             db.messageDao().insertMessages(entities)
@@ -1550,7 +1550,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     fileName = msg.file?.name ?: "",
                                     delivered = msg.delivered,
                                     isRead = msg.read,
-                                    reactionsJson = (db.messageDao().getMessages(chatKey(me, selId)).find { it.id == msg.id })?.reactionsJson ?: "{}"
+                                    reactionsJson = "{}"  // реакции обновляются отдельно
                                 )
                             }
                             db.messageDao().insertMessages(entities)
