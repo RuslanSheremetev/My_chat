@@ -1359,20 +1359,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     }
                     // Обновляем статусы на sent
                     thread { db.messageDao().markSent(selId) }
-                    handler.post {
-                        // Сохраняем статусы delivered/read
-                        val oldItems = msgAdapter.getItems()
-                        for (m in msgs) {
-                            val old = oldItems.find { (it as? ChatMessage)?.id == m.id }
-                            if (old != null) {
-                                if (old is ChatMessage && m is ChatMessage) {
-                                    m.delivered = old.delivered
-                                    m.read = old.read
-                                }
-                            }
-                        }
-                        msgAdapter.update(msgs)
-                    }
+                    handler.post { msgAdapter.update(msgs) }
                 }
             } catch (e: Exception) {}
         }
