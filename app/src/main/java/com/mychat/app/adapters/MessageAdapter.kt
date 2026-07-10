@@ -45,6 +45,18 @@ class MessageAdapter(
     }
 
     fun update(list: List<ChatMessage>) {
+        // Сохраняем реакции и статусы из старых сообщений
+        val oldItems = items.filterIsInstance<ChatMessage>().associateBy { it.id }
+        for (msg in list) {
+            val old = oldItems[msg.id]
+            if (old != null) {
+                msg.delivered = old.delivered
+                msg.read = old.read
+                if (old.reactions.isNotEmpty()) {
+                    msg.reactions = old.reactions
+                }
+            }
+        }
         items.clear()
         var lastDate = ""
         for (msg in list) {
