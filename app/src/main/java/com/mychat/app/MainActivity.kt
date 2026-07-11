@@ -128,6 +128,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        window.statusBarColor = 0xff1c1c1e.toInt()
         // Контекстное меню для чатов
         logText = findViewById(R.id.logText)
         logScroll = findViewById(R.id.logScroll)
