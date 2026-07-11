@@ -1069,6 +1069,27 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         }
                         return
                     }
+                    if (jtype == "reaction_add" || jtype == "reaction_remove") {
+                        val msgId = j.optString("msg_id", "")
+                        val emoji = j.optString("emoji", "")
+                        val username = j.optString("username", "")
+                        if (msgId.isNotEmpty() && username.isNotEmpty()) {
+                            runOnUiThread {
+                                if (jtype == "reaction_add") {
+                                    msgAdapter.addReaction(msgId, emoji, username)
+                                } else {
+                                    msgAdapter.removeReaction(msgId, emoji, username)
+                                }
+                            }
+                            // Сохраняем в Room
+                            thread {
+                                val reactions = msgAdapter.getReactions(msgId)
+                                val json = org.json.JSONObject(reactions as Map<*, *>).toString()
+                                db.messageDao().updateReactions(msgId, json)
+                            }
+                        }
+                        return
+                    }
                     if (jtype == "read") {
                         val from = j.optString("from", "")
                         val u = users.find { it.username == from }
