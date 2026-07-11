@@ -1076,7 +1076,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         val username = j.optString("username", "")
                         if (msgId.isNotEmpty() && username.isNotEmpty()) {
                             runOnUiThread {
-                                if (jtype == "reaction_add") {
+                                if (jtype == "reaction_added") {
                                     msgAdapter.addReaction(msgId, emoji, username)
                                 } else {
                                     msgAdapter.removeReaction(msgId, emoji, username)
