@@ -207,7 +207,7 @@ class MessageAdapter(
                     // Скрываем иконку файла для обычных сообщений
                     val fc = holder.itemView.findViewById<LinearLayout>(R.id.fileIconContainer)
                     if (fc != null) fc.visibility = View.GONE
-                    if (item.file == null) showLinkPreview(holder.itemView, item.text)
+                    // if (item.file == null) showLinkPreview(holder.itemView, item.text) // отключено
                     val vp = holder.itemView.findViewById<LinearLayout>(R.id.voicePlayer)
                     if (vp != null) vp.visibility = View.GONE
                 }
