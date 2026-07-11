@@ -485,6 +485,25 @@ class MessageAdapter(
     }
 
 
+    fun removeReaction(msgId: String, emoji: String, from: String) {
+        val index = items.indexOfFirst { it is ChatMessage && it.id == msgId }
+        if (index >= 0) {
+            val msg = items[index] as ChatMessage
+            val newReactions = msg.reactions.toMutableMap()
+            newReactions[emoji] = newReactions[emoji]?.filter { it != from }?.toMutableList() ?: mutableListOf()
+            if (newReactions[emoji]?.isEmpty() == true) {
+                newReactions.remove(emoji)
+            }
+            items[index] = msg.copy(reactions = newReactions)
+            notifyItemChanged(index)
+        }
+    }
+    
+    fun getReactions(msgId: String): Map<String, List<String>> {
+        val msg = items.find { it is ChatMessage && it.id == msgId } as? ChatMessage
+        return msg?.reactions ?: emptyMap()
+    }
+    
     private fun formatReactions(reactions: Map<String, out List<String>>): String { android.util.Log.d("Reaction", "formatReactions: input=$reactions")
         if (reactions.isEmpty()) return ""
         return reactions.entries.joinToString("  ") { (emoji, users) ->
