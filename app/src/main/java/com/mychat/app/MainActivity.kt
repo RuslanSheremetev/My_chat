@@ -1462,16 +1462,20 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             }
                             // Сохраняем старые реакции перед REPLACE
                             val oldReactions = mutableMapOf<String, String>()
+                            val ck = chatKey(me, selId)
+                            log("Reaction: saving to Room, chatKey=$ck, entities=${entities.size}")
                             for (e in entities) {
-                                val old = db.messageDao().getMessages(chatKey(me, selId)).find { it.id == e.id }
+                                val old = db.messageDao().getMessages(ck).find { it.id == e.id }
                                 if (old != null && old.reactionsJson != "{}") {
                                     oldReactions[e.id] = old.reactionsJson
+                                    log("Reaction: preserving old reaction for ${e.id}")
                                 }
                             }
                             db.messageDao().insertMessages(entities)
                             // Восстанавливаем реакции
                             for ((id, json) in oldReactions) {
                                 db.messageDao().updateReactions(id, json)
+                                log("Reaction: restored $id")
                             }
                             // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
@@ -1577,16 +1581,20 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             }
                             // Сохраняем старые реакции перед REPLACE
                             val oldReactions = mutableMapOf<String, String>()
+                            val ck = chatKey(me, selId)
+                            log("Reaction: saving to Room, chatKey=$ck, entities=${entities.size}")
                             for (e in entities) {
-                                val old = db.messageDao().getMessages(chatKey(me, selId)).find { it.id == e.id }
+                                val old = db.messageDao().getMessages(ck).find { it.id == e.id }
                                 if (old != null && old.reactionsJson != "{}") {
                                     oldReactions[e.id] = old.reactionsJson
+                                    log("Reaction: preserving old reaction for ${e.id}")
                                 }
                             }
                             db.messageDao().insertMessages(entities)
                             // Восстанавливаем реакции
                             for ((id, json) in oldReactions) {
                                 db.messageDao().updateReactions(id, json)
+                                log("Reaction: restored $id")
                             }
                             // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
