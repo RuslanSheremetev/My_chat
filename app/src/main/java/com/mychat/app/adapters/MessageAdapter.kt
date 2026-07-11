@@ -276,6 +276,8 @@ class MessageAdapter(
                 val reactionsStr = formatReactions(item.reactions)
                 android.util.Log.d("Reaction", "In bind: id=${item.id}, reactions=${item.reactions}, str=$reactionsStr")
                 holder.reactionsText.text = reactionsStr
+                holder.reactionsText.setBackgroundResource(R.drawable.bg_reaction_bubble)
+                holder.reactionsText.setPadding(8, 4, 8, 4)
                 holder.reactionsText.visibility = if (reactionsStr.isNotEmpty()) View.VISIBLE else View.GONE
             }
             item is ChatMessage && holder is OutViewHolder -> {
@@ -420,6 +422,8 @@ class MessageAdapter(
                 // Показываем реакции
                 val reactionsStr = formatReactions(item.reactions)
                 holder.reactionsText.text = reactionsStr
+                holder.reactionsText.setBackgroundResource(R.drawable.bg_reaction_bubble)
+                holder.reactionsText.setPadding(8, 4, 8, 4)
                 holder.reactionsText.visibility = if (reactionsStr.isNotEmpty()) View.VISIBLE else View.GONE
             }
         }
