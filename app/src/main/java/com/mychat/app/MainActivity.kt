@@ -923,17 +923,34 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         )
         reactions.forEach { (id, emoji) ->
             view.findViewById<TextView>(id)?.setOnClickListener {
-                // Отправляем реакцию через WebSocket
-                if (ws != null) {
-                    ws?.send(JSONObject().apply {
-                        put("type", "reaction_add")
-                        put("msg_id", msg.id)
-                        put("emoji", emoji)
-                    }.toString())
-                    log("WS: reaction_add sent")
-                } else {
-                    log("WS: reaction_add FAILED - ws is null")
+                // Отправляем реакцию через HTTP API
+                val jsonBody = JSONObject().apply {
+                    put("message_id", msg.id)
+                    put("user_id", currentUserId)
+                    put("emoji", emoji)
                 }
+                val body = jsonBody.toString().toRequestBody("application/json".toMediaType())
+                val request = Request.Builder()
+                    .url("$server/api/messages/reaction?token=$token")
+                    .post(body)
+                    .build()
+                client.newCall(request).enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        runOnUiThread { t("Ошибка реакции") }
+                    }
+                    override fun onResponse(call: Call, response: Response) {
+                        if (response.isSuccessful) {
+                            runOnUiThread {
+                                msgAdapter.addReaction(msg.id, emoji, currentUserPhone)
+                            }
+                            thread {
+                                val reactions = msgAdapter.getReactions(msg.id)
+                                val json = org.json.JSONObject(reactions as Map<*, *>).toString()
+                                db.messageDao().updateReactions(msg.id, json)
+                            }
+                        }
+                    }
+                })
                 bottomSheet.dismiss()
             }
         }
