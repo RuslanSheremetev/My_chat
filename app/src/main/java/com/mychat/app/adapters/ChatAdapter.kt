@@ -124,8 +124,12 @@ class ChatAdapter(
             val displayName = if (user.name.isNotEmpty()) user.name else user.username
             avatar.text = displayName.take(1).uppercase()
             val colors = arrayOf("#2AABEE", "#34C759", "#FF9500", "#FF3B30", "#9C6BFF", "#FF6B9D", "#00BCD4", "#FF5722")
-            val colorIndex = user.username.hashCode().mod(colors.size)
-            val color = colors[if (colorIndex < 0) colorIndex * -1 else colorIndex]
+            val color = if (user.avatarColor.isNotEmpty() && user.avatarColor != "#2AABEE") {
+                user.avatarColor
+            } else {
+                val colorIndex = user.username.hashCode().mod(colors.size)
+                colors[if (colorIndex < 0) colorIndex * -1 else colorIndex]
+            }
             avatar.background = circleBg(color)
             name.text = displayName
             
