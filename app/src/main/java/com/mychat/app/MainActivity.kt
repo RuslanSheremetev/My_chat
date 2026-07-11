@@ -928,15 +928,6 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                     put("msg_id", msg.id)
                     put("emoji", emoji)
                 }.toString())
-                // Обновляем UI сразу
-                msgAdapter.addReaction(msg.id, emoji, currentUserPhone)
-                // Сохраняем в Room
-                thread {
-                    val reactionsMap = mapOf(emoji to listOf(currentUserPhone))
-                    val reactionsJson = JSONObject(reactionsMap as Map<*, *>).toString()
-                    db.messageDao().updateReactions(msg.id, reactionsJson)
-                    log("Saved to Room: ${msg.id} -> $reactionsJson")
-                }
                 bottomSheet.dismiss()
             }
         }
