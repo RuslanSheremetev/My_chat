@@ -1460,7 +1460,19 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     reactionsJson = "{}"  // реакции только через updateReactions
                                 )
                             }
+                            // Сохраняем старые реакции перед REPLACE
+                            val oldReactions = mutableMapOf<String, String>()
+                            for (e in entities) {
+                                val old = db.messageDao().getMessages(chatKey(me, selId)).find { it.id == e.id }
+                                if (old != null && old.reactionsJson != "{}") {
+                                    oldReactions[e.id] = old.reactionsJson
+                                }
+                            }
                             db.messageDao().insertMessages(entities)
+                            // Восстанавливаем реакции
+                            for ((id, json) in oldReactions) {
+                                db.messageDao().updateReactions(id, json)
+                            }
                             // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
                     }
@@ -1563,7 +1575,19 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     reactionsJson = "{}"  // реакции только через updateReactions
                                 )
                             }
+                            // Сохраняем старые реакции перед REPLACE
+                            val oldReactions = mutableMapOf<String, String>()
+                            for (e in entities) {
+                                val old = db.messageDao().getMessages(chatKey(me, selId)).find { it.id == e.id }
+                                if (old != null && old.reactionsJson != "{}") {
+                                    oldReactions[e.id] = old.reactionsJson
+                                }
+                            }
                             db.messageDao().insertMessages(entities)
+                            // Восстанавливаем реакции
+                            for ((id, json) in oldReactions) {
+                                db.messageDao().updateReactions(id, json)
+                            }
                             // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
                     }
