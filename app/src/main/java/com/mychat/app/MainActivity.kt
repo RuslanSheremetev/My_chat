@@ -1069,7 +1069,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         }
                         return
                     }
-                    if (jtype == "reaction_add" || jtype == "reaction_remove") {
+                    if (jtype == "reaction_added" || jtype == "reaction_removed") {
                         val msgId = j.optString("msg_id", "")
                         val emoji = j.optString("emoji", "")
                         val username = j.optString("username", "")
