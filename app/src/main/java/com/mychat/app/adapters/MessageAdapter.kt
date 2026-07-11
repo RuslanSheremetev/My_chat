@@ -912,11 +912,6 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         val time: TextView = view.findViewById(R.id.time)
         val imageMsg: ImageView = view.findViewById(R.id.imageMsg)
         val reactionsText: TextView = view.findViewById(R.id.reactionsText)
-        val msgCheck: ImageView = ImageView(view.context).apply {
-            val d = view.context.resources.displayMetrics.density
-            layoutParams = LinearLayout.LayoutParams((16*d).toInt(), (16*d).toInt()).apply { marginStart = (4*d).toInt() }
-            visibility = View.GONE
-            (view as? LinearLayout)?.addView(this)
-        }
+        val msgCheck: ImageView = view.findViewById(R.id.msgCheck)
     }
 }
