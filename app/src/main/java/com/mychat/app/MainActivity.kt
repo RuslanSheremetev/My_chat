@@ -52,6 +52,7 @@ import com.mychat.app.utils.FileCache
 import com.mychat.app.data.AppDatabase
 import com.mychat.app.data.ChatSettings
 import com.mychat.app.data.MessageEntity
+import com.mychat.app.data.ReactionEntity
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -763,7 +764,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             onSaveReaction = { msgId, json ->
                 kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
                     log("Saved to Room: $msgId")
-                            db.messageDao().updateReactions(msgId, json)
+                            // Старый метод, оставлен для совместимости
+db.messageDao().updateReactions(msgId, json)
                 }
             },
             appContext = applicationContext,
@@ -946,7 +948,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             thread {
                                 val reactions = msgAdapter.getReactions(msg.id)
                                 val json = org.json.JSONObject(reactions as Map<*, *>).toString()
-                                db.messageDao().updateReactions(msg.id, json)
+                                // Старый метод, оставлен для совместимости
+db.messageDao().updateReactions(msg.id, json)
                             }
                         }
                     }
@@ -1108,7 +1111,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             thread {
                                 val reactions = msgAdapter.getReactions(msgId)
                                 val json = org.json.JSONObject(reactions as Map<*, *>).toString()
-                                db.messageDao().updateReactions(msgId, json)
+                                // Старый метод, оставлен для совместимости
+db.messageDao().updateReactions(msgId, json)
                             }
                         }
                         return
@@ -1386,7 +1390,17 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                             text = entity.text,
                             time = entity.time,
                             file = if (entity.fileUrl.isNotEmpty()) FileInfo(entity.fileName, entity.fileUrl) else null,
-                            reactions = parseReactions(entity.reactionsJson),
+                            reactions = mutableMapOf<String, MutableList<String>>().also { reactions ->
+                            // Загружаем реакции из отдельной таблицы
+                            val roomReactions = db.messageDao().getReactions(entity.id)
+                            roomReactions.groupBy { it.emoji }.forEach { (emoji, list) ->
+                                reactions.getOrPut(emoji) { mutableListOf() }.addAll(list.map { it.username })
+                            }
+                            // Если в таблице пусто, пробуем старый reactionsJson
+                            if (reactions.isEmpty() && entity.reactionsJson != "{}") {
+                                reactions.putAll(parseReactions(entity.reactionsJson))
+                            }
+                        },
                             delivered = entity.delivered,
                             read = entity.isRead
                         )
@@ -1460,22 +1474,18 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     reactionsJson = "{}"  // реакции только через updateReactions
                                 )
                             }
-                            // Сохраняем старые реакции перед REPLACE
-                            val oldReactions = mutableMapOf<String, String>()
-                            val ck = chatKey(me, selId)
-                            log("Reaction: saving to Room, chatKey=$ck, entities=${entities.size}")
-                            for (e in entities) {
-                                val old = db.messageDao().getMessages(ck).find { it.id == e.id }
-                                if (old != null && old.reactionsJson != "{}") {
-                                    oldReactions[e.id] = old.reactionsJson
-                                    log("Reaction: preserving old reaction for ${e.id}")
-                                }
-                            }
                             db.messageDao().insertMessages(entities)
-                            // Восстанавливаем реакции
-                            for ((id, json) in oldReactions) {
-                                db.messageDao().updateReactions(id, json)
-                                log("Reaction: restored $id")
+                            // Сохраняем реакции в отдельную таблицу
+                            for (msg in messages) {
+                                if (msg.reactions.isNotEmpty()) {
+                                    db.messageDao().clearReactions(msg.id)
+                                    val reactionEntities = msg.reactions.flatMap { (emoji, users) ->
+                                        users.map { username -> ReactionEntity(msgId = msg.id, emoji = emoji, username = username) }
+                                    }
+                                    if (reactionEntities.isNotEmpty()) {
+                                        db.messageDao().insertReactions(reactionEntities)
+                                    }
+                                }
                             }
                             // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
@@ -1579,22 +1589,18 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                                     reactionsJson = "{}"  // реакции только через updateReactions
                                 )
                             }
-                            // Сохраняем старые реакции перед REPLACE
-                            val oldReactions = mutableMapOf<String, String>()
-                            val ck = chatKey(me, selId)
-                            log("Reaction: saving to Room, chatKey=$ck, entities=${entities.size}")
-                            for (e in entities) {
-                                val old = db.messageDao().getMessages(ck).find { it.id == e.id }
-                                if (old != null && old.reactionsJson != "{}") {
-                                    oldReactions[e.id] = old.reactionsJson
-                                    log("Reaction: preserving old reaction for ${e.id}")
-                                }
-                            }
                             db.messageDao().insertMessages(entities)
-                            // Восстанавливаем реакции
-                            for ((id, json) in oldReactions) {
-                                db.messageDao().updateReactions(id, json)
-                                log("Reaction: restored $id")
+                            // Сохраняем реакции в отдельную таблицу
+                            for (msg in messages) {
+                                if (msg.reactions.isNotEmpty()) {
+                                    db.messageDao().clearReactions(msg.id)
+                                    val reactionEntities = msg.reactions.flatMap { (emoji, users) ->
+                                        users.map { username -> ReactionEntity(msgId = msg.id, emoji = emoji, username = username) }
+                                    }
+                                    if (reactionEntities.isNotEmpty()) {
+                                        db.messageDao().insertReactions(reactionEntities)
+                                    }
+                                }
                             }
                             // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
@@ -2235,7 +2241,8 @@ private fun sendMessageTo(to: String, text: String) {
                                 msgAdapter.setReactions(msgId, reactions)
                                 loadedReactions.add(msgId)
                                 val jsonStr = org.json.JSONObject(reactions as Map<*, *>).toString()
-                                thread { db.messageDao().updateReactions(msgId, jsonStr) }
+                                thread { // Старый метод, оставлен для совместимости
+db.messageDao().updateReactions(msgId, jsonStr) }
                             }
                         }
                     }
@@ -2271,7 +2278,8 @@ private fun sendMessageTo(to: String, text: String) {
                             // Сохраняем в Room
                             val reactionsJson = JSONObject(reactions as Map<*, *>).toString()
                             CoroutineScope(Dispatchers.IO).launch {
-                                db.messageDao().updateReactions(msg.id, reactionsJson)
+                                // Старый метод, оставлен для совместимости
+db.messageDao().updateReactions(msg.id, reactionsJson)
                             }
                             runOnUiThread {
                                 log("Reactions loaded for ${msg.id}: $reactions")
@@ -2279,7 +2287,8 @@ private fun sendMessageTo(to: String, text: String) {
                             // Сохраняем в Room только если есть реакции
                             if (reactions.isNotEmpty()) {
                                 val json = org.json.JSONObject(reactions as Map<*, *>).toString()
-                                thread { db.messageDao().updateReactions(msg.id, json) }
+                                thread { // Старый метод, оставлен для совместимости
+db.messageDao().updateReactions(msg.id, json) }
                             }
                             }
                         }
@@ -2581,7 +2590,8 @@ private fun sendMessageTo(to: String, text: String) {
                                 onSaveReaction = { msgId, json ->
                                     kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
                                         log("Saved to Room: $msgId")
-                            db.messageDao().updateReactions(msgId, json)
+                            // Старый метод, оставлен для совместимости
+db.messageDao().updateReactions(msgId, json)
                                     }
                                 },
                                 appContext = applicationContext,

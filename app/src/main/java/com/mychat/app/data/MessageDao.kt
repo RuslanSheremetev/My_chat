@@ -62,3 +62,17 @@ interface MessageDao {
     @Query("UPDATE messages SET delivered = 1 WHERE fromUser = :fromUser")
     fun markDelivered(fromUser: String)
 }
+    // === Реакции ===
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertReactions(reactions: List<ReactionEntity>)
+
+    @Query("SELECT * FROM reactions WHERE msgId = :msgId")
+    fun getReactions(msgId: String): List<ReactionEntity>
+
+    @Query("DELETE FROM reactions WHERE msgId = :msgId AND emoji = :emoji AND username = :username")
+    fun deleteReaction(msgId: String, emoji: String, username: String)
+
+    @Query("DELETE FROM reactions WHERE msgId = :msgId")
+    fun clearReactions(msgId: String)
+
+}
