@@ -924,11 +924,16 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         reactions.forEach { (id, emoji) ->
             view.findViewById<TextView>(id)?.setOnClickListener {
                 // Отправляем реакцию через WebSocket
-                ws?.send(JSONObject().apply {
-                    put("type", "reaction_add")
-                    put("msg_id", msg.id)
-                    put("emoji", emoji)
-                }.toString())
+                if (ws != null) {
+                    ws?.send(JSONObject().apply {
+                        put("type", "reaction_add")
+                        put("msg_id", msg.id)
+                        put("emoji", emoji)
+                    }.toString())
+                    log("WS: reaction_add sent")
+                } else {
+                    log("WS: reaction_add FAILED - ws is null")
+                }
                 bottomSheet.dismiss()
             }
         }
