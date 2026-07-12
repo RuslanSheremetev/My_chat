@@ -835,7 +835,7 @@ db.messageDao().updateReactions(msgId, json)
         val userMuted = u?.isMuted ?: isMuted
         val muteIcon = findViewById<ImageView>(R.id.chatMuteIcon)
         muteIcon?.visibility = if (userMuted) View.VISIBLE else View.GONE
-        muteIcon?.setImageResource(if (userMuted) R.drawable.ic_muted else R.drawable.ic_speaker)
+        muteIcon?.setImageResource(if (userMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
         chatAvatar.text = name.take(1).uppercase()
         chatAvatar.background = circleBg(u?.avatarColor ?: "#2AABEE")
         chatStatus.text = if (u?.online == true) "online" else "offline"
@@ -878,7 +878,7 @@ db.messageDao().updateReactions(msgId, json)
             runOnUiThread {
                 val mi = findViewById<ImageView>(R.id.chatMuteIcon)
                 mi?.visibility = if (isMuted) View.VISIBLE else View.GONE
-                mi?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_speaker)
+                mi?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
             }
         }
         // Восстанавливаем блокировку из Room
@@ -2931,7 +2931,7 @@ db.messageDao().updateReactions(msgId, json)
         // Обновляем иконку в диалоге сразу
         val mi2 = findViewById<ImageView>(R.id.chatMuteIcon)
         mi2?.visibility = if (isMuted) View.VISIBLE else View.GONE
-        mi2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_speaker)
+        mi2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
         // Обновляем текст в меню
         val muteMenuText = findViewById<TextView>(R.id.menuMuteText)
         muteMenuText?.text = if (isMuted) "Включить звук" else "Без звука"

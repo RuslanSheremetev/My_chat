@@ -445,7 +445,7 @@
                         android:id="@+id/chatMuteIcon"
                         android:layout_width="14dp"
                         android:layout_height="14dp"
-                        android:src="@drawable/ic_muted"
+                        android:src="@drawable/ic_unmuted"
                         android:tint="#777777"
                         android:layout_marginStart="6dp"
                         android:visibility="gone"/>
