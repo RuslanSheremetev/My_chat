@@ -1345,7 +1345,7 @@ db.messageDao().updateReactions(msgId, json)
                                 if (fav != null) {
                                     fav.lastMsg = last.optString("text", "")
                                     fav.lastTime = formatTime(last.optString("time", ""))
-                                    fav.lastMsgStatus = last.optString("from", "") == me && last.optBoolean("read", false) == false
+                                    fav.lastMsgStatus = if (last.optString("from", "") == me) "sent" else "received"
                                 }
                             }
                         }
