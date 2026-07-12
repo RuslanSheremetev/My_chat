@@ -1211,7 +1211,7 @@ db.messageDao().updateReactions(msgId, json)
                 ).execute()
                 if (r.isSuccessful) {
                     val a = JSONArray(r.body!!.string())
-                    users.clear()
+                    // Не очищаем — будем обновлять существующих юзеров
                     val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
                     val savedStatus = prefs.getString("user_status", "No bio") ?: "No bio"
                     
@@ -1222,12 +1222,7 @@ db.messageDao().updateReactions(msgId, json)
                         // MyChat теперь показывается
                         
                         val displayName = o.optString("name", "")
-                        val cachedName = prefs.getString("display_name_$username", "")
-                        val finalName = when {
-                            displayName.isNotEmpty() -> displayName.also { prefs.edit().putString("display_name_$username", it).apply() }
-                            cachedName.isNotEmpty() -> cachedName
-                            else -> username
-                        }
+                        val finalName = if (displayName.isNotEmpty()) displayName else username
                         val bio = if (username == me) savedStatus else o.optString("bio", "")
                         val isGroup = o.optBoolean("is_group", false)
                         val isFeed = o.optBoolean("is_feed", false)
@@ -1314,11 +1309,22 @@ db.messageDao().updateReactions(msgId, json)
                         }
                     }
                     
-                    users.addAll(userList)
+                    // Merge: обновляем существующих, добавляем новых
+                    for (newUser in userList) {
+                        val existing = users.indexOfFirst { it.username == newUser.username }
+                        if (existing >= 0) {
+                            // Обновляем поля, но сохраняем name если новый пустой
+                            val old = users[existing]
+                            val mergedName = if (newUser.name.isNotEmpty()) newUser.name else old.name
+                            users[existing] = newUser.copy(name = mergedName)
+                        } else {
+                            users.add(newUser)
+                        }
+                    }
                     handler.post {
                         // Удаляем дубликаты перед показом
                         val unique = users.distinctBy { it.username }
-                        users.clear()
+                        // Не очищаем — будем обновлять существующих юзеров
                         users.addAll(unique)
                         if (selId == null || chatLayout.visibility != View.VISIBLE) {
                             chatAdapter.update(users)
@@ -2522,7 +2528,7 @@ db.messageDao().updateReactions(msg.id, json) }
                             users.removeAt(index)
                             // Удаляем дубликаты перед показом
                         val unique = users.distinctBy { it.username }
-                        users.clear()
+                        // Не очищаем — будем обновлять существующих юзеров
                         users.addAll(unique)
                         if (selId == null || chatLayout.visibility != View.VISIBLE) {
                             chatAdapter.update(users)
