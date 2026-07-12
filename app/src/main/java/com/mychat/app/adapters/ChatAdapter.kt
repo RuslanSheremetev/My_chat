@@ -175,6 +175,16 @@ class ChatAdapter(
                         cornerRadius = 12f * itemView.context.resources.displayMetrics.density
                     }
                 }
+                user.username == "favorites" -> {
+                    badge.visibility = View.VISIBLE
+                    badge.text = "☆"
+                    badge.setTextColor(0xffFFB800.toInt())
+                    badge.background = android.graphics.drawable.GradientDrawable().apply {
+                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                        cornerRadius = 20f * itemView.resources.displayMetrics.density
+                        setColor(0x2EFFB800.toInt())
+                    }
+                }
                 user.username == "MyChat" -> {
                     badge.visibility = View.VISIBLE
                     badge.text = "системный"
@@ -182,6 +192,16 @@ class ChatAdapter(
                     badge.background = android.graphics.drawable.GradientDrawable().apply {
                         setColor(0x228e44ad.toInt())
                         cornerRadius = 12f * itemView.context.resources.displayMetrics.density
+                    }
+                }
+                user.username == "favorites" -> {
+                    badge.visibility = View.VISIBLE
+                    badge.text = "☆"
+                    badge.setTextColor(0xffFFB800.toInt())
+                    badge.background = android.graphics.drawable.GradientDrawable().apply {
+                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                        cornerRadius = 20f * itemView.resources.displayMetrics.density
+                        setColor(0x2EFFB800.toInt())
                     }
                 }
                 else -> { badge.visibility = View.GONE }
