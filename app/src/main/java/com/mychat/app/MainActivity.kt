@@ -1222,7 +1222,12 @@ db.messageDao().updateReactions(msgId, json)
                         // MyChat теперь показывается
                         
                         val displayName = o.optString("name", "")
-                        val finalName = if (displayName.isNotEmpty()) displayName else username
+                        val cachedName = prefs.getString("display_name_$username", "")
+                        val finalName = when {
+                            displayName.isNotEmpty() -> displayName.also { prefs.edit().putString("display_name_$username", it).apply() }
+                            cachedName.isNotEmpty() -> cachedName
+                            else -> username
+                        }
                         val bio = if (username == me) savedStatus else o.optString("bio", "")
                         val isGroup = o.optBoolean("is_group", false)
                         val isFeed = o.optBoolean("is_feed", false)
