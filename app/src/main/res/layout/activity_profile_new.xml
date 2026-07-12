@@ -128,7 +128,7 @@
                 android:background="@drawable/bg_fab_pill"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:padding="12dp 24dp"
+                android:paddingTop="12dp" android:paddingBottom="12dp" android:paddingStart="24dp" android:paddingEnd="24dp"
                 android:clickable="true" android:focusable="true">
                 <ImageView
                     android:layout_width="22dp" android:layout_height="22dp"
@@ -151,7 +151,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="#0e1621"
-        android:padding="12dp 20dp 20dp"
+        android:paddingTop="12dp" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="20dp"
         android:gravity="center"
         android:orientation="horizontal">
         <LinearLayout android:id="@+id/navChats2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
