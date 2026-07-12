@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var profileBio: TextView
     private lateinit var editBio: EditText
     private lateinit var navChats: LinearLayout
-    private lateinit var navFavorites: LinearLayout
+    private lateinit var navSettings: LinearLayout
     private lateinit var navProfile: LinearLayout
     private var server = "http://2.26.71.102:8000"
     private var token = ""
@@ -246,7 +246,7 @@ class MainActivity : AppCompatActivity() {
         profileBio = findViewById(R.id.profileBio)
         editBio = findViewById(R.id.editBio)
         navChats = findViewById(R.id.navChats)
-        navFavorites = findViewById(R.id.navFavorites)
+        navSettings = findViewById(R.id.navSettings)
         navProfile = findViewById(R.id.navProfile)
         
         serverUrl.setText(server)
@@ -450,7 +450,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
         
         navChats.setOnClickListener { showTab(0) }
-        navFavorites.setOnClickListener { openFavorites() }  // Избранное теперь чат
+        navSettings.setOnClickListener { openProfile() }  // Избранное теперь чат
         navProfile.setOnClickListener { startActivity(android.content.Intent(this@MainActivity, com.mychat.app.activities.ProfileActivity::class.java)) }
         
         searchInput.addTextChangedListener(object : TextWatcher {
@@ -499,7 +499,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         highlightTab(0)
     }
 
-    private fun openFavorites() {
+    private fun openProfile() {
         openChat("favorites")
         return
     }
@@ -540,8 +540,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         chatLabel?.setTextColor(if (tab == 0) activeColor else inactiveColor)
         
         // Подсветка Избранного
-        val favIcon = navFavorites.getChildAt(0) as? ImageView
-        val favLabel = navFavorites.getChildAt(1) as? TextView
+        val favIcon = navSettings.getChildAt(0) as? ImageView
+        val favLabel = navSettings.getChildAt(1) as? TextView
         favIcon?.setColorFilter(if (tab == 1) activeColor else inactiveColor)
         favLabel?.setTextColor(if (tab == 1) activeColor else inactiveColor)
         
