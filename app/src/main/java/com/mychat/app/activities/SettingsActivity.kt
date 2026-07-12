@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import android.app.AlertDialog
+import kotlin.concurrent.thread
 import androidx.appcompat.app.AppCompatActivity
 import com.mychat.app.R
 
