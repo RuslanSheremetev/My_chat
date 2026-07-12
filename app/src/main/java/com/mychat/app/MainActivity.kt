@@ -381,6 +381,12 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             view.findViewById<LinearLayout>(R.id.menuInfo).setOnClickListener { popup.dismiss(); showUserInfo() }
             val muteText = view.findViewById<TextView>(R.id.menuMuteText)
         muteText?.text = if (isMuted) "Включить звук" else "Без звука"
+        // Меняем иконку в меню
+        val muteIconMenu = (view.findViewById<LinearLayout>(R.id.menuMute)?.getChildAt(0) as? ImageView)
+        muteIconMenu?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
+        val muteIconMenu = view.findViewById<ImageView>(R.id.menuMute)?.findViewById<ImageView>(R.id.menuMute) ?: view.findViewById<ImageView>(R.id.menuMute)?.let { it.findViewById<ImageView>(it.id) }
+        // Меняем иконку в меню
+        val muteImg = view.findViewById<ImageView>(view.resources.getIdentifier("menuMute", "id", packageName)?.let { view.findViewById<LinearLayout>(it)?.getChildAt(0) as? ImageView } ?: 0)
         view.findViewById<LinearLayout>(R.id.menuMute).setOnClickListener {
             popup.dismiss()
             toggleMute()
@@ -829,7 +835,7 @@ db.messageDao().updateReactions(msgId, json)
         // Берём isMuted из users (загружено в loadUsers) или из Room
         val userMuted = u?.isMuted ?: isMuted
         val muteIcon = findViewById<ImageView>(R.id.chatMuteIcon)
-        muteIcon?.visibility = View.VISIBLE
+        muteIcon?.visibility = if (userMuted) View.VISIBLE else View.GONE
         muteIcon?.setImageResource(if (userMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
         if (id == "favorites") {
             chatAvatar.text = "☆"
@@ -878,7 +884,7 @@ db.messageDao().updateReactions(msgId, json)
             isMuted = chatSettings?.isMuted ?: false
             runOnUiThread {
                 val mi = findViewById<ImageView>(R.id.chatMuteIcon)
-                mi?.visibility = View.VISIBLE
+                mi?.visibility = if (isMuted) View.VISIBLE else View.GONE
                 mi?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
             }
         }
@@ -2955,6 +2961,8 @@ db.messageDao().updateReactions(msgId, json)
         // Обновляем текст в меню
         val muteMenuText = findViewById<TextView>(R.id.menuMuteText)
         muteMenuText?.text = if (isMuted) "Включить звук" else "Без звука"
+        val muteIconMenu2 = (findViewById<LinearLayout>(R.id.menuMute)?.getChildAt(0) as? ImageView)
+        muteIconMenu2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
         // Сохраняем в Room
         thread {
             val ck = chatKey(me, selId)
