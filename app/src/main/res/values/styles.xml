@@ -1,2 +1,11 @@
-
-
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:statusBarColor">#1c1c1e</item>
+        <item name="android:windowBackground">#121212</item>
+    </style>
+    <style name="RoundedImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+</resources>
