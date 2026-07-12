@@ -2937,6 +2937,9 @@ db.messageDao().updateReactions(msgId, json)
                 client.newCall(Request.Builder().url("$server/chat_settings?token=$token").post(body).build()).execute()
             } catch (e: Exception) {}
         }
+        // Обновляем текст в меню (если оно сейчас открыто)
+        val muteMenuText = findViewById<TextView>(R.id.menuMuteText)
+        muteMenuText?.text = if (isMuted) "Включить звук" else "Без звука"
         if (isMuted) {
             t("🔇 Уведомления отключены")
         } else {
