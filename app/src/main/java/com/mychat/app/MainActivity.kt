@@ -829,7 +829,7 @@ db.messageDao().updateReactions(msgId, json)
             }.toString())
         }
         // unread сбрасывается сервером через mark_read
-        val name = u?.name ?: id
+        val name = u?.name ?: PreferenceManager.getDefaultSharedPreferences(this).getString("display_name_$id", id) ?: id
         chatTitle.text = name
         findViewById<ImageView>(R.id.chatMuteIcon)?.visibility = if (isMuted) View.VISIBLE else View.GONE
         chatAvatar.text = name.take(1).uppercase()
@@ -1228,7 +1228,7 @@ db.messageDao().updateReactions(msgId, json)
                         // MyChat теперь показывается
                         
                         val displayName = o.optString("name", "")
-                        val finalName = if (displayName.isNotEmpty()) displayName else username
+                        val finalName = if (displayName.isNotEmpty()) displayName.also { prefs.edit().putString("display_name_$username", it).apply() } else username
                         val bio = if (username == me) savedStatus else o.optString("bio", "")
                         val isGroup = o.optBoolean("is_group", false)
                         val isFeed = o.optBoolean("is_feed", false)
