@@ -2927,11 +2927,19 @@ db.messageDao().updateReactions(msgId, json)
         log("Mute: $isMuted for $selId")
         // Обновляем иконку в списке чатов
         users.find { it.username == selId }?.isMuted = isMuted
-        chatAdapter.notifyDataSetChanged()
-        // Обновляем иконку в диалоге сразу
-        val mi2 = findViewById<ImageView>(R.id.chatMuteIcon)
-        mi2?.visibility = if (isMuted) View.VISIBLE else View.GONE
-        mi2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
+        // Находим позицию в адаптере и обновляем только её
+        for (i in 0 until chatAdapter.itemCount) {
+            if (chatAdapter.getItem(i).username == selId) {
+                chatAdapter.notifyItemChanged(i)
+                break
+            }
+        }
+        // Обновляем иконку в диалоге (с задержкой чтобы View был доступен)
+        handler.post {
+            val mi2 = findViewById<ImageView>(R.id.chatMuteIcon)
+            mi2?.visibility = if (isMuted) View.VISIBLE else View.GONE
+            mi2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
+        }
         // Обновляем текст в меню
         val muteMenuText = findViewById<TextView>(R.id.menuMuteText)
         muteMenuText?.text = if (isMuted) "Включить звук" else "Без звука"
