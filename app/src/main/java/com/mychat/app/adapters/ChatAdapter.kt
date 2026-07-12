@@ -122,7 +122,12 @@ class ChatAdapter(
         
         fun bind(user: User) {
             val displayName = if (user.name.isNotEmpty()) user.name else user.username
-            avatar.text = displayName.take(1).uppercase()
+            if (user.username == "favorites") {
+                avatar.text = ""
+                avatar.setImageResource(R.drawable.ic_favorites)
+            } else {
+                avatar.text = displayName.take(1).uppercase()
+            }
             val colors = arrayOf("#2AABEE", "#34C759", "#FF9500", "#FF3B30", "#9C6BFF", "#FF6B9D", "#00BCD4", "#FF5722")
             val colorIndex = user.username.hashCode().mod(colors.size)
             val color = colors[if (colorIndex < 0) colorIndex * -1 else colorIndex]

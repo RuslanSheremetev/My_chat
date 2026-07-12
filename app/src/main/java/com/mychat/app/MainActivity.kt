@@ -831,7 +831,12 @@ db.messageDao().updateReactions(msgId, json)
         val muteIcon = findViewById<ImageView>(R.id.chatMuteIcon)
         muteIcon?.visibility = if (userMuted) View.VISIBLE else View.GONE
         muteIcon?.setImageResource(if (userMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
-        chatAvatar.text = name.take(1).uppercase()
+        if (id == "favorites") {
+            chatAvatar.text = ""
+            chatAvatar.setImageResource(R.drawable.ic_favorites)
+        } else {
+            chatAvatar.text = name.take(1).uppercase()
+        }
         chatAvatar.background = circleBg(u?.avatarColor ?: "#2AABEE")
         chatStatus.text = if (u?.online == true) "online" else "offline"
         chatStatus.setTextColor(if (u?.online == true) 0xff34c759.toInt() else 0xff8e8e93.toInt())
