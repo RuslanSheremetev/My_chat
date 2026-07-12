@@ -947,9 +947,14 @@ db.messageDao().updateReactions(msgId, json)
                             }
                             thread {
                                 val reactions = msgAdapter.getReactions(msg.id)
-                                val json = org.json.JSONObject(reactions as Map<*, *>).toString()
-                                // Старый метод, оставлен для совместимости
-db.messageDao().updateReactions(msg.id, json)
+                                // Сохраняем в новую таблицу reactions
+                                db.messageDao().clearReactions(msg.id)
+                                val entities = reactions.flatMap { (emoji, users) ->
+                                    users.map { username -> ReactionEntity(msgId = msg.id, emoji = emoji, username = username) }
+                                }
+                                if (entities.isNotEmpty()) {
+                                    db.messageDao().insertReactions(entities)
+                                }
                             }
                         }
                     }
@@ -1107,12 +1112,16 @@ db.messageDao().updateReactions(msg.id, json)
                                     msgAdapter.removeReaction(msgId, emoji, username)
                                 }
                             }
-                            // Сохраняем в Room
+                            // Сохраняем в Room (новая таблица)
                             thread {
                                 val reactions = msgAdapter.getReactions(msgId)
-                                val json = org.json.JSONObject(reactions as Map<*, *>).toString()
-                                // Старый метод, оставлен для совместимости
-db.messageDao().updateReactions(msgId, json)
+                                db.messageDao().clearReactions(msgId)
+                                val entities = reactions.flatMap { (emoji, users) ->
+                                    users.map { username -> ReactionEntity(msgId = msgId, emoji = emoji, username = username) }
+                                }
+                                if (entities.isNotEmpty()) {
+                                    db.messageDao().insertReactions(entities)
+                                }
                             }
                         }
                         return
@@ -1475,6 +1484,18 @@ db.messageDao().updateReactions(msgId, json)
                                 )
                             }
                             db.messageDao().insertMessages(entities)
+                            // Сохраняем реакции из ответа сервера в таблицу
+                            for (msg in messages) {
+                                if (msg.reactions.isNotEmpty()) {
+                                    db.messageDao().clearReactions(msg.id)
+                                    val rEntities = msg.reactions.flatMap { (emoji, users) ->
+                                        users.map { username -> ReactionEntity(msgId = msg.id, emoji = emoji, username = username) }
+                                    }
+                                    if (rEntities.isNotEmpty()) {
+                                        db.messageDao().insertReactions(rEntities)
+                                    }
+                                }
+                            }
                             // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
                     }
@@ -1578,6 +1599,18 @@ db.messageDao().updateReactions(msgId, json)
                                 )
                             }
                             db.messageDao().insertMessages(entities)
+                            // Сохраняем реакции из ответа сервера в таблицу
+                            for (msg in messages) {
+                                if (msg.reactions.isNotEmpty()) {
+                                    db.messageDao().clearReactions(msg.id)
+                                    val rEntities = msg.reactions.flatMap { (emoji, users) ->
+                                        users.map { username -> ReactionEntity(msgId = msg.id, emoji = emoji, username = username) }
+                                    }
+                                    if (rEntities.isNotEmpty()) {
+                                        db.messageDao().insertReactions(rEntities)
+                                    }
+                                }
+                            }
                             // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
                     }
