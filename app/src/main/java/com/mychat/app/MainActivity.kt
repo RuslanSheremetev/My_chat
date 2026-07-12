@@ -1484,18 +1484,6 @@ db.messageDao().updateReactions(msgId, json)
                                 )
                             }
                             db.messageDao().insertMessages(entities)
-                            // Сохраняем реакции из ответа сервера в таблицу
-                            for (msg in messages) {
-                                if (msg.reactions.isNotEmpty()) {
-                                    db.messageDao().clearReactions(msg.id)
-                                    val rEntities = msg.reactions.flatMap { (emoji, users) ->
-                                        users.map { username -> ReactionEntity(msgId = msg.id, emoji = emoji, username = username) }
-                                    }
-                                    if (rEntities.isNotEmpty()) {
-                                        db.messageDao().insertReactions(rEntities)
-                                    }
-                                }
-                            }
                             // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
                     }
@@ -1599,18 +1587,6 @@ db.messageDao().updateReactions(msgId, json)
                                 )
                             }
                             db.messageDao().insertMessages(entities)
-                            // Сохраняем реакции из ответа сервера в таблицу
-                            for (msg in messages) {
-                                if (msg.reactions.isNotEmpty()) {
-                                    db.messageDao().clearReactions(msg.id)
-                                    val rEntities = msg.reactions.flatMap { (emoji, users) ->
-                                        users.map { username -> ReactionEntity(msgId = msg.id, emoji = emoji, username = username) }
-                                    }
-                                    if (rEntities.isNotEmpty()) {
-                                        db.messageDao().insertReactions(rEntities)
-                                    }
-                                }
-                            }
                             // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
                     }
