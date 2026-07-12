@@ -2799,35 +2799,20 @@ db.messageDao().updateReactions(msgId, json)
     }
     
     private fun addToFavorites(msg: ChatMessage) {
-        val json = JSONObject().apply {
-            put("id", msg.id)
-            put("from", msg.from)
-            put("to", msg.to)
-            put("text", msg.text)
-            put("time", msg.time)
-        }
-        val requestBody = json.toString().toRequestBody("application/json".toMediaType())
-        val request = Request.Builder()
-            .url("$server/favorites/add?token=$token")
-            .post(requestBody)
-            .build()
-        log("HTTP: request"); client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                runOnUiThread { t("Ошибка") }
-            }
-            override fun onResponse(call: Call, response: Response) {
-                runOnUiThread {
-                    log("Server response: OK, code=${response.code}")
-                            if (response.isSuccessful) {
-                        t("✅ Добавлено в избранное!")
-                    } else {
-                        t("Ошибка добавления")
-                    }
-                }
-            }
-        })
+        val forwardText = "↪ ${msg.from}: ${msg.text}"
+        ws?.send(JSONObject().apply {
+            put("type", "private")
+            put("to", "favorites")
+            put("text", forwardText)
+        }.toString())
+        msgAdapter.addMessage(ChatMessage(
+            id = "sending_${System.currentTimeMillis()}",
+            from = me, to = "favorites", text = forwardText,
+            time = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Date())
+        ))
+        t("✅ Добавлено в избранное!")
     }
-    
+
     private fun showStickers() {
         val bs = BottomSheetDialog(this)
         val v = layoutInflater.inflate(R.layout.bottom_stickers, null)
