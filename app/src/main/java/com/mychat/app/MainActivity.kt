@@ -497,14 +497,6 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         openChat("favorites")
         return
     }
-    private fun openFavoritesOld() {
-        val intent = Intent(this, FavoritesActivity::class.java).apply {
-            putExtra("token", token)
-            putExtra("username", me)
-        }
-        startActivity(intent)
-        // Не вызываем finish(), чтобы onResume сработал при возврате
-    }
 
     private fun openProfile() {
         try {
