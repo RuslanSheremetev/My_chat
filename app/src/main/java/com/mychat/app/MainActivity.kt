@@ -1459,7 +1459,8 @@ db.messageDao().updateReactions(msgId, json)
                                 file = fi,
                                 isGroup = o.optBoolean("is_group"),
                                 delivered = o.optBoolean("delivered", false),
-                                read = o.optBoolean("read", false)
+                                read = o.optBoolean("read", false),
+                                reactions = parseReactionsFromJson(o.optJSONObject("reactions"))
                             )
                         )
                     }
@@ -1484,6 +1485,18 @@ db.messageDao().updateReactions(msgId, json)
                                 )
                             }
                             db.messageDao().insertMessages(entities)
+                            // Сохраняем реакции из ответа сервера в таблицу reactions
+                            for (msg in nm) {
+                                if (msg.reactions.isNotEmpty()) {
+                                    db.messageDao().clearReactions(msg.id)
+                                    val rEntities = msg.reactions.flatMap { (emoji, users) ->
+                                        users.map { username -> ReactionEntity(msgId = msg.id, emoji = emoji, username = username) }
+                                    }
+                                    if (rEntities.isNotEmpty()) {
+                                        db.messageDao().insertReactions(rEntities)
+                                    }
+                                }
+                            }
                             // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
                     }
@@ -1559,7 +1572,8 @@ db.messageDao().updateReactions(msgId, json)
                                 file = fi,
                                 isGroup = o.optBoolean("is_group"),
                                 delivered = o.optBoolean("delivered", false),
-                                read = o.optBoolean("read", false)
+                                read = o.optBoolean("read", false),
+                                reactions = parseReactionsFromJson(o.optJSONObject("reactions"))
                             )
                         )
                     }
@@ -1587,6 +1601,18 @@ db.messageDao().updateReactions(msgId, json)
                                 )
                             }
                             db.messageDao().insertMessages(entities)
+                            // Сохраняем реакции из ответа сервера в таблицу reactions
+                            for (msg in nm) {
+                                if (msg.reactions.isNotEmpty()) {
+                                    db.messageDao().clearReactions(msg.id)
+                                    val rEntities = msg.reactions.flatMap { (emoji, users) ->
+                                        users.map { username -> ReactionEntity(msgId = msg.id, emoji = emoji, username = username) }
+                                    }
+                                    if (rEntities.isNotEmpty()) {
+                                        db.messageDao().insertReactions(rEntities)
+                                    }
+                                }
+                            }
                             // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
                         } catch (e: Exception) {}
                     }
@@ -2170,6 +2196,20 @@ private fun sendMessageTo(to: String, text: String) {
     }
 
 
+
+    private fun parseReactionsFromJson(obj: org.json.JSONObject?): MutableMap<String, MutableList<String>> {
+        val result = mutableMapOf<String, MutableList<String>>()
+        if (obj == null || obj.length() == 0) return result
+        obj.keys().forEach { emoji ->
+            val arr = obj.optJSONArray(emoji) ?: return@forEach
+            val users = mutableListOf<String>()
+            for (i in 0 until arr.length()) {
+                users.add(arr.optString(i, ""))
+            }
+            if (users.isNotEmpty()) result[emoji] = users
+        }
+        return result
+    }
 
     private fun parseReactions(json: String): MutableMap<String, MutableList<String>> {
         log("parseReactions: json=${json.take(100)}")
