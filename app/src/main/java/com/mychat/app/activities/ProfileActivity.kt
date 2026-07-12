@@ -21,7 +21,7 @@ class ProfileActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.profileName).text = displayName
         findViewById<TextView>(R.id.profileAvatar).text = displayName.take(1).uppercase()
         
-        findViewById<LinearLayout>(R.id.profileBackBtn).setOnClickListener { finish() }
+        findViewById<ImageView>(R.id.profileBackBtn).setOnClickListener { finish() }
         findViewById<LinearLayout>(R.id.actionCreate).setOnClickListener { 
             Toast.makeText(this, "Создание истории", Toast.LENGTH_SHORT).show()
         }
