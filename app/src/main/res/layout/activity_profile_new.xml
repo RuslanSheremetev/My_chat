@@ -150,7 +150,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#0e1621"
+        android:background="#1c1c1e"
         android:paddingTop="12dp" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="20dp"
         android:gravity="center"
         android:orientation="horizontal">
