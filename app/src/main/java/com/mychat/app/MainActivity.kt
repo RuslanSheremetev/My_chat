@@ -1332,6 +1332,24 @@ db.messageDao().updateReactions(msgId, json)
                     )
                     prefs.edit().putString("display_name_favorites", "Избранное").apply()
                     users.add(favUser)
+                    // Загружаем lastMsg для избранного
+                    try {
+                        val favMsgR = client.newCall(
+                            Request.Builder().url("$server/messages/favorites?me=$me&token=$token").build()
+                        ).execute()
+                        if (favMsgR.isSuccessful) {
+                            val favMsgs = JSONArray(favMsgR.body!!.string())
+                            if (favMsgs.length() > 0) {
+                                val last = favMsgs.getJSONObject(favMsgs.length() - 1)
+                                val fav = users.find { it.username == "favorites" }
+                                if (fav != null) {
+                                    fav.lastMsg = last.optString("text", "")
+                                    fav.lastTime = formatTime(last.optString("time", ""))
+                                    fav.lastMsgStatus = last.optString("from", "") == me && last.optBoolean("read", false) == false
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {}
                     users.addAll(userList)
                     handler.post {
                         // Удаляем дубликаты перед показом
