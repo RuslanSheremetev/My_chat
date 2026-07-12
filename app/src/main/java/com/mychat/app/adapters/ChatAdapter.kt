@@ -123,8 +123,7 @@ class ChatAdapter(
         fun bind(user: User) {
             val displayName = if (user.name.isNotEmpty()) user.name else user.username
             if (user.username == "favorites") {
-                avatar.text = ""
-                avatar.setImageResource(R.drawable.ic_favorites)
+                avatar.text = "⭐"
             } else {
                 avatar.text = displayName.take(1).uppercase()
             }

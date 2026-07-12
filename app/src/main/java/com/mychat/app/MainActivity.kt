@@ -832,8 +832,7 @@ db.messageDao().updateReactions(msgId, json)
         muteIcon?.visibility = if (userMuted) View.VISIBLE else View.GONE
         muteIcon?.setImageResource(if (userMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
         if (id == "favorites") {
-            chatAvatar.text = ""
-            chatAvatar.setImageResource(R.drawable.ic_favorites)
+            chatAvatar.text = "⭐"
         } else {
             chatAvatar.text = name.take(1).uppercase()
         }
