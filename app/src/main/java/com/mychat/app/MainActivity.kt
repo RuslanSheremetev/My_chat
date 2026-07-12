@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.mychat.app.activities.ProfileActivity
+import com.mychat.app.activities.SettingsActivity
 import com.mychat.app.adapters.ChatAdapter
 import android.view.animation.TranslateAnimation
 import android.view.animation.Animation
@@ -447,7 +448,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
         
         navChats.setOnClickListener { showTab(0) }
-        navSettings.setOnClickListener { openProfile() }  // Избранное теперь чат
+        navSettings.setOnClickListener { startActivity(Intent(this@MainActivity, SettingsActivity::class.java).apply { putExtra("username", me); putExtra("token", token) }) }  // Избранное теперь чат
         navProfile.setOnClickListener { startActivity(android.content.Intent(this@MainActivity, com.mychat.app.activities.ProfileActivity::class.java)) }
         
         searchInput.addTextChangedListener(object : TextWatcher {
