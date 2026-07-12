@@ -179,11 +179,12 @@ class ChatAdapter(
                     badge.visibility = View.VISIBLE
                     badge.text = "☆"
                     badge.setTextColor(0xffFFB800.toInt())
+                    badge.textSize = 14f
                     badge.background = android.graphics.drawable.GradientDrawable().apply {
-                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                        cornerRadius = 20f * itemView.resources.displayMetrics.density
+                        shape = android.graphics.drawable.GradientDrawable.OVAL
                         setColor(0x2EFFB800.toInt())
                     }
+                    badge.setPadding(6, 2, 6, 2)
                 }
                 user.username == "MyChat" -> {
                     badge.visibility = View.VISIBLE
@@ -198,11 +199,12 @@ class ChatAdapter(
                     badge.visibility = View.VISIBLE
                     badge.text = "☆"
                     badge.setTextColor(0xffFFB800.toInt())
+                    badge.textSize = 14f
                     badge.background = android.graphics.drawable.GradientDrawable().apply {
-                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                        cornerRadius = 20f * itemView.resources.displayMetrics.density
+                        shape = android.graphics.drawable.GradientDrawable.OVAL
                         setColor(0x2EFFB800.toInt())
                     }
+                    badge.setPadding(6, 2, 6, 2)
                 }
                 else -> { badge.visibility = View.GONE }
             }
