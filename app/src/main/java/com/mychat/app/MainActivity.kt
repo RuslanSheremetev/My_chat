@@ -866,9 +866,15 @@ db.messageDao().updateReactions(msgId, json)
             msgInput.visibility = View.VISIBLE
             findViewById<View>(R.id.btnCall)?.visibility = View.VISIBLE
         }
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         val ck2 = chatKey(me, id)
-            isMuted = prefs.getBoolean("mute_$ck2", false)
+        // Загружаем isMuted из Room в фоне
+        thread {
+            val chatSettings = db.messageDao().getChatSettings(ck2)
+            isMuted = chatSettings?.isMuted ?: false
+            runOnUiThread {
+                findViewById<ImageView>(R.id.chatMuteIcon)?.visibility = if (isMuted) View.VISIBLE else View.GONE
+            }
+        }
         // Восстанавливаем блокировку из Room
         thread {
             val settings = db.messageDao().getChatSettings(id)
