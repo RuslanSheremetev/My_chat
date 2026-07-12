@@ -1211,7 +1211,7 @@ db.messageDao().updateReactions(msgId, json)
                 ).execute()
                 if (r.isSuccessful) {
                     val a = JSONArray(r.body!!.string())
-                    // Не очищаем — будем обновлять существующих юзеров
+                    users.clear()
                     val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
                     val savedStatus = prefs.getString("user_status", "No bio") ?: "No bio"
                     
@@ -1309,22 +1309,11 @@ db.messageDao().updateReactions(msgId, json)
                         }
                     }
                     
-                    // Merge: обновляем существующих, добавляем новых
-                    for (newUser in userList) {
-                        val existing = users.indexOfFirst { it.username == newUser.username }
-                        if (existing >= 0) {
-                            // Обновляем поля, но сохраняем name если новый пустой
-                            val old = users[existing]
-                            val mergedName = if (newUser.name.isNotEmpty()) newUser.name else old.name
-                            users[existing] = newUser.copy(name = mergedName)
-                        } else {
-                            users.add(newUser)
-                        }
-                    }
+                    users.addAll(userList)
                     handler.post {
                         // Удаляем дубликаты перед показом
                         val unique = users.distinctBy { it.username }
-                        // Не очищаем — будем обновлять существующих юзеров
+                        users.clear()
                         users.addAll(unique)
                         if (selId == null || chatLayout.visibility != View.VISIBLE) {
                             chatAdapter.update(users)
@@ -2528,7 +2517,7 @@ db.messageDao().updateReactions(msg.id, json) }
                             users.removeAt(index)
                             // Удаляем дубликаты перед показом
                         val unique = users.distinctBy { it.username }
-                        // Не очищаем — будем обновлять существующих юзеров
+                        users.clear()
                         users.addAll(unique)
                         if (selId == null || chatLayout.visibility != View.VISIBLE) {
                             chatAdapter.update(users)
