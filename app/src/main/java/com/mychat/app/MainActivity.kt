@@ -445,7 +445,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
         
         navChats.setOnClickListener { showTab(0) }
-        navFavorites.setOnClickListener { openFavorites() }
+        navFavorites.setOnClickListener { openFavorites() }  // Избранное теперь чат
         navProfile.setOnClickListener { startActivity(android.content.Intent(this@MainActivity, com.mychat.app.activities.ProfileActivity::class.java)) }
         
         searchInput.addTextChangedListener(object : TextWatcher {
@@ -495,6 +495,10 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
     }
 
     private fun openFavorites() {
+        openChat("favorites")
+        return
+    }
+    private fun openFavoritesOld() {
         val intent = Intent(this, FavoritesActivity::class.java).apply {
             putExtra("token", token)
             putExtra("username", me)
