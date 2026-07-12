@@ -831,7 +831,11 @@ db.messageDao().updateReactions(msgId, json)
         // unread сбрасывается сервером через mark_read
         val name = u?.name ?: PreferenceManager.getDefaultSharedPreferences(this).getString("display_name_$id", id) ?: id
         chatTitle.text = name
-        findViewById<ImageView>(R.id.chatMuteIcon)?.visibility = if (isMuted) View.VISIBLE else View.GONE
+        // Берём isMuted из users (загружено в loadUsers) или из Room
+        val userMuted = u?.isMuted ?: isMuted
+        val muteIcon = findViewById<ImageView>(R.id.chatMuteIcon)
+        muteIcon?.visibility = if (userMuted) View.VISIBLE else View.GONE
+        muteIcon?.setImageResource(if (userMuted) R.drawable.ic_muted else R.drawable.ic_speaker)
         chatAvatar.text = name.take(1).uppercase()
         chatAvatar.background = circleBg(u?.avatarColor ?: "#2AABEE")
         chatStatus.text = if (u?.online == true) "online" else "offline"
@@ -872,7 +876,9 @@ db.messageDao().updateReactions(msgId, json)
             val chatSettings = db.messageDao().getChatSettings(ck2)
             isMuted = chatSettings?.isMuted ?: false
             runOnUiThread {
-                findViewById<ImageView>(R.id.chatMuteIcon)?.visibility = if (isMuted) View.VISIBLE else View.GONE
+                val mi = findViewById<ImageView>(R.id.chatMuteIcon)
+                mi?.visibility = if (isMuted) View.VISIBLE else View.GONE
+                mi?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_speaker)
             }
         }
         // Восстанавливаем блокировку из Room
@@ -2923,7 +2929,9 @@ db.messageDao().updateReactions(msgId, json)
         users.find { it.username == selId }?.isMuted = isMuted
         chatAdapter.notifyDataSetChanged()
         // Обновляем иконку в диалоге сразу
-        findViewById<ImageView>(R.id.chatMuteIcon)?.visibility = if (isMuted) View.VISIBLE else View.GONE
+        val mi2 = findViewById<ImageView>(R.id.chatMuteIcon)
+        mi2?.visibility = if (isMuted) View.VISIBLE else View.GONE
+        mi2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_speaker)
         // Обновляем текст в меню
         val muteMenuText = findViewById<TextView>(R.id.menuMuteText)
         muteMenuText?.text = if (isMuted) "Включить звук" else "Без звука"
