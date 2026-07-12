@@ -855,9 +855,13 @@ db.messageDao().updateReactions(msgId, json)
         msgInput.requestFocus()
         // Скрываем поле ввода и звонок для системного чата, ботов, лент, групп
         val isSpecial = selId == "MyChat" || u?.isBot == true || u?.isFeed == true || u?.isGroup == true
+        val isFavorites = selId == "favorites"
         if (isSpecial) {
             msgInput.visibility = View.GONE
             findViewById<View>(R.id.btnCall)?.visibility = View.GONE
+        } else if (isFavorites) {
+            msgInput.visibility = View.VISIBLE  // Можно писать заметки
+            findViewById<View>(R.id.btnCall)?.visibility = View.GONE  // Но без звонков
         } else {
             msgInput.visibility = View.VISIBLE
             findViewById<View>(R.id.btnCall)?.visibility = View.VISIBLE
@@ -1313,6 +1317,16 @@ db.messageDao().updateReactions(msgId, json)
                         }
                     }
                     
+                    // Добавляем Избранное в начало списка
+                    val favUser = User(
+                        username = "favorites",
+                        name = "Избранное",
+                        avatarColor = "#FFB800",
+                        isBot = false,
+                        isFeed = false,
+                        isGroup = false
+                    )
+                    users.add(favUser)
                     users.addAll(userList)
                     handler.post {
                         // Удаляем дубликаты перед показом
