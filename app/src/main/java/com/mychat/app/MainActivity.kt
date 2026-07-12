@@ -1330,6 +1330,7 @@ db.messageDao().updateReactions(msgId, json)
                         isFeed = false,
                         isGroup = false
                     )
+                    prefs.edit().putString("display_name_favorites", "Избранное").apply()
                     users.add(favUser)
                     users.addAll(userList)
                     handler.post {
