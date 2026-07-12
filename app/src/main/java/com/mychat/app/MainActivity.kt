@@ -853,17 +853,9 @@ db.messageDao().updateReactions(msgId, json)
         lastMessageCount = 0
         refreshMessages()
         msgInput.requestFocus()
-        // Скрываем поле ввода и звонок для системного чата
-        if (selId == "MyChat") {
-            msgInput.visibility = View.GONE
-            findViewById<View>(R.id.btnCall)?.visibility = View.GONE
-            findViewById<View>(R.id.btnCall)?.visibility = View.GONE
-        } else {
-            msgInput.visibility = View.VISIBLE
-            findViewById<View>(R.id.btnCall)?.visibility = View.VISIBLE
-            findViewById<View>(R.id.btnCall)?.visibility = View.VISIBLE
-        }
-        if (selId == "MyChat") {
+        // Скрываем поле ввода и звонок для системного чата, ботов, лент, групп
+        val isSpecial = selId == "MyChat" || u?.isBot == true || u?.isFeed == true || u?.isGroup == true
+        if (isSpecial) {
             msgInput.visibility = View.GONE
             findViewById<View>(R.id.btnCall)?.visibility = View.GONE
         } else {
