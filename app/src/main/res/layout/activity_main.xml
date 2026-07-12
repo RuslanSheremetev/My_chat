@@ -448,7 +448,6 @@
                         android:src="@drawable/ic_muted"
                         android:tint="#777777"
                         android:layout_marginStart="6dp"
-                        android:layout_marginEnd="48dp"
                         android:visibility="gone"/>
                 </LinearLayout>
 
@@ -463,8 +462,9 @@
 
             <ImageButton
                 android:id="@+id/btnCall"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
                 android:src="@drawable/ic_phone"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:tint="#8e8e93"/>

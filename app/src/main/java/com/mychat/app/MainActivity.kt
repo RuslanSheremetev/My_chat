@@ -2919,9 +2919,14 @@ db.messageDao().updateReactions(msgId, json)
     private fun toggleMute() {
         isMuted = !isMuted
         log("Mute: $isMuted for $selId")
-        // Обновляем иконку в списке
+        // Обновляем иконку в списке чатов
         users.find { it.username == selId }?.isMuted = isMuted
         chatAdapter.notifyDataSetChanged()
+        // Обновляем иконку в диалоге сразу
+        findViewById<ImageView>(R.id.chatMuteIcon)?.visibility = if (isMuted) View.VISIBLE else View.GONE
+        // Обновляем текст в меню
+        val muteMenuText = findViewById<TextView>(R.id.menuMuteText)
+        muteMenuText?.text = if (isMuted) "Включить звук" else "Без звука"
         // Сохраняем в Room
         thread {
             val ck = chatKey(me, selId)
@@ -2937,9 +2942,6 @@ db.messageDao().updateReactions(msgId, json)
                 client.newCall(Request.Builder().url("$server/chat_settings?token=$token").post(body).build()).execute()
             } catch (e: Exception) {}
         }
-        // Обновляем текст в меню (если оно сейчас открыто)
-        val muteMenuText = findViewById<TextView>(R.id.menuMuteText)
-        muteMenuText?.text = if (isMuted) "Включить звук" else "Без звука"
         if (isMuted) {
             t("🔇 Уведомления отключены")
         } else {
