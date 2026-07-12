@@ -33,7 +33,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
-import com.mychat.app.activities.FavoritesActivity
 import com.mychat.app.activities.ProfileActivity
 import com.mychat.app.adapters.ChatAdapter
 import android.view.animation.TranslateAnimation
