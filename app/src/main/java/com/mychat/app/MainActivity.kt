@@ -829,16 +829,22 @@ db.messageDao().updateReactions(msgId, json)
         // Берём isMuted из users (загружено в loadUsers) или из Room
         val userMuted = u?.isMuted ?: isMuted
         val muteIcon = findViewById<ImageView>(R.id.chatMuteIcon)
-        muteIcon?.visibility = if (userMuted) View.VISIBLE else View.GONE
+        muteIcon?.visibility = View.VISIBLE
         muteIcon?.setImageResource(if (userMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
         if (id == "favorites") {
-            chatAvatar.text = "⭐"
+            chatAvatar.text = "☆"
         } else {
             chatAvatar.text = name.take(1).uppercase()
         }
         chatAvatar.background = circleBg(u?.avatarColor ?: "#2AABEE")
-        chatStatus.text = if (u?.online == true) "online" else "offline"
-        chatStatus.setTextColor(if (u?.online == true) 0xff34c759.toInt() else 0xff8e8e93.toInt())
+        // Скрываем статус для групп, лент, избранного
+        val isSpecialChat = u?.isGroup == true || u?.isFeed == true || id == "favorites"
+        if (isSpecialChat) {
+            chatStatus.text = ""
+        } else {
+            chatStatus.text = if (u?.online == true) "online" else "offline"
+            chatStatus.setTextColor(if (u?.online == true) 0xff34c759.toInt() else 0xff8e8e93.toInt())
+        }
         mainContainer.visibility = View.GONE
         bottomNav.visibility = View.GONE
         chatLayout.visibility = View.VISIBLE
@@ -872,7 +878,7 @@ db.messageDao().updateReactions(msgId, json)
             isMuted = chatSettings?.isMuted ?: false
             runOnUiThread {
                 val mi = findViewById<ImageView>(R.id.chatMuteIcon)
-                mi?.visibility = if (isMuted) View.VISIBLE else View.GONE
+                mi?.visibility = View.VISIBLE
                 mi?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
             }
         }
@@ -1723,6 +1729,7 @@ private fun sendMessageTo(to: String, text: String) {
 
     private fun sendMessage() {
         val t = msgInput.text.toString().trim()
+        log("DEBUG: t='${t.take(20)}' selId='$selId' ws=${ws != null}")
         if (t.isEmpty() || selId.isEmpty()) return
         log("WS send: file"); ws?.send(
             JSONObject().apply {
