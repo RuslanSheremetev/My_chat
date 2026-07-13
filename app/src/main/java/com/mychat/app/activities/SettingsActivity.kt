@@ -16,6 +16,7 @@ class SettingsActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("mychat_prefs", MODE_PRIVATE)
         val displayName = prefs.getString("display_name_$username", username) ?: username
         
+        findViewById<ImageView>(R.id.settingsBackBtn)?.setOnClickListener { finish() }
         findViewById<TextView>(R.id.settingsName).text = displayName
         findViewById<TextView>(R.id.settingsAvatar).text = displayName.take(1).uppercase()
         findViewById<TextView>(R.id.settingsUsername).text = "@$username"
