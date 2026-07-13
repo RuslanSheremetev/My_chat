@@ -148,7 +148,7 @@
     <LinearLayout
         android:id="@+id/profileBottomNav"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:background="#1c1c1e"
         android:paddingTop="@dimen/spacing_md" android:paddingStart="@dimen/spacing_xl" android:paddingEnd="@dimen/spacing_xl" android:paddingBottom="@dimen/spacing_xl"
@@ -158,13 +158,13 @@
             <ImageView android:layout_width="@dimen/icon_md" android:layout_height="@dimen/icon_md" android:tint="#777777" android:src="@drawable/ic_home_simple"/>
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textColor="#777777" android:text="Чаты"/>
         </LinearLayout>
-        <LinearLayout android:id="@+id/navSettings2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <ImageView android:layout_width="@dimen/icon_md" android:layout_height="@dimen/icon_md" android:tint="#777777" android:src="@drawable/ic_settings_simple"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textColor="#777777" android:text="Настройки"/>
-        </LinearLayout>
         <LinearLayout android:id="@+id/navProfile2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
             <ImageView android:layout_width="@dimen/icon_md" android:layout_height="@dimen/icon_md" android:src="@drawable/ic_profile" android:tint="#ff5e8e"/>
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textColor="#ff5e8e" android:text="Профиль"/>
+        </LinearLayout>
+        <LinearLayout android:id="@+id/navSettings2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+            <ImageView android:layout_width="@dimen/icon_md" android:layout_height="@dimen/icon_md" android:tint="#777777" android:src="@drawable/ic_settings_simple"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textColor="#777777" android:text="Настройки"/>
         </LinearLayout>
     </LinearLayout>
 
