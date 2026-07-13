@@ -343,26 +343,6 @@
             </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/navSettings"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_settings_simple"
-                android:tint="#8e8e93"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Настройки"
-                android:textSize="10sp"
-                android:textColor="#8e8e93"/>
-            </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/navProfile"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -378,6 +358,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Профиль"
+                android:textSize="10sp"
+                android:textColor="#8e8e93"/>
+            </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navSettings"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_settings_simple"
+                android:tint="#8e8e93"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Настройки"
                 android:textSize="10sp"
                 android:textColor="#8e8e93"/>
             </LinearLayout>
