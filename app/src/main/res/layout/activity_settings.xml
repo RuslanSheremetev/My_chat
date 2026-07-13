@@ -11,11 +11,11 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:paddingTop="40dp" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="20dp"
+        android:paddingTop="40dp" android:paddingStart="@dimen/spacing_xl" android:paddingEnd="@dimen/spacing_xl" android:paddingBottom="@dimen/spacing_xl"
         android:background="@drawable/bg_settings_header">
         <TextView
             android:id="@+id/settingsAvatar"
-            android:layout_width="90dp" android:layout_height="90dp"
+            android:layout_width="@dimen/avatar_size" android:layout_height="@dimen/avatar_size"
             android:gravity="center"
             android:text="R" android:textColor="#fff"
             android:textSize="38sp" android:textStyle="bold"
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:text="Руслан" android:textColor="#fff"
             android:textSize="22sp" android:textStyle="bold"
-            android:layout_marginTop="12dp"/>
+            android:layout_marginTop="@dimen/spacing_md"/>
         <TextView
             android:id="@+id/settingsUsername"
             android:layout_width="wrap_content"
@@ -39,7 +39,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:padding="@dimen/spacing_lg">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,8 +52,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/bg_settings_card"
-                android:paddingTop="4dp" android:paddingBottom="4dp" android:paddingStart="16dp" android:paddingEnd="16dp"
-                android:layout_marginBottom="16dp">
+                android:paddingTop="4dp" android:paddingBottom="4dp" android:paddingStart="@dimen/spacing_lg" android:paddingEnd="@dimen/spacing_lg"
+                android:layout_marginBottom="@dimen/spacing_lg">
 
                 <LinearLayout android:id="@+id/settingsAccount" style="@style/SettingsRow">
                     <LinearLayout style="@style/SettingsIconBg" android:background="@drawable/bg_icon_blue">
@@ -116,7 +116,7 @@
                 android:background="@drawable/bg_settings_card"
                 android:padding="14dp"
                 android:textSize="15sp"
-                android:layout_marginTop="12dp"/>
+                android:layout_marginTop="@dimen/spacing_md"/>
 
         </LinearLayout>
     </ScrollView>

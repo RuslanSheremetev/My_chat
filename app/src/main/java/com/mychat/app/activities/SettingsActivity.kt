@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import android.app.AlertDialog
-import kotlin.concurrent.thread
 import androidx.appcompat.app.AppCompatActivity
 import com.mychat.app.R
 
@@ -39,17 +38,9 @@ class SettingsActivity : AppCompatActivity() {
         findViewById<Button>(R.id.settingsLogout).setOnClickListener {
             AlertDialog.Builder(this)
                 .setTitle("Выйти из аккаунта")
-                .setMessage("Вы уверены? Все локальные данные будут удалены.")
+                .setMessage("Вы уверены?")
                 .setPositiveButton("Выйти") { _, _ ->
                     prefs.edit().clear().apply()
-                    // Очищаем Room
-                    thread {
-                        try {
-                            val db = androidx.room.Room.databaseBuilder(applicationContext, com.mychat.app.data.AppDatabase::class.java, "mychat_db").build()
-                            db.clearAllTables()
-                            db.close()
-                        } catch (e: Exception) {}
-                    }
                     finishAffinity()
                 }
                 .setNegativeButton("Отмена", null)

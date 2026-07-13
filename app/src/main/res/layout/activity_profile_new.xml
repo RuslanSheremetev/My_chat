@@ -10,16 +10,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:padding="@dimen/spacing_lg"
         android:gravity="center_vertical">
         <ImageView
             android:id="@+id/profileBackBtn"
-            android:layout_width="24dp" android:layout_height="24dp"
+            android:layout_width="@dimen/icon_md" android:layout_height="@dimen/icon_md"
             android:src="@drawable/ic_arrow_back"
             android:tint="#b0b0b0"/>
         <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
         <ImageView
-            android:layout_width="24dp" android:layout_height="24dp"
+            android:layout_width="@dimen/icon_md" android:layout_height="@dimen/icon_md"
             android:src="@drawable/ic_more_vert"
             android:tint="#b0b0b0"/>
     </LinearLayout>
@@ -36,22 +36,22 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center_horizontal"
-            android:padding="20dp">
+            android:padding="@dimen/spacing_xl">
 
             <!-- Аватарка с камерой -->
             <RelativeLayout
-                android:layout_width="90dp" android:layout_height="90dp"
+                android:layout_width="@dimen/avatar_size" android:layout_height="@dimen/avatar_size"
                 android:layout_marginBottom="10dp">
                 <TextView
                     android:id="@+id/profileAvatar"
-                    android:layout_width="90dp" android:layout_height="90dp"
+                    android:layout_width="@dimen/avatar_size" android:layout_height="@dimen/avatar_size"
                     android:background="@drawable/bg_avatar_circle"
                     android:gravity="center"
                     android:text="Р"
                     android:textColor="#fff" android:textSize="34sp"
                     android:textStyle="bold"/>
                 <LinearLayout
-                    android:layout_width="28dp" android:layout_height="28dp"
+                    android:layout_width="@dimen/avatar_badge" android:layout_height="@dimen/avatar_badge"
                     android:layout_alignBottom="@id/profileAvatar"
                     android:layout_alignEnd="@id/profileAvatar"
                     android:background="@drawable/bg_avatar_circle_small"
@@ -101,20 +101,20 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/spacing_lg"
                 android:background="@drawable/bg_action_pill"
                 android:orientation="horizontal"
                 android:padding="4dp">
                 <LinearLayout android:id="@+id/actionCreate" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:paddingTop="8dp" android:paddingBottom="8dp" android:background="@android:color/transparent">
-                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:tint="#b0b0b0" android:src="@drawable/ic_gallery"/>
+                    <ImageView android:layout_width="@dimen/spacing_xl" android:layout_height="@dimen/spacing_xl" android:tint="#b0b0b0" android:src="@drawable/ic_gallery"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textColor="#b0b0b0" android:text="Создать"/>
                 </LinearLayout>
                 <LinearLayout android:id="@+id/actionGallery" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:paddingTop="8dp" android:paddingBottom="8dp" android:background="@android:color/transparent">
-                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:tint="#b0b0b0" android:src="@drawable/ic_calendar"/>
+                    <ImageView android:layout_width="@dimen/spacing_xl" android:layout_height="@dimen/spacing_xl" android:tint="#b0b0b0" android:src="@drawable/ic_calendar"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textColor="#b0b0b0" android:text="Галерея"/>
                 </LinearLayout>
                 <LinearLayout android:id="@+id/actionDrafts" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:paddingTop="8dp" android:paddingBottom="8dp" android:background="@android:color/transparent">
-                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:tint="#b0b0b0" android:src="@drawable/ic_drafts"/>
+                    <ImageView android:layout_width="@dimen/spacing_xl" android:layout_height="@dimen/spacing_xl" android:tint="#b0b0b0" android:src="@drawable/ic_drafts"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textColor="#b0b0b0" android:text="Черновики"/>
                 </LinearLayout>
             </LinearLayout>
@@ -124,11 +124,11 @@
                 android:id="@+id/fabAddMedia"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/spacing_xl"
                 android:background="@drawable/bg_fab_pill"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:paddingTop="12dp" android:paddingBottom="12dp" android:paddingStart="24dp" android:paddingEnd="24dp"
+                android:paddingTop="@dimen/spacing_md" android:paddingBottom="@dimen/spacing_md" android:paddingStart="@dimen/icon_md" android:paddingEnd="@dimen/icon_md"
                 android:clickable="true" android:focusable="true">
                 <ImageView
                     android:layout_width="22dp" android:layout_height="22dp"
@@ -151,19 +151,19 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="#1c1c1e"
-        android:paddingTop="12dp" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="20dp"
+        android:paddingTop="@dimen/spacing_md" android:paddingStart="@dimen/spacing_xl" android:paddingEnd="@dimen/spacing_xl" android:paddingBottom="@dimen/spacing_xl"
         android:gravity="center"
         android:orientation="horizontal">
         <LinearLayout android:id="@+id/navChats2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:tint="#777777" android:src="@drawable/ic_home_simple"/>
+            <ImageView android:layout_width="@dimen/icon_md" android:layout_height="@dimen/icon_md" android:tint="#777777" android:src="@drawable/ic_home_simple"/>
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textColor="#777777" android:text="Чаты"/>
         </LinearLayout>
         <LinearLayout android:id="@+id/navSettings2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:tint="#777777" android:src="@drawable/ic_settings_simple"/>
+            <ImageView android:layout_width="@dimen/icon_md" android:layout_height="@dimen/icon_md" android:tint="#777777" android:src="@drawable/ic_settings_simple"/>
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textColor="#777777" android:text="Настройки"/>
         </LinearLayout>
         <LinearLayout android:id="@+id/navProfile2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_profile" android:tint="#ff5e8e"/>
+            <ImageView android:layout_width="@dimen/icon_md" android:layout_height="@dimen/icon_md" android:src="@drawable/ic_profile" android:tint="#ff5e8e"/>
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textColor="#ff5e8e" android:text="Профиль"/>
         </LinearLayout>
     </LinearLayout>
