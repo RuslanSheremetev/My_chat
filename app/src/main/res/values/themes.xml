@@ -5,7 +5,7 @@
         <item name="colorPrimaryVariant">#e0557e</item>
         <item name="colorOnPrimary">#ffffff</item>
         <item name="android:windowBackground">#121212</item>
-        <item name="android:statusBarColor">#121212</item>
+        <item name="android:statusBarColor">#1c1c1e</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>
