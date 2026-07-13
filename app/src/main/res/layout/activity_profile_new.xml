@@ -147,13 +147,12 @@
     <!-- Нижнее меню -->
     <LinearLayout
         android:id="@+id/profileBottomNav"
-        android:paddingTop="4dp"
-        android:paddingBottom="8dp"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:background="#1c1c1e"
-        android:paddingTop="@dimen/spacing_md" android:paddingStart="@dimen/spacing_xl" android:paddingEnd="@dimen/spacing_xl" android:paddingBottom="@dimen/spacing_xl"
+        android:paddingTop="4dp"
+        android:paddingBottom="8dp"
         android:gravity="center"
         android:orientation="horizontal">
         <LinearLayout android:id="@+id/navChats2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
