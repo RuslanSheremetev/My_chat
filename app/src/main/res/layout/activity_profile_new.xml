@@ -147,6 +147,8 @@
     <!-- Нижнее меню -->
     <LinearLayout
         android:id="@+id/profileBottomNav"
+        android:paddingTop="4dp"
+        android:paddingBottom="8dp"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
