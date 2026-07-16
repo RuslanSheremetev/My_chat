@@ -5,6 +5,7 @@ import com.mychat.app.models.*
 import org.json.JSONArray
 import org.json.JSONObject
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
 import java.io.IOException
 
 class ChatRepository(
@@ -80,7 +81,7 @@ class ChatRepository(
                     put("chat_key", chatKey)
                     put("is_muted", isMuted)
                 }
-                val body = RequestBody.create(okhttp3.MediaType.parse("application/json"), json.toString())
+                val body = RequestBody.create("application/json".toMediaType(), json.toString())
                 val request = Request.Builder().url("$server/chat_settings?token=$token").post(body).build()
                 client.newCall(request).execute()
             } catch (e: Exception) {}
