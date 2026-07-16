@@ -488,9 +488,27 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
 
     override fun onResume() {
         super.onResume()
-        // Обновляем mute иконки в списке чатов
+        // Обновляем mute иконки с сервера
         if (::chatAdapter.isInitialized) {
-            chatAdapter.notifyDataSetChanged()
+            thread {
+                try {
+                    val resp = client.newCall(
+                        Request.Builder().url("$server/api/chat_settings/all?me=$me&token=$token").build()
+                    ).execute()
+                    if (resp.isSuccessful) {
+                        val serverSettings = org.json.JSONObject(resp.body!!.string())
+                        for (u in users) {
+                            val ck = chatKey(me, u.username)
+                            if (serverSettings.has(ck)) {
+                                val s = serverSettings.getJSONObject(ck)
+                                u.isMuted = s.optBoolean("is_muted", false)
+                                u.unread = s.optInt("unread", 0)
+                            }
+                        }
+                        runOnUiThread { chatAdapter.notifyDataSetChanged() }
+                    }
+                } catch (e: Exception) { log("onResume sync: ${e.message}") }
+            }
         }
         // Принудительно восстанавливаем экран чатов
         chatsScreen.visibility = View.VISIBLE
