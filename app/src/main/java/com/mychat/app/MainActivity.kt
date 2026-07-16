@@ -1280,32 +1280,7 @@ db.messageDao().updateReactions(msgId, json)
                             u.unread = s.unread
                         }
                     }
-                    // Синхронизация chat_settings с сервером
-                    thread {
-                        try {
-                            val resp = client.newCall(
-                                Request.Builder().url("$server/api/chat_settings/all?me=$me&token=$token").build()
-                            ).execute()
-                            if (resp.isSuccessful) {
-                                val serverSettings = org.json.JSONObject(resp.body!!.string())
-                                for (u in userList) {
-                                    val ck = chatKey(me, u.username)
-                                    if (serverSettings.has(ck)) {
-                                        val s = serverSettings.getJSONObject(ck)
-                                        val muted = s.optBoolean("is_muted", false)
-                                        val unread = s.optInt("unread", 0)
-                                        // Сохраняем в Room
-                                        val local = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
-                                        db.messageDao().saveChatSettings(local.copy(isMuted = muted, unread = unread))
-                                        // Обновляем в памяти
-                                        u.isMuted = muted
-                                        u.unread = unread
-                                    }
-                                }
-                                runOnUiThread { chatAdapter.notifyDataSetChanged() }
-                            }
-                        } catch (e: Exception) { log("Sync chat_settings: ${e.message}") }
-                    }
+
                     for (user in userList) {
                         try {
                             val msgR = client.newCall(
@@ -1382,6 +1357,25 @@ db.messageDao().updateReactions(msgId, json)
                             }
                         }
                     } catch (e: Exception) {}
+                    // Синхронизация chat_settings с сервером перед показом
+                    try {
+                        val resp = client.newCall(
+                            Request.Builder().url("$server/api/chat_settings/all?me=$me&token=$token").build()
+                        ).execute()
+                        if (resp.isSuccessful) {
+                            val serverSettings = org.json.JSONObject(resp.body!!.string())
+                            for (u in userList) {
+                                val ck = chatKey(me, u.username)
+                                if (serverSettings.has(ck)) {
+                                    val s = serverSettings.getJSONObject(ck)
+                                    u.isMuted = s.optBoolean("is_muted", false)
+                                    u.unread = s.optInt("unread", 0)
+                                    val local = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
+                                    db.messageDao().saveChatSettings(local.copy(isMuted = u.isMuted, unread = u.unread))
+                                }
+                            }
+                        }
+                    } catch (e: Exception) { log("Sync: ${e.message}") }
                     users.addAll(userList)
                     handler.post {
                         // Удаляем дубликаты перед показом
