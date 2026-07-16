@@ -909,7 +909,8 @@ db.messageDao().updateReactions(msgId, json)
         // Скрываем клавиатуру
         val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
         currentFocus?.let { imm.hideSoftInputFromWindow(it.windowToken, 0) }
-        chatAdapter.notifyDataSetChanged()
+        // Обновляем список чатов с задержкой (ждём пока станет видимым)
+        chatList.post { chatAdapter.notifyDataSetChanged() }
     }
     
     private var selectedMessage: ChatMessage? = null
