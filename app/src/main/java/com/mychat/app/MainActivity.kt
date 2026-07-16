@@ -2960,9 +2960,12 @@ db.messageDao().updateReactions(msgId, json)
         thread {
             try {
                 val ck = chatKey(me, selId)
-                val s = db.messageDao().getChatSettings(ck) ?: ChatSettings(chatKey = ck)
-                s.isMuted = savedState
-                db.messageDao().saveChatSettings(s)
+                val existing = db.messageDao().getChatSettings(ck)
+                if (existing != null) {
+                    db.messageDao().saveChatSettings(existing.copy(isMuted = savedState))
+                } else {
+                    db.messageDao().saveChatSettings(ChatSettings(chatKey = ck, isMuted = savedState))
+                }
             } catch (e: Exception) {
                 log("Mute save error: ${e.message}")
                 // Откат UI при ошибке
