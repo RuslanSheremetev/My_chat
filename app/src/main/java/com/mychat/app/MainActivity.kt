@@ -2942,34 +2942,44 @@ db.messageDao().updateReactions(msgId, json)
         isMuted = !isMuted
         log("Mute: $isMuted for $selId")
         
-        // Сохраняем в Room
+        // === МГНОВЕННОЕ ОБНОВЛЕНИЕ UI ===
+        users.find { it.username == selId }?.isMuted = isMuted
+        chatAdapter.notifyDataSetChanged()
+        
+        val mi2 = findViewById<ImageView>(R.id.chatMuteIcon)
+        mi2?.visibility = if (isMuted) View.VISIBLE else View.GONE
+        mi2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
+        
+        val muteMenuText = findViewById<TextView>(R.id.menuMuteText)
+        muteMenuText?.text = if (isMuted) "Включить звук" else "Без звука"
+        val muteIconMenu2 = (findViewById<LinearLayout>(R.id.menuMute)?.getChildAt(0) as? ImageView)
+        muteIconMenu2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
+        
+        // === ФОНОВОЕ СОХРАНЕНИЕ ===
+        val savedState = isMuted
         thread {
             try {
                 val ck = chatKey(me, selId)
                 val s = db.messageDao().getChatSettings(ck) ?: ChatSettings(chatKey = ck)
-                s.isMuted = isMuted
+                s.isMuted = savedState
                 db.messageDao().saveChatSettings(s)
-                
-                runOnUiThread {
-                    // Обновляем иконку в списке чатов
-                    users.find { it.username == selId }?.isMuted = isMuted
-                    chatAdapter.notifyDataSetChanged()
-                    
-                    // Иконка в диалоге
-                    val mi2 = findViewById<ImageView>(R.id.chatMuteIcon)
-                    mi2?.visibility = if (isMuted) View.VISIBLE else View.GONE
-                    mi2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
-                    
-                    // Текст и иконка в меню
-                    val muteMenuText = findViewById<TextView>(R.id.menuMuteText)
-                    muteMenuText?.text = if (isMuted) "Включить звук" else "Без звука"
-                    val muteIconMenu2 = (findViewById<LinearLayout>(R.id.menuMute)?.getChildAt(0) as? ImageView)
-                    muteIconMenu2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
+                // Отправляем на сервер
+                try {
+                    val resp = http("${apiUrl}/mute_chat", mapOf("chat_id" to selId, "muted" to savedState.toString()))
+                    log("Mute saved: $resp")
+                } catch (e: Exception) {
+                    log("Mute server error: ${e.message}")
                 }
             } catch (e: Exception) {
-                log("Mute error: ${e.message}")
-                // Откат при ошибке
-                isMuted = !isMuted
+                log("Mute save error: ${e.message}")
+                // Откат UI при ошибке
+                runOnUiThread {
+                    isMuted = !savedState
+                    users.find { it.username == selId }?.isMuted = isMuted
+                    chatAdapter.notifyDataSetChanged()
+                    mi2?.visibility = if (isMuted) View.VISIBLE else View.GONE
+                    mi2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
+                }
             }
         }
     }
