@@ -2968,7 +2968,14 @@ db.messageDao().updateReactions(msgId, json)
         log("Mute: $isMuted for $selId")
         
         // === МГНОВЕННОЕ ОБНОВЛЕНИЕ UI ===
-        val foundUser = users.find { it.username == selId }; android.widget.Toast.makeText(this, "Mute: found=" + (foundUser != null) + " selId=" + selId, android.widget.Toast.LENGTH_LONG).show(); foundUser?.isMuted = isMuted
+        users.find { it.username == selId }?.isMuted = isMuted
+        for (i in 0 until chatAdapter.itemCount) {
+            if (chatAdapter.getItem(i).username == selId) {
+                chatAdapter.getItem(i).isMuted = isMuted
+                chatAdapter.notifyItemChanged(i)
+                break
+            }
+        }
         chatAdapter.notifyDataSetChanged()
         
         val mi2 = findViewById<ImageView>(R.id.chatMuteIcon)
