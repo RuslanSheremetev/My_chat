@@ -2942,73 +2942,39 @@ db.messageDao().updateReactions(msgId, json)
         isMuted = !isMuted
         log("Mute: $isMuted for $selId")
         
-        // === ОПТИМИСТИЧНОЕ ОБНОВЛЕНИЕ UI (мгновенно) ===
-        // 1. Иконка в списке чатов
-        users.find { it.username == selId }?.isMuted = isMuted
-        for (i in 0 until chatAdapter.itemCount) {
-            if (chatAdapter.getItem(i).username == selId) {
-                chatAdapter.notifyItemChanged(i)
-                break
-            }
-        }
-        chatAdapter.notifyDataSetChanged()
-        
-        // 2. Иконка в диалоге
-        val mi2 = findViewById<ImageView>(R.id.chatMuteIcon)
-        mi2?.visibility = if (isMuted) View.VISIBLE else View.GONE
-        mi2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
-        
-        // 3. Текст и иконка в меню
-        val muteMenuText = findViewById<TextView>(R.id.menuMuteText)
-        muteMenuText?.text = if (isMuted) "Включить звук" else "Без звука"
-        val muteIconMenu2 = (findViewById<LinearLayout>(R.id.menuMute)?.getChildAt(0) as? ImageView)
-        muteIconMenu2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
-        
-        // === ФОНОВОЕ СОХРАНЕНИЕ (не блокирует UI) ===
+        // Сохраняем в Room
         thread {
-            var saved = false
             try {
                 val ck = chatKey(me, selId)
-                val settings = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
-                db.messageDao().saveChatSettings(settings.copy(isMuted = isMuted))
-                // Синхронизация с MongoDB
-                try {
-                    val json = JSONObject().apply {
-                        put("chat_key", chatKey(me, selId))
-                        put("is_muted", isMuted)
-                    }
-                    val body = json.toString().toRequestBody("application/json".toMediaType())
-                    val resp = client.newCall(Request.Builder().url("$server/chat_settings?token=$token").post(body).build()).execute()
-                    saved = resp.isSuccessful
-                } catch (e: Exception) {
-                    // MongoDB не ответил — но Room сохранил, считаем успехом
-                    saved = true
+                val s = db.messageDao().getChatSettings(ck) ?: ChatSettings(chatKey = ck)
+                s.isMuted = isMuted
+                db.messageDao().saveChatSettings(s)
+                
+                runOnUiThread {
+                    // Обновляем иконку в списке чатов
+                    users.find { it.username == selId }?.isMuted = isMuted
+                    chatAdapter.notifyDataSetChanged()
+                    
+                    // Иконка в диалоге
+                    val mi2 = findViewById<ImageView>(R.id.chatMuteIcon)
+                    mi2?.visibility = if (isMuted) View.VISIBLE else View.GONE
+                    mi2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
+                    
+                    // Текст и иконка в меню
+                    val muteMenuText = findViewById<TextView>(R.id.menuMuteText)
+                    muteMenuText?.text = if (isMuted) "Включить звук" else "Без звука"
+                    val muteIconMenu2 = (findViewById<LinearLayout>(R.id.menuMute)?.getChildAt(0) as? ImageView)
+                    muteIconMenu2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
                 }
             } catch (e: Exception) {
-                log("Mute: save failed - ${e.message}")
+                log("Mute error: ${e.message}")
+                // Откат при ошибке
+                isMuted = !isMuted
             }
-            // Если сохранение не удалось — откатываем UI
-            if (!saved) {
-                runOnUiThread {
-                    isMuted = !isMuted
-                    users.find { it.username == selId }?.isMuted = isMuted
-                    findViewById<ImageView>(R.id.chatMuteIcon)?.apply {
-                        visibility = if (isMuted) View.VISIBLE else View.GONE
-                        setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
-                    }
-                    chatAdapter.notifyDataSetChanged()
-                    t("Ошибка сохранения настроек")
-                }
-            }
-        }
-        if (isMuted) {
-            t("🔇 Уведомления отключены")
-        } else {
-            t("🔔 Уведомления включены")
         }
     }
-    
-    private fun chatKey(u1: String, u2: String) = listOf(u1, u2).sorted().joinToString("_")
+
+private fun chatKey(u1: String, u2: String) = listOf(u1, u2).sorted().joinToString("_")
     
     private fun t(msg: String) {
         handler.post {
