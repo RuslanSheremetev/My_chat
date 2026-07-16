@@ -53,6 +53,8 @@ import com.mychat.app.data.AppDatabase
 import com.mychat.app.data.ChatSettings
 import com.mychat.app.data.MessageEntity
 import com.mychat.app.data.ReactionEntity
+import com.mychat.app.utils.chatKey
+import com.mychat.app.utils.Constants
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -3012,7 +3014,7 @@ db.messageDao().updateReactions(msgId, json)
             }
         }
     }
-private fun chatKey(u1: String, u2: String) = listOf(u1, u2).sorted().joinToString("_")
+// chatKey теперь в utils/Extensions.kt
     
     private fun t(msg: String) {
         handler.post {
