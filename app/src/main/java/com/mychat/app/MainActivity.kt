@@ -2973,7 +2973,7 @@ db.messageDao().updateReactions(msgId, json)
                     val json = org.json.JSONObject()
                     json.put("chat_key", ck)
                     json.put("is_muted", savedState)
-                    val body = okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/json"), json.toString())
+                    val body = okhttp3.RequestBody.create("application/json".toMediaType(), json.toString())
                     val req = okhttp3.Request.Builder().url("$server/chat_settings?token=$token").post(body).build()
                     client.newCall(req).execute().close()
                 } catch (e: Exception) {
