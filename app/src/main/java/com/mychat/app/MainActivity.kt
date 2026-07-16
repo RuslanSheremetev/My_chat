@@ -1284,7 +1284,7 @@ db.messageDao().updateReactions(msgId, json)
                     thread {
                         try {
                             val resp = client.newCall(
-                                Request.Builder().url("$server/chat_settings/all?me=$me&token=$token").build()
+                                Request.Builder().url("$server/api/chat_settings/all?me=$me&token=$token").build()
                             ).execute()
                             if (resp.isSuccessful) {
                                 val serverSettings = org.json.JSONObject(resp.body!!.string())
