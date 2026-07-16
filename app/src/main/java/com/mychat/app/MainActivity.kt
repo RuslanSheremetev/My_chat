@@ -2957,9 +2957,7 @@ db.messageDao().updateReactions(msgId, json)
         val muteMenuText = findViewById<TextView>(R.id.menuMuteText)
         muteMenuText?.text = if (isMuted) "Включить звук" else "Без звука"
         val muteIconMenu2 = (findViewById<LinearLayout>(R.id.menuMute)?.getChildAt(0) as? ImageView)
-        muteIconMenu2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
-        
-        // === ФОНОВОЕ СОХРАНЕНИЕ ===
+        // === СОХРАНЕНИЕ В ROOM И НА СЕРВЕР ===
         val savedState = isMuted
         thread {
             try {
@@ -2970,21 +2968,22 @@ db.messageDao().updateReactions(msgId, json)
                 } else {
                     db.messageDao().saveChatSettings(ChatSettings(chatKey = ck, isMuted = savedState))
                 }
-            } catch (e: Exception) {
-                log("Mute save error: ${e.message}")
-                // Откат UI при ошибке
-                runOnUiThread {
-                    isMuted = !savedState
-                    users.find { it.username == selId }?.isMuted = isMuted
-                    chatAdapter.notifyDataSetChanged()
-                    val mi2 = findViewById<ImageView>(R.id.chatMuteIcon)
-                    mi2?.visibility = if (isMuted) View.VISIBLE else View.GONE
-                    mi2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
+                // Отправляем на сервер
+                try {
+                    val json = org.json.JSONObject()
+                    json.put("chat_key", ck)
+                    json.put("is_muted", savedState)
+                    val body = okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/json"), json.toString())
+                    val req = okhttp3.Request.Builder().url("$server/chat_settings?token=$token").post(body).build()
+                    client.newCall(req).execute().close()
+                } catch (e: Exception) {
+                    log("Mute server: ${e.message}")
                 }
+            } catch (e: Exception) {
+                log("Mute save: ${e.message}")
             }
         }
     }
-
 private fun chatKey(u1: String, u2: String) = listOf(u1, u2).sorted().joinToString("_")
     
     private fun t(msg: String) {
