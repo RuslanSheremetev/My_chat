@@ -488,6 +488,10 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
 
     override fun onResume() {
         super.onResume()
+        // Обновляем mute иконки в списке чатов
+        if (::chatAdapter.isInitialized) {
+            chatAdapter.notifyDataSetChanged()
+        }
         // Принудительно восстанавливаем экран чатов
         chatsScreen.visibility = View.VISIBLE
         profileScreen.visibility = View.GONE
