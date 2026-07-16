@@ -2963,13 +2963,6 @@ db.messageDao().updateReactions(msgId, json)
                 val s = db.messageDao().getChatSettings(ck) ?: ChatSettings(chatKey = ck)
                 s.isMuted = savedState
                 db.messageDao().saveChatSettings(s)
-                // Отправляем на сервер
-                try {
-                    val resp = http("${apiUrl}/mute_chat", mapOf("chat_id" to selId, "muted" to savedState.toString()))
-                    log("Mute saved: $resp")
-                } catch (e: Exception) {
-                    log("Mute server error: ${e.message}")
-                }
             } catch (e: Exception) {
                 log("Mute save error: ${e.message}")
                 // Откат UI при ошибке
@@ -2977,6 +2970,7 @@ db.messageDao().updateReactions(msgId, json)
                     isMuted = !savedState
                     users.find { it.username == selId }?.isMuted = isMuted
                     chatAdapter.notifyDataSetChanged()
+                    val mi2 = findViewById<ImageView>(R.id.chatMuteIcon)
                     mi2?.visibility = if (isMuted) View.VISIBLE else View.GONE
                     mi2?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
                 }
