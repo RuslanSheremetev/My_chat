@@ -909,7 +909,7 @@ db.messageDao().updateReactions(msgId, json)
         // Скрываем клавиатуру
         val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
         currentFocus?.let { imm.hideSoftInputFromWindow(it.windowToken, 0) }
-        loadUsers()
+        chatAdapter.notifyDataSetChanged()
     }
     
     private var selectedMessage: ChatMessage? = null
