@@ -29,7 +29,7 @@ import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodels.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.mychat.app.viewmodel.ChatViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -145,7 +145,7 @@ class MainActivity : AppCompatActivity() {
         window.statusBarColor = 0xff1c1c1e.toInt()
         
         // ViewModel
-        viewModel = ViewModelProvider(this)[ChatViewModel::class.java]
+        viewModel = viewModels<ChatViewModel>().value
         
         // Коллекторы (users будет пустым пока не получим token)
         lifecycleScope.launch {
@@ -2673,7 +2673,7 @@ db.messageDao().updateReactions(msgId, json)
     private val loadedReactions = mutableSetOf<String>()
     @Inject lateinit var userRepo: UserRepository
     @Inject lateinit var chatRepo: ChatRepository
-    private lateinit var viewModel: ChatViewModel
+    private val viewModel: ChatViewModel by viewModels()
     private lateinit var wsManager: WebSocketManager
     private var isBlocked = false
     

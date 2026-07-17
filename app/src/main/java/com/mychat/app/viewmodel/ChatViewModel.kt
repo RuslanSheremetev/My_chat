@@ -2,6 +2,9 @@ package com.mychat.app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import androidx.lifecycle.viewModelScope
 import com.mychat.app.data.AppDatabase
 import com.mychat.app.models.User
 import com.mychat.app.network.WebSocketManager
@@ -12,8 +15,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class ChatViewModel : ViewModel() {
-    private lateinit var chatRepo: ChatRepository
+@HiltViewModel
+class ChatViewModel @Inject constructor() : ViewModel() {
+    @Inject lateinit var chatRepo: ChatRepository
     private var wsManager: WebSocketManager? = null
 
     private val _users = MutableStateFlow<List<User>>(emptyList())
