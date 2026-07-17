@@ -373,7 +373,7 @@ class CallActivity : AppCompatActivity() {
     }
     
     private fun logToServer(msg: String) {
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val json = JSONObject().apply {
                     put("logs", org.json.JSONArray().apply {
