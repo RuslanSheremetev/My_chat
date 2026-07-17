@@ -2554,6 +2554,2613 @@ db.messageDao().updateReactions(msgId, json)
         val bs = BottomSheetDialog(this)
         val v = layoutInflater.inflate(R.layout.bottom_stickers, null)
         bs.setContentView(v)
+        
+        val stickersGrid = v.findViewById<RecyclerView>(R.id.stickersGrid)
+        stickersGrid.layoutManager = GridLayoutManager(this@MainActivity, 4)
+        
+        // Загружаем стикеры с API
+        thread {
+            try {
+                val response = ApiClient.get("$server/api/stickers/packs", token)
+                if (response.isSuccessful) {
+                    val json = JSONObject(response.body!!.string())
+                    val packs = json.getJSONArray("packs")
+                    val allStickers = mutableListOf<StickerItem>()
+                    
+                    for (i in 0 until packs.length()) {
+                        val pack = packs.getJSONObject(i)
+                        val stickers = pack.getJSONArray("stickers")
+                        for (j in 0 until stickers.length()) {
+                            val s = stickers.getJSONObject(j)
+                            val stickerUrl = s.getString("url")
+                            val fullUrl = if (stickerUrl.startsWith("http")) stickerUrl 
+                                          else "$server$stickerUrl"
+                            allStickers.add(StickerItem(
+                                id = s.getString("id"),
+                                emoji = s.getString("emoji"),
+                                url = fullUrl
+                            ))
+                        }
+                    }
+                    
+                    runOnUiThread {
+                        stickersGrid.adapter = StickerAdapter(allStickers) { sticker ->
+                            bs.dismiss()
+                            val json = JSONObject().apply {
+                                put("type", "sticker")
+                                put("to", selId)
+                                put("sticker_id", sticker.id)
+                                put("sticker_url", sticker.url)
+                                put("emoji", sticker.emoji)
+                            }
+                            wsManager?.send(json.toString())
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                log("Stickers load: ${e.message}")
+            }
+        }
+        
+        bs.show()
+    }
+
+package com.mychat.app
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
+import android.net.Uri
+import android.os.*
+import android.provider.OpenableColumns
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.*
+import android.content.ClipboardManager
+import android.content.ClipData
+import android.os.Vibrator
+import android.os.VibrationEffect
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import android.view.animation.AnimationUtils
+import androidx.appcompat.app.AppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.mychat.app.viewmodel.ChatViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import androidx.core.content.FileProvider
+import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
+import com.mychat.app.activities.ProfileActivity
+import com.mychat.app.activities.SettingsActivity
+import com.mychat.app.adapters.ChatAdapter
+import android.view.animation.TranslateAnimation
+import android.view.animation.Animation
+import android.widget.FrameLayout
+
+import com.mychat.app.adapters.MessageAdapter
+import com.mychat.app.adapters.StickerAdapter
+import com.mychat.app.adapters.StickerItem
+import com.mychat.app.adapters.circleBg
+import com.mychat.app.models.ChatMessage
+import com.mychat.app.models.ForwardData
+import com.mychat.app.models.FileInfo
+import com.mychat.app.models.LocationData
+import com.mychat.app.models.User
+import com.mychat.app.utils.FileCache
+import com.mychat.app.data.AppDatabase
+import com.mychat.app.data.ChatSettings
+import com.mychat.app.data.MessageEntity
+import com.mychat.app.data.ReactionEntity
+import com.mychat.app.utils.chatKey
+import com.mychat.app.utils.Constants
+import com.mychat.app.repository.UserRepository
+import com.mychat.app.network.ApiClient
+import com.mychat.app.repository.ChatRepository
+import com.mychat.app.network.WebSocketManager
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
+import android.location.Location
+import android.location.LocationManager
+import android.location.LocationListener
+
+
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity() {
+    companion object {
+        var onSignalingMessage: ((String) -> Unit)? = null
+        fun sendCallSignal(msg: String) {
+            android.util.Log.d("CALL", "sending: $msg")
+            // WebSocketManager управляет отправкой через ws-прокси
+        }
+    }
+    private lateinit var loginLayout: LinearLayout
+    private lateinit var mainContainer: LinearLayout
+    private lateinit var bottomNav: LinearLayout
+    private lateinit var chatsScreen: LinearLayout
+    private lateinit var profileScreen: ScrollView
+    private lateinit var chatLayout: LinearLayout
+    private lateinit var loginUser: EditText
+    private lateinit var loginPass: EditText
+    private lateinit var serverUrl: EditText
+    private lateinit var searchInput: EditText
+    private lateinit var chatList: RecyclerView
+    private lateinit var messagesList: RecyclerView
+    private lateinit var msgInput: EditText
+    private lateinit var chatTitle: TextView
+    private lateinit var chatAvatar: TextView
+    private lateinit var chatStatus: TextView
+    private lateinit var btnSearchClear: ImageButton
+    private lateinit var profileAvatar: TextView
+    private lateinit var profileName: TextView
+    private lateinit var profileBio: TextView
+    private lateinit var editBio: EditText
+    private lateinit var navChats: LinearLayout
+    private lateinit var navSettings: LinearLayout
+    private lateinit var navProfile: LinearLayout
+    private var server = Constants.SERVER_URL
+    private var token = ""
+    private var me = ""
+    private var selId = ""
+    @Inject lateinit var db: AppDatabase
+    private val users = mutableListOf<User>()
+    private var currentUserId: String = ""
+    private var currentUserPhone: String = ""
+    private val handler = Handler(Looper.getMainLooper())
+    private var pollRunnable: Runnable? = null
+    private var lastMessageCount = 0
+    private lateinit var chatAdapter: ChatAdapter
+    private lateinit var logText: android.widget.TextView
+    private lateinit var logScroll: android.widget.ScrollView
+    private lateinit var contextMenuBar: FrameLayout
+    private var selectedUserForDelete: User? = null
+
+    private lateinit var msgAdapter: MessageAdapter
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .build()
+    
+    private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        window.statusBarColor = 0xff1c1c1e.toInt()
+        
+        // ViewModel
+        viewModel = ViewModelProvider(this)[ChatViewModel::class.java]
+        
+        // Коллекторы (users будет пустым пока не получим token)
+        lifecycleScope.launch {
+            viewModel.users.collectLatest { userList ->
+                if (userList.isNotEmpty()) {
+                    users.clear()
+                    users.addAll(userList)
+                    chatAdapter?.update(users)
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.selectedChat.collectLatest { chatId ->
+                // sync with selId
+            }
+        }
+        // Контекстное меню для чатов
+        logText = findViewById(R.id.logText)
+        logScroll = findViewById(R.id.logScroll)
+        logScroll.visibility = android.view.View.GONE  // Скрыто на главном экране
+        log("Log started")
+        chatHeader = findViewById(R.id.chatHeader)
+        selectPanel = findViewById(R.id.selectPanel)
+        selectPanel.findViewById<LinearLayout>(R.id.btnDeleteSelected).setOnClickListener {
+            deleteSelectedMessages()
+        }
+        selectPanel.findViewById<LinearLayout>(R.id.btnForwardSelected).setOnClickListener {
+            forwardSelectedMessages()
+        }
+        contextMenuBar = findViewById(R.id.contextMenuBar)
+        contextMenuBar.visibility = View.GONE
+        contextMenuBar.findViewById<ImageView>(R.id.btn_close).setOnClickListener { hideContextMenu() }
+        contextMenuBar.findViewById<ImageView>(R.id.btn_delete).setOnClickListener {
+            selectedUserForDelete?.let { deleteChat(it) }
+            hideContextMenu()
+        }
+
+        FileCache.init(this)
+        
+        loginLayout = findViewById(R.id.loginLayout)
+        mainContainer = findViewById(R.id.mainContainer)
+        bottomNav = findViewById(R.id.bottomNav)
+        chatsScreen = findViewById(R.id.chatsScreen)
+        profileScreen = findViewById(R.id.profileScreen)
+        chatLayout = findViewById(R.id.chatLayout)
+        
+        // Свайп для выхода из чата
+        var swipeStartX = 0f
+        chatLayout.setOnTouchListener { _, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    swipeStartX = event.x
+                    false
+                }
+                android.view.MotionEvent.ACTION_CANCEL, android.view.MotionEvent.ACTION_UP -> {
+                    if (event.x - swipeStartX > 200 && swipeStartX < 80) {
+                        closeChat()
+                        true
+                    } else false
+                }
+                else -> false
+            }
+        }
+        
+        // Свайп справа-налево для выхода из чата
+        var startX = 0f
+        chatLayout.setOnTouchListener { _, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    startX = event.x
+                    false
+                }
+                android.view.MotionEvent.ACTION_CANCEL, android.view.MotionEvent.ACTION_UP -> {
+                    if (event.x - startX > 150 && startX < 100) {
+                        closeChat()
+                        true
+                    } else false
+                }
+                else -> false
+            }
+        }
+        loginUser = findViewById(R.id.loginUser)
+        loginPass = findViewById(R.id.loginPass)
+        serverUrl = findViewById(R.id.serverUrl)
+        searchInput = findViewById(R.id.searchInput)
+        
+        val btnSearchOpen = findViewById<android.widget.ImageButton>(R.id.btnSearchOpen)
+        val searchOverlayPanel = findViewById<android.widget.LinearLayout>(R.id.searchOverlayPanel)
+        val searchOverlayInput = searchOverlayPanel.findViewById<android.widget.EditText>(R.id.searchOverlayInput)
+        
+        btnSearchOpen.setOnClickListener {
+            searchOverlayPanel.visibility = android.view.View.VISIBLE
+            searchOverlayPanel.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.search_slide_down))
+            searchOverlayInput.requestFocus()
+        }
+        
+        searchOverlayPanel.findViewById<android.widget.ImageButton>(R.id.btnSearchBack).setOnClickListener {
+            val anim = android.view.animation.AnimationUtils.loadAnimation(this, R.anim.search_slide_up)
+            anim.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
+                override fun onAnimationEnd(a: android.view.animation.Animation?) { searchOverlayPanel.visibility = android.view.View.GONE }
+                override fun onAnimationStart(a: android.view.animation.Animation?) {}
+                override fun onAnimationRepeat(a: android.view.animation.Animation?) {}
+            })
+            searchOverlayPanel.startAnimation(anim)
+        }
+        
+        searchOverlayInput.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) { searchUsers(s?.toString() ?: "") }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+        chatList = findViewById(R.id.chatList)
+        messagesList = findViewById(R.id.messagesList)
+        // Свайп вправо для возврата в список чатов
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            override fun onMove(r: RecyclerView, vh: RecyclerView.ViewHolder, t: RecyclerView.ViewHolder) = false
+            override fun onSwiped(vh: RecyclerView.ViewHolder, dir: Int) { closeChat() }
+        }).attachToRecyclerView(messagesList)
+        replyPreview = findViewById(R.id.replyPreview)
+        previewAuthor = replyPreview.findViewById(R.id.previewAuthor)
+        previewText = replyPreview.findViewById(R.id.previewText)
+        replyPreview.findViewById<android.widget.ImageButton>(R.id.btnCloseReply).setOnClickListener { cancelReply() }
+        msgInput = findViewById(R.id.msgInput)
+        chatTitle = findViewById(R.id.chatTitle)
+        chatAvatar = findViewById(R.id.chatAvatar)
+        chatStatus = findViewById(R.id.chatStatus)
+        btnSearchClear = findViewById(R.id.btnSearchClear)
+        profileAvatar = findViewById(R.id.profileAvatar)
+        profileName = findViewById(R.id.profileName)
+        profileBio = findViewById(R.id.profileBio)
+        editBio = findViewById(R.id.editBio)
+        navChats = findViewById(R.id.navChats)
+        navSettings = findViewById(R.id.navSettings)
+        navProfile = findViewById(R.id.navProfile)
+        
+        serverUrl.setText(server)
+        chatAdapter = ChatAdapter(
+            onClick = { user -> openChat(user.username) },
+            onLongClick = { user -> showChatActions(user) }
+        )
+        chatList.layoutManager = LinearLayoutManager(this)
+        chatList.adapter = chatAdapter
+        
+        // Создаём адаптер позже
+        val lm = LinearLayoutManager(this).apply { stackFromEnd = true }
+        messagesList.layoutManager = lm
+        messagesList.overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS
+        // Эффект растяжения при прокрутке
+        messagesList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                // Лёгкое затемнение краёв при скролле
+                val topChild = recyclerView.getChildAt(0)
+                val bottomChild = recyclerView.getChildAt(recyclerView.childCount - 1)
+                topChild?.alpha = if (recyclerView.canScrollVertically(-1)) 0.7f else 1.0f
+                bottomChild?.alpha = if (recyclerView.canScrollVertically(1)) 0.7f else 1.0f
+            }
+        })
+        messagesList.itemAnimator = null; //
+        
+        findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
+        findViewById<Button>(R.id.btnRegister).setOnClickListener { register() }
+        var voiceRecorder: android.media.MediaRecorder? = null
+        var voiceFile: java.io.File? = null
+        
+        findViewById<ImageButton>(R.id.btnMic).setOnTouchListener { _, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions(arrayOf(android.Manifest.permission.RECORD_AUDIO), 200)
+                        t("Разрешите доступ к микрофону")
+                        true  // Не вылетаем
+                    }
+                    try {
+                        voiceFile = java.io.File.createTempFile("voice_", ".m4a", cacheDir)
+                        val glow = findViewById<View>(R.id.glowView)
+                    glow.visibility = View.VISIBLE
+                    glow.startAnimation(AnimationUtils.loadAnimation(this@MainActivity, R.anim.pulse_glow))
+                    voiceRecorder = android.media.MediaRecorder().apply {
+                            setAudioSource(android.media.MediaRecorder.AudioSource.MIC)
+                            setOutputFormat(android.media.MediaRecorder.OutputFormat.MPEG_4)
+                            setAudioEncoder(android.media.MediaRecorder.AudioEncoder.AAC)
+                            setOutputFile(voiceFile!!.absolutePath)
+                            prepare()
+                            start()
+                        }
+                        log("VOICE: recording started"); t("🎤 Запись...")
+                    } catch (e: Exception) {
+                        log("VOICE: error - mic failed"); t("Ошибка микрофона")
+                    }
+                    true
+                }
+                android.view.MotionEvent.ACTION_CANCEL, android.view.MotionEvent.ACTION_UP -> {
+                    val glow = findViewById<View>(R.id.glowView)
+                    glow.visibility = View.GONE
+                    glow.clearAnimation()
+                    voiceRecorder?.apply { stop(); release() }; val voiceDuration = ((voiceFile?.length() ?: 0) / 800).toInt().coerceAtLeast(1); log("VOICE: recording stopped, size=${voiceFile?.length() ?: 0}, dur=${voiceDuration}s")
+                    voiceRecorder = null
+                    voiceFile?.let { file ->
+                        if (file.length() > 0) sendVoiceFile(file)
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+        msgInput.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val hasText = s?.isNotEmpty() == true
+                // Переключение кнопок
+                val mic = findViewById<ImageButton>(R.id.btnMic)
+                val send = findViewById<ImageButton>(R.id.btnSend)
+                if (hasText) {
+                    if (mic.visibility == View.VISIBLE) {
+                        mic.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this@MainActivity, R.anim.icon_fade_out))
+                        mic.visibility = View.GONE
+                        send.visibility = View.VISIBLE
+                        send.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this@MainActivity, R.anim.icon_fade_in))
+                    }
+                } else {
+                    if (send.visibility == View.VISIBLE) {
+                        send.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this@MainActivity, R.anim.icon_fade_out))
+                        send.visibility = View.GONE
+                        mic.visibility = View.VISIBLE
+                        mic.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this@MainActivity, R.anim.icon_fade_in))
+                    }
+                }
+                // Typing отправляется раз в 3 секунды, не на каждый символ
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+        findViewById<ImageButton>(R.id.btnStickers).setOnClickListener { showStickers() }
+
+        findViewById<ImageButton>(R.id.btnClearInput).setOnClickListener {
+            msgInput.text.clear()
+        }
+        findViewById<ImageButton>(R.id.btnSend).setOnClickListener { v ->
+            v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_scale))
+            v.postDelayed({ v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_release)) }, 150)
+            v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.send_button_in))
+            sendMessage()
+        }
+        findViewById<ImageButton>(R.id.btnAttach).setOnClickListener { showAttachmentMenu() }
+        findViewById<ImageButton>(R.id.btnBack).setOnClickListener { closeChat() }
+        
+findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
+            v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_scale))
+            v.postDelayed({ v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_release)) }, 150)
+            val intent = android.content.Intent(this, com.mychat.app.activities.CallActivity::class.java).apply {
+                putExtra("name", chatTitle.text.toString())
+                putExtra("avatar", chatTitle.text.toString().take(1))
+                putExtra("incoming", false)
+            }
+            startActivity(intent)
+        }
+        findViewById<ImageButton>(R.id.btnChatMenu)?.setOnClickListener { anchor ->
+            val view = layoutInflater.inflate(R.layout.popup_chat_menu, null)
+            val popup = android.widget.PopupWindow(view, 
+                (220 * resources.displayMetrics.density).toInt(),
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, true)
+            popup.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+            popup.elevation = 20f
+            
+            view.findViewById<LinearLayout>(R.id.menuInfo).setOnClickListener { popup.dismiss(); showUserInfo() }
+            val muteText = view.findViewById<TextView>(R.id.menuMuteText)
+        muteText?.text = if (isMuted) "Включить звук" else "Без звука"
+        // Меняем иконку в меню
+        val muteIconMenu = (view.findViewById<LinearLayout>(R.id.menuMute)?.getChildAt(0) as? ImageView)
+        muteIconMenu?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
+        view.findViewById<LinearLayout>(R.id.menuMute).setOnClickListener {
+            popup.dismiss()
+            toggleMute()
+        }
+            view.findViewById<LinearLayout>(R.id.menuSearch).setOnClickListener { popup.dismiss(); showSearchOverlay() }
+        view.findViewById<LinearLayout>(R.id.menuWallpaper).setOnClickListener { popup.dismiss(); t("Выбор обоев") }
+        view.findViewById<LinearLayout>(R.id.menuVideoCall).setOnClickListener { popup.dismiss(); t("Видеозвонок") }
+            view.findViewById<LinearLayout>(R.id.menuClear).setOnClickListener {
+                popup.dismiss()
+                AlertDialog.Builder(this).setTitle("Очистить историю")
+                    .setMessage("Удалить все сообщения?")
+                    .setPositiveButton("Очистить") { _, _ -> clearHistory() }
+                    .setNegativeButton("Отмена", null).show()
+            }
+            view.findViewById<LinearLayout>(R.id.menuReport).setOnClickListener {
+            popup.dismiss()
+            thread {
+                try {
+                    val json = JSONObject().apply {
+                        put("reported_user", selId)
+                        put("reason", "spam")
+                        put("message_id", "")
+                        put("token", token)
+                    }
+                    val body = json.toString().toRequestBody("application/json".toMediaType())
+                    client.newCall(Request.Builder().url("$server/api/report").post(body).build()).execute()
+                    runOnUiThread { t("Жалоба отправлена") }
+                } catch (e: Exception) {
+                    runOnUiThread { t("Ошибка отправки жалобы") }
+                }
+            }
+        }
+        view.findViewById<LinearLayout>(R.id.menuBlock).setOnClickListener { popup.dismiss(); blockUser() }
+            
+            popup.showAsDropDown(anchor, -180.dpToPx(), 8.dpToPx())
+        }
+        findViewById<ImageButton>(R.id.btnCreate).setOnClickListener { anchor ->
+            anchor.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_scale))
+            anchor.postDelayed({ anchor.startAnimation(android.view.animation.AnimationUtils.loadAnimation(this, R.anim.item_click_release)) }, 150)
+            val view = layoutInflater.inflate(R.layout.popup_create_menu, null)
+            val popup = android.widget.PopupWindow(view,
+                (200 * resources.displayMetrics.density).toInt(),
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, true)
+            popup.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+            popup.elevation = 20f
+            view.findViewById<LinearLayout>(R.id.menuCreateGroup).setOnClickListener {
+                popup.dismiss()
+                startActivity(android.content.Intent(this@MainActivity, com.mychat.app.activities.CreateGroupActivity::class.java))
+            }
+            view.findViewById<LinearLayout>(R.id.menuCreateFeed).setOnClickListener {
+                popup.dismiss()
+                startActivity(android.content.Intent(this@MainActivity, com.mychat.app.activities.CreateFeedActivity::class.java))
+            }
+            view.findViewById<LinearLayout>(R.id.menuCreateBot).setOnClickListener {
+                popup.dismiss()
+                val intent = android.content.Intent(this@MainActivity, com.mychat.app.activities.CreateBotActivity::class.java)
+                startActivityForResult(intent, 103)
+            }
+            popup.showAsDropDown(anchor, 0, 8.dpToPx())
+        }
+        findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
+        
+        navChats.setOnClickListener { showTab(0) }
+        navSettings.setOnClickListener { startActivity(Intent(this@MainActivity, SettingsActivity::class.java).apply { putExtra("username", me); putExtra("token", token) }) }  // Избранное теперь чат
+        navProfile.setOnClickListener { startActivity(android.content.Intent(this@MainActivity, com.mychat.app.activities.ProfileActivity::class.java)) }
+        
+        searchInput.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val q = s.toString().trim()
+                if (q.isNotEmpty()) {
+                    searchUsers(q)
+                    btnSearchClear.visibility = View.VISIBLE
+                } else {
+                    btnSearchClear.visibility = View.GONE
+                    loadUsers()
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+        
+        btnSearchClear.setOnClickListener {
+            searchInput.text.clear()
+            hideKeyboard()
+        }
+        
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        token = prefs.getString("token", "") ?: ""
+        currentUserId = prefs.getString("username", "") ?: ""
+        me = currentUserId
+        viewModel.init(db, server, currentUserId, token)
+        chatRepo.currentUser = currentUserId
+        chatRepo.currentToken = token
+        currentUserPhone = prefs.getString("phone", "") ?: ""
+        me = prefs.getString("username", "") ?: ""
+        me = prefs.getString("username", "") ?: ""
+        server = prefs.getString("server_url", server) ?: server
+        
+        Log.d("MainActivity", "me = '$me'")
+        
+        if (token.isNotEmpty() && me.isNotEmpty()) {
+            showMain()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Обновляем список чатов (mute иконки уже в users)
+        if (::chatAdapter.isInitialized) {
+            chatAdapter.notifyDataSetChanged()
+        }
+        // Принудительно восстанавливаем экран чатов
+        chatsScreen.visibility = View.VISIBLE
+        profileScreen.visibility = View.GONE
+        chatLayout.visibility = View.GONE
+        mainContainer.visibility = View.VISIBLE
+        bottomNav.visibility = View.VISIBLE
+        highlightTab(0)
+    }
+
+
+    private fun openProfile() {
+        try {
+            val intent = Intent(this, ProfileActivity::class.java).apply {
+                putExtra("token", token)
+                putExtra("username", me)
+            }
+            startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun showTab(tab: Int) {
+        chatsScreen.visibility = if (tab == 0) View.VISIBLE else View.GONE
+        profileScreen.visibility = if (tab == 2) View.VISIBLE else View.GONE
+        if (tab == 0) {
+            chatLayout.visibility = View.GONE
+            mainContainer.visibility = View.VISIBLE
+            bottomNav.visibility = View.VISIBLE
+        }
+        if (tab == 2) loadProfile()
+        highlightTab(tab)
+    }
+    
+    private fun highlightTab(tab: Int) {
+        val activeColor = resources.getColor(R.color.primary, theme)
+        val inactiveColor = resources.getColor(R.color.nav_inactive, theme)
+        
+        // Подсветка Чатов
+        val chatIcon = navChats.getChildAt(0) as? ImageView
+        val chatLabel = navChats.getChildAt(1) as? TextView
+        chatIcon?.setColorFilter(if (tab == 0) activeColor else inactiveColor)
+        chatLabel?.setTextColor(if (tab == 0) activeColor else inactiveColor)
+        
+        // Подсветка Избранного
+        val favIcon = navSettings.getChildAt(0) as? ImageView
+        val favLabel = navSettings.getChildAt(1) as? TextView
+        favIcon?.setColorFilter(if (tab == 1) activeColor else inactiveColor)
+        favLabel?.setTextColor(if (tab == 1) activeColor else inactiveColor)
+        
+        // Подсветка Профиля
+        val profIcon = navProfile.getChildAt(0) as? ImageView
+        val profLabel = navProfile.getChildAt(1) as? TextView
+        profIcon?.setColorFilter(if (tab == 2) activeColor else inactiveColor)
+        profLabel?.setTextColor(if (tab == 2) activeColor else inactiveColor)
+    }
+
+    private fun loadProfile() {
+        profileAvatar.text = me.take(1).uppercase()
+        profileName.text = me
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val status = prefs.getString("user_status", "No bio") ?: "No bio"
+        profileBio.text = status
+        editBio.setText(status)
+    }
+
+    private fun saveProfile() {
+        val bio = editBio.text.toString().trim()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        prefs.edit().putString("user_status", bio).apply()
+        profileBio.text = bio
+        log("WS send: typing"); wsManager?.send(JSONObject().apply {
+            put("type", "profile_updated")
+            put("bio", bio)
+            put("status_text", bio)
+            put("avatar_url", "")
+        }.toString())
+        t("Profile updated!")
+        loadUsers()
+    }
+
+    private fun showCreateMenu() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.menu_create, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        
+        dialogView.findViewById<LinearLayout>(R.id.menuGroup).setOnClickListener {
+            dialog.dismiss()
+            startActivity(android.content.Intent(this@MainActivity, com.mychat.app.activities.CreateGroupActivity::class.java))
+        }
+        
+        dialogView.findViewById<LinearLayout>(R.id.menuFeed).setOnClickListener {
+            dialog.dismiss()
+            startActivity(android.content.Intent(this@MainActivity, com.mychat.app.activities.CreateFeedActivity::class.java))
+        }
+        dialog.show()
+    }
+
+    private fun showCreateGroupDialog() {
+        val v = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(40, 20, 40, 20)
+        }
+        val nameIn = EditText(this).apply {
+            hint = "Название группы"
+            setTextColor(0xffffffff.toInt())
+            setHintTextColor(0xff636366.toInt())
+            setBackgroundResource(R.drawable.bg_input)
+            setPadding(30, 20, 30, 20)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = 16 }
+        }
+        val membIn = EditText(this).apply {
+            hint = "Участники (через запятую)"
+            setTextColor(0xffffffff.toInt())
+            setHintTextColor(0xff636366.toInt())
+            setBackgroundResource(R.drawable.bg_input)
+            setPadding(30, 20, 30, 20)
+        }
+        v.addView(nameIn)
+        v.addView(membIn)
+        AlertDialog.Builder(this)
+            .setTitle("Создать группу")
+            .setView(v)
+            .setPositiveButton("Создать") { _, _ ->
+                val n = nameIn.text.toString().trim()
+                val m = membIn.text.toString().split(",").map { it.trim() }.filter { it.isNotEmpty() }.toMutableList()
+                if (n.isNotEmpty() && m.isNotEmpty()) {
+                    m.add(me)
+                    log("WS send: reaction"); wsManager?.send(JSONObject().apply {
+                        put("type", "create_group")
+                        put("name", n)
+                        put("members", JSONArray(m))
+                        put("private", false)
+                    }.toString())
+                    t("Группа создана!")
+                    // loadUsers removed - too many calls
+                }
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
+
+    private fun showCreateFeedDialog() {
+        val v = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(40, 20, 40, 20)
+        }
+        val nameIn = EditText(this).apply {
+            hint = "Название ленты"
+            setTextColor(0xffffffff.toInt())
+            setHintTextColor(0xff636366.toInt())
+            setBackgroundResource(R.drawable.bg_input)
+            setPadding(30, 20, 30, 20)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = 16 }
+        }
+        val descIn = EditText(this).apply {
+            hint = "Описание"
+            setTextColor(0xffffffff.toInt())
+            setHintTextColor(0xff636366.toInt())
+            setBackgroundResource(R.drawable.bg_input)
+            setPadding(30, 20, 30, 20)
+        }
+        v.addView(nameIn)
+        v.addView(descIn)
+        AlertDialog.Builder(this)
+            .setTitle("Создать ленту")
+            .setView(v)
+            .setPositiveButton("Создать") { _, _ ->
+                val n = nameIn.text.toString().trim()
+                if (n.isNotEmpty()) {
+                    log("WS send: sticker"); wsManager?.send(JSONObject().apply {
+                        put("type", "create_feed")
+                        put("name", n)
+                        put("description", descIn.text.toString().trim())
+                        put("private", false)
+                    }.toString())
+                    t("Лента создана!")
+                    // loadUsers removed - too many calls
+                }
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
+
+    private fun login() {
+        val u = loginUser.text.toString().trim()
+        val p = loginPass.text.toString().trim()
+        server = serverUrl.text.toString().trim()
+        if (u.isEmpty() || p.isEmpty()) return t("Fill all fields")
+        thread {
+            try {
+                val j = JSONObject().apply {
+                    put("username", u)
+                    put("password", p)
+                }
+                val b = j.toString().toRequestBody("application/json".toMediaType())
+                val r = client.newCall(Request.Builder().url("$server/login").post(b).build()).execute()
+                if (r.isSuccessful) {
+                    val d = JSONObject(r.body!!.string())
+                    token = d.optString("access_token", "")
+                    currentUserId = d.optString("username", d.optString("user_id", ""))
+                    currentUserPhone = u
+                    me = u
+                    Log.d("MainActivity", "Login - me = '$me'")
+                    PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
+                        .edit()
+                        .putString("token", token)
+                        .putString("user_id", currentUserId)
+                        .putString("phone", currentUserPhone)
+                        .putString("username", me)
+                        .putString("server_url", server)
+                        .apply()
+                    handler.post {
+                        viewModel.init(db, server, currentUserId, token)
+                        showMain()
+                    }
+                } else {
+                    handler.post { t(JSONObject(r.body!!.string()).optString("detail", "Error")) }
+                }
+            } catch (e: Exception) {
+                handler.post { t("Server unavailable") }
+            }
+        }
+    }
+
+    private fun register() {
+        val u = loginUser.text.toString().trim()
+        val p = loginPass.text.toString().trim()
+        server = serverUrl.text.toString().trim()
+        if (u.isEmpty() || p.isEmpty()) return t("Fill all fields")
+        thread {
+            try {
+                val j = JSONObject().apply {
+                    put("username", u)
+                    put("password", p)
+                }
+                val b = j.toString().toRequestBody("application/json".toMediaType())
+                val r = client.newCall(Request.Builder().url("$server/register").post(b).build()).execute()
+                if (r.isSuccessful) {
+                    handler.post {
+                        t("Account created!")
+                        login()
+                    }
+                } else {
+                    handler.post { t(JSONObject(r.body!!.string()).optString("detail", "Error")) }
+                }
+            } catch (e: Exception) {
+                handler.post { t("Server unavailable") }
+            }
+        }
+    }
+
+    private fun showMain() {
+        loginLayout.visibility = View.GONE
+        mainContainer.visibility = View.VISIBLE
+        bottomNav.visibility = View.VISIBLE
+        
+        // СОЗДАЁМ АДАПТЕР ЗДЕСЬ, КОГДА me УЖЕ ЕСТЬ
+        msgAdapter = MessageAdapter(
+            me = me,
+            onDownload = { url, name -> downloadFile(url, name) },
+            onMessageLongClick = { msg -> showMessageActions(msg) },
+            onSaveReaction = { msgId, json ->
+                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                    log("Saved to Room: $msgId")
+                            // Старый метод, оставлен для совместимости
+db.messageDao().updateReactions(msgId, json)
+                }
+            },
+            appContext = applicationContext,
+            onLog = { msg -> log(msg) }
+        )
+        messagesList.adapter = msgAdapter
+        
+        connectWS()
+        loadUsers()
+        showTab(0)
+    }
+
+    private fun openChat(id: String) {
+        if (selId == id && chatLayout.visibility == View.VISIBLE) return
+        if (selId == id && chatLayout.visibility == View.VISIBLE) return  // Уже открыт
+        if (selId == id && chatLayout.visibility == View.VISIBLE) return  // Уже открыт
+        log("FORWARD: openChat id=$id, mode=$isForwardMode, msgs=${pendingForwardMessages?.size}")
+        if (isForwardMode && pendingForwardMessages != null) {
+            val messages = pendingForwardMessages!!
+            for (msg in messages) {
+                val forwardText = "↪ ${msg.from}: ${msg.text}"
+                sendMessageTo(id, forwardText)
+            }
+            pendingForwardMessages = null
+            isForwardMode = false
+            log("FORWARD: sent ${messages.size} messages to $id")
+            t("Переслано: ${messages.size} сообщений")
+            pendingForwardMessages = null
+            isForwardMode = false
+            // Продолжаем открытие чата
+        }
+        selId = id
+        msgAdapter.update(emptyList())
+        // Оптимистично сбрасываем бейдж сразу в UI
+        // Обнуляем unread в адаптере и в локальном списке
+        val mainUser = users.find { it.username == id }
+        if (mainUser != null) mainUser.unread = 0
+        for (i in 0 until chatAdapter.itemCount) {
+            if (chatAdapter.getItem(i).username == id) {
+                chatAdapter.resetUnread(i)
+                break
+            }
+        }
+        // Сбрасываем счётчик на сервере
+        thread {
+            try {
+                val url = java.net.URL("$server/api/mark_read/$id?token=$token")
+                val conn = url.openConnection() as java.net.HttpURLConnection
+                conn.requestMethod = "POST"
+                conn.responseCode
+            } catch (_: Exception) {}
+            // loadUsers с задержкой — чтобы сервер точно обновился
+            handler.postDelayed({ loadUsers() }, 1500)
+        }
+        val u = users.find { it.username == id }
+        // Отправляем статус прочтения
+        if (u != null) {
+            wsManager?.send(JSONObject().apply {
+                put("type", "read")
+                put("to", id)
+            }.toString())
+        }
+        // unread сбрасывается сервером через mark_read
+        val name = u?.name ?: PreferenceManager.getDefaultSharedPreferences(this).getString("display_name_$id", id) ?: id
+        chatTitle.text = name
+        // Берём isMuted из users (загружено в loadUsers) или из Room
+        val userMuted = u?.isMuted ?: isMuted
+        val muteIcon = findViewById<ImageView>(R.id.chatMuteIcon)
+        muteIcon?.visibility = if (userMuted) View.VISIBLE else View.GONE
+        muteIcon?.setImageResource(if (userMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
+        if (id == "favorites") {
+            chatAvatar.text = "☆"
+        } else {
+            chatAvatar.text = name.take(1).uppercase()
+        }
+        chatAvatar.background = circleBg(u?.avatarColor ?: "#2AABEE")
+        // Скрываем статус для групп, лент, избранного
+        val isSpecialChat = u?.isGroup == true || u?.isFeed == true || id == "favorites"
+        if (isSpecialChat) {
+            chatStatus.text = ""
+        } else {
+            chatStatus.text = if (u?.online == true) "online" else "offline"
+            chatStatus.setTextColor(if (u?.online == true) 0xff34c759.toInt() else 0xff8e8e93.toInt())
+        }
+        mainContainer.visibility = View.GONE
+        bottomNav.visibility = View.GONE
+        chatLayout.visibility = View.VISIBLE
+        // Отмечаем сообщения как прочитанные
+        // Отмечаем последнее сообщение как прочитанное
+        val lastMsg = msgAdapter.getItems().lastOrNull()
+        if (lastMsg is ChatMessage) {
+            wsManager?.send("{\"type\":\"read\",\"from\":\"$me\",\"to\":\"$id\",\"msg_id\":\"${lastMsg.id}\"}")
+        }
+        
+        lastMessageCount = 0
+        refreshMessages()
+        msgInput.requestFocus()
+        // Скрываем поле ввода и звонок для системного чата, ботов, лент, групп
+        val isSpecial = selId == "MyChat" || u?.isBot == true || u?.isFeed == true || u?.isGroup == true
+        val isFavorites = selId == "favorites"
+        if (isSpecial) {
+            msgInput.visibility = View.GONE
+            findViewById<View>(R.id.btnCall)?.visibility = View.GONE
+        } else if (isFavorites) {
+            msgInput.visibility = View.VISIBLE  // Можно писать заметки
+            findViewById<View>(R.id.btnCall)?.visibility = View.GONE  // Но без звонков
+        } else {
+            msgInput.visibility = View.VISIBLE
+            findViewById<View>(R.id.btnCall)?.visibility = View.VISIBLE
+        }
+        val ck2 = chatKey(me, id)
+        // Загружаем isMuted из Room в фоне
+        thread {
+            val chatSettings = db.messageDao().getChatSettings(ck2)
+            isMuted = chatSettings?.isMuted ?: false
+            runOnUiThread {
+                val mi = findViewById<ImageView>(R.id.chatMuteIcon)
+                mi?.visibility = if (isMuted) View.VISIBLE else View.GONE
+                mi?.setImageResource(if (isMuted) R.drawable.ic_muted else R.drawable.ic_unmuted)
+            }
+        }
+        // Восстанавливаем блокировку из Room
+        thread {
+            val settings = db.messageDao().getChatSettings(id)
+            isBlocked = settings?.isBlocked ?: false
+        }
+        pendingForward?.let { msg -> handler.postDelayed({ forwardMessage(msg); pendingForward = null }, 500) }
+        // Отмечаем сообщения прочитанными
+
+        startPolling()
+    }
+
+    private fun closeChat() {
+        // Скрываем клавиатуру
+        val immClose = getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        currentFocus?.let { immClose.hideSoftInputFromWindow(it.windowToken, 0) }
+        selId = ""
+        stopPolling()
+        chatLayout.visibility = View.GONE
+        mainContainer.visibility = View.VISIBLE
+        bottomNav.visibility = View.VISIBLE
+        // Скрываем клавиатуру
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        currentFocus?.let { imm.hideSoftInputFromWindow(it.windowToken, 0) }
+        // Обновляем список чатов с задержкой (ждём пока станет видимым)
+        chatList.post { chatAdapter.notifyDataSetChanged() }
+    }
+    
+    private var selectedMessage: ChatMessage? = null
+    private var selectedMessages = mutableListOf<ChatMessage>()
+    private var isSelectMode = false
+    private val logBuffer = mutableListOf<org.json.JSONObject>()
+    private lateinit var chatHeader: android.view.View
+    private lateinit var selectPanel: android.view.View
+    private var pendingForward: ChatMessage? = null
+    private var replyToMsg: ChatMessage? = null
+    private lateinit var replyPreview: android.view.View
+    private lateinit var previewAuthor: android.widget.TextView
+    private lateinit var previewText: android.widget.TextView
+    private var pendingForwardMessages: List<ChatMessage>? = null
+    private var isForwardMode = false
+    
+    private fun showMessageActions(msg: ChatMessage) {
+        selectedMessage = msg
+        val bottomSheet = BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.bottom_message_actions, null)
+        bottomSheet.setContentView(view)
+        
+        val reactions = mapOf(
+            R.id.reactionLove to "❤️",
+            R.id.reactionLike to "👍",
+            R.id.reactionLaugh to "😂",
+            R.id.reactionWow to "😮",
+            R.id.reactionSad to "😢",
+            R.id.reactionAngry to "😡"
+        )
+        reactions.forEach { (id, emoji) ->
+            view.findViewById<TextView>(id)?.setOnClickListener {
+                // Отправляем реакцию через HTTP API
+                val jsonBody = JSONObject().apply {
+                    put("message_id", msg.id)
+                    put("user_id", currentUserId)
+                    put("emoji", emoji)
+                }
+                val body = jsonBody.toString().toRequestBody("application/json".toMediaType())
+                val request = Request.Builder()
+                    .url("$server/api/messages/reaction?token=$token")
+                    .post(body)
+                    .build()
+                client.newCall(request).enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        runOnUiThread { t("Ошибка реакции") }
+                    }
+                    override fun onResponse(call: Call, response: Response) {
+                        if (response.isSuccessful) {
+                            runOnUiThread {
+                                msgAdapter.addReaction(msg.id, emoji, currentUserPhone)
+                            }
+                            thread {
+                                val reactions = msgAdapter.getReactions(msg.id)
+                                // Сохраняем в новую таблицу reactions
+                                db.messageDao().clearReactions(msg.id)
+                                val entities = reactions.flatMap { (emoji, users) ->
+                                    users.map { username -> ReactionEntity(msgId = msg.id, emoji = emoji, username = username) }
+                                }
+                                if (entities.isNotEmpty()) {
+                                    db.messageDao().insertReactions(entities)
+                                }
+                            }
+                        }
+                    }
+                })
+                bottomSheet.dismiss()
+            }
+        }
+        
+        view.findViewById<LinearLayout>(R.id.actionReply)?.setOnClickListener {
+            bottomSheet.dismiss()
+            replyToMessage(msg)
+        }
+        view.findViewById<LinearLayout>(R.id.actionEdit)?.setOnClickListener {
+            bottomSheet.dismiss()
+            editMessage(msg)
+        }
+        view.findViewById<LinearLayout>(R.id.actionSelect)?.setOnClickListener {
+            bottomSheet.dismiss()
+            log("UI: select mode ON"); log("UI: select mode ON - ${msg.id}")
+            isSelectMode = true
+            selectedMessages.clear()
+            selectedMessages.add(msg)
+            msgAdapter.selectMode = true
+            msgAdapter.selectedIds.clear()
+            msgAdapter.notifyDataSetChanged()
+            chatHeader.visibility = android.view.View.GONE
+            selectPanel.visibility = android.view.View.VISIBLE
+            log("Select mode ON")
+            t("Режим выбора. Нажмите на сообщения")
+            t("Сообщение выбрано. Нажмите ещё для выбора нескольких")
+        }
+        view.findViewById<LinearLayout>(R.id.actionCopy)?.setOnClickListener {
+            bottomSheet.dismiss()
+            val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            clipboard.setPrimaryClip(ClipData.newPlainText("message", msg.text))
+            t("Текст скопирован!")
+        }
+        view.findViewById<LinearLayout>(R.id.actionForward)?.setOnClickListener {
+            bottomSheet.dismiss()
+            showForwardDialog(msg)
+        }
+        view.findViewById<LinearLayout>(R.id.actionFavorite)?.setOnClickListener {
+            bottomSheet.dismiss()
+            addToFavorites(msg)
+        }
+        view.findViewById<LinearLayout>(R.id.actionDelete)?.setOnClickListener {
+            bottomSheet.dismiss()
+            showDeletePopup(msg)
+        }
+        
+        log("UI: bottomSheet show"); bottomSheet.show()
+    }
+
+
+    private fun showDeletePopup(msg: ChatMessage) {
+        val popupView = layoutInflater.inflate(R.layout.popup_delete_menu, null)
+        val popup = android.widget.PopupWindow(popupView,
+            (220 * resources.displayMetrics.density).toInt(),
+            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, true)
+        popup.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+        popup.elevation = 20f
+        popupView.findViewById<LinearLayout>(R.id.menuDeleteLocal).setOnClickListener {
+            popup.dismiss()
+            deleteMessage(msg)
+        }
+        popupView.findViewById<LinearLayout>(R.id.menuDeleteGlobal).setOnClickListener {
+            popup.dismiss()
+            thread { db.messageDao().markDeleted(msg.id) }
+            msgAdapter.markDeleted(msg.id)
+        }
+        popup.showAtLocation(window.decorView, android.view.Gravity.CENTER, 0, 0)
+    }
+
+    private fun connectWS() {
+        try {
+            log("WS connecting...")
+            wsManager = WebSocketManager(server, me, token)
+            wsManager.onMessage = { text ->
+                log("WS received: ${text.take(50)}...")
+                viewModel.handleWsMessage(text)
+                // UI обновления на месте
+                try {
+                    val j = JSONObject(text)
+                    val jtype = j.optString("type")
+                    when {
+                        jtype == "call_offer" -> {
+                            val from = j.optString("from", "")
+                            if (from.isNotEmpty() && from != me) {
+                                val intent = android.content.Intent(this@MainActivity, com.mychat.app.activities.CallActivity::class.java).apply {
+                                    putExtra("name", from)
+                                    putExtra("caller", false)
+                                    putExtra("sdp", j.optJSONObject("sdp")?.toString() ?: "")
+                                }
+                                startActivity(intent)
+                            }
+                        }
+                        jtype in listOf("call_answer", "ice_candidate", "call_end") -> {
+                            onSignalingMessage?.invoke(text)
+                        }
+                        jtype == "delivered" -> {
+                            chatAdapter.notifyDataSetChanged()
+                        }
+                        jtype == "read" -> {
+                            chatAdapter.notifyDataSetChanged()
+                        }
+                        jtype == "reaction_added" || jtype == "reaction_removed" -> {
+                            val msgId = j.optString("msg_id", "")
+                            val emoji = j.optString("emoji", "")
+                            val username = j.optString("username", "")
+                            if (msgId.isNotEmpty() && username.isNotEmpty()) {
+                                if (jtype == "reaction_added") msgAdapter.addReaction(msgId, emoji, username)
+                                else msgAdapter.removeReaction(msgId, emoji, username)
+                            }
+                        }
+                        selId.isNotEmpty() -> handler.post { updateMessagesSilent() }
+                        else -> handler.post { loadUsers() }
+                    }
+                } catch (_: Exception) {}
+            }
+            wsManager.onReconnect = {
+                log("WS reconnecting...")
+                handler.postDelayed({ connectWS() }, 3000)
+            }
+            wsManager.connect()
+    // wsManager используется напрямую
+        } catch (e: Exception) {
+            handler.post { t("Connection error: ${e.message}") }
+        }
+    }
+
+    private fun loadUsers() {
+        if (token.isEmpty()) { log("HTTP: loadUsers skipped (no token)"); return }
+        log("HTTP: loadUsers")
+        viewModel.loadUsers()
+    }
+
+    private fun formatTime(timeStr: String): String {
+        return try {
+            val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(timeStr)
+            sdf.format(date ?: Date())
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
+    private fun searchUsers(q: String) {
+        val filtered = users.filter { it.username.contains(q, ignoreCase = true) || it.name.contains(q, ignoreCase = true) }
+        chatAdapter.update(filtered.toMutableList())
+        if (filtered.isEmpty()) t("Ничего не найдено")
+    }
+
+    private fun refreshMessages() {
+        // Сначала показываем из Room (мгновенно)
+        thread {
+            try {
+                val localMessages = db.messageDao().getMessages(selId)
+                if (localMessages.isNotEmpty()) {
+                    val msgs = localMessages.map { entity ->
+                        ChatMessage(
+                            id = entity.id,
+                            from = entity.fromUser,
+                            to = entity.toUser,
+                            text = entity.text,
+                            time = entity.time,
+                            file = if (entity.fileUrl.isNotEmpty()) FileInfo(entity.fileName, entity.fileUrl) else null,
+                            reactions = mutableMapOf<String, MutableList<String>>().also { reactions ->
+                            // Загружаем реакции из отдельной таблицы
+                            val roomReactions = db.messageDao().getReactions(entity.id)
+                            roomReactions.groupBy { it.emoji }.forEach { (emoji, list) ->
+                                reactions.getOrPut(emoji) { mutableListOf() }.addAll(list.map { it.username })
+                            }
+                            // Если в таблице пусто, пробуем старый reactionsJson
+                            if (reactions.isEmpty() && entity.reactionsJson != "{}") {
+                                reactions.putAll(parseReactions(entity.reactionsJson))
+                            }
+                        },
+                            delivered = entity.delivered,
+                            read = entity.isRead
+                        )
+                    }
+                    // Обновляем статусы на sent
+                    thread { db.messageDao().markSent(selId) }
+                    handler.post { msgAdapter.update(msgs) }
+                }
+            } catch (e: Exception) {}
+        }
+        // Потом обновляем с сервера
+        if (selId.isEmpty()) return
+        thread {
+            try {
+                val r = client.newCall(
+                    Request.Builder().url("$server/messages/$selId?me=$me&token=$token").build()
+                ).execute()
+                if (r.isSuccessful) {
+                    val a = JSONArray(r.body!!.string())
+                    val nm = mutableListOf<ChatMessage>()
+                    for (i in 0 until a.length()) {
+                        val o = a.getJSONObject(i)
+                        var fi: FileInfo? = null
+                        if (o.has("location")) {
+                            val loc = o.getJSONObject("location")
+                            fi = null
+                            nm.add(ChatMessage(
+                                id = o.optString("id"),
+                                from = o.optString("from"),
+                                to = o.optString("to", selId),
+                                text = "🧭 Геолокация",
+                                time = o.optString("time"),
+                                location = LocationData(lat = loc.optDouble("lat", 0.0), lon = loc.optDouble("lon", 0.0))
+                            ))
+                        } else if (o.has("file")) {
+                            val f = o.getJSONObject("file")
+                            fi = FileInfo(f.optString("name"), f.optString("url"), f.optLong("size"))
+                        } else { fi = null }
+                        // continue removed
+                        nm.add(
+                            ChatMessage(
+                                id = o.optString("id"),
+                                from = o.optString("from"),
+                                to = o.optString("to"),
+                                text = o.optString("text"),
+                                time = o.optString("time"),
+                                file = fi,
+                                isGroup = o.optBoolean("is_group"),
+                                delivered = o.optBoolean("delivered", false),
+                                read = o.optBoolean("read", false),
+                                reactions = parseReactionsFromJson(o.optJSONObject("reactions"))
+                            )
+                        )
+                    }
+                    lastMessageCount = nm.size
+                    handler.post {
+                        // Сохраняем в Room
+                    thread {
+                        try {
+                            val entities = nm.map { msg ->
+                                MessageEntity(
+                                    id = msg.id,
+                                    chatKey = chatKey(me, selId),
+                                    fromUser = msg.from,
+                                    toUser = msg.to,
+                                    text = msg.text,
+                                    time = msg.time,
+                                    fileUrl = msg.file?.url ?: "",
+                                    fileName = msg.file?.name ?: "",
+                                    delivered = msg.delivered,
+                                    isRead = msg.read,
+                                    reactionsJson = "{}"  // реакции только через updateReactions
+                                )
+                            }
+                            db.messageDao().insertMessages(entities)
+                            // Сохраняем реакции из ответа сервера в таблицу reactions
+                            for (msg in nm) {
+                                if (msg.reactions.isNotEmpty()) {
+                                    db.messageDao().clearReactions(msg.id)
+                                    val rEntities = msg.reactions.flatMap { (emoji, users) ->
+                                        users.map { username -> ReactionEntity(msgId = msg.id, emoji = emoji, username = username) }
+                                    }
+                                    if (rEntities.isNotEmpty()) {
+                                        db.messageDao().insertReactions(rEntities)
+                                    }
+                                }
+                            }
+                            // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
+                        } catch (e: Exception) {}
+                    }
+                    // Удаляем временные сообщения (отправленные локально)
+                    thread {
+                        val local = db.messageDao().getMessages(selId)
+                        val tempIds = local.filter { it.id.startsWith("sending_") }.map { it.id }
+                        if (tempIds.isNotEmpty()) {
+                            db.messageDao().deleteTempMessages(tempIds)
+                        }
+                    }
+                    // Фильтруем удалённые сообщения
+                    val filtered = nm.filter { it.text != "Сообщение удалено" }
+                    val oldItems2 = msgAdapter.getItems()
+                    for (m in filtered) {
+                        val old = oldItems2.find { (it as? ChatMessage)?.id == m.id }
+                        if (old != null && m is ChatMessage && old is ChatMessage) {
+                            m.delivered = old.delivered
+                            m.read = old.read
+                            if (old.reactions.isNotEmpty()) {
+                                m.reactions = old.reactions
+                            }
+                        }
+                    }
+                    msgAdapter.update(filtered)
+                        if (nm.isNotEmpty()) {
+                            messagesList.scrollToPosition(msgAdapter.itemCount - 1)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun updateMessagesSilent() {
+        if (selId.isEmpty()) return
+        thread {
+            try {
+                val r = client.newCall(
+                    Request.Builder().url("$server/messages/$selId?me=$me&token=$token").build()
+                ).execute()
+                if (r.isSuccessful) {
+                    val a = JSONArray(r.body!!.string())
+                    val nm = mutableListOf<ChatMessage>()
+                    for (i in 0 until a.length()) {
+                        val o = a.getJSONObject(i)
+                        var fi: FileInfo? = null
+                        if (o.has("location")) {
+                            val loc = o.getJSONObject("location")
+                            fi = null
+                            nm.add(ChatMessage(
+                                id = o.optString("id"),
+                                from = o.optString("from"),
+                                to = o.optString("to", selId),
+                                text = "🧭 Геолокация",
+                                time = o.optString("time"),
+                                location = LocationData(lat = loc.optDouble("lat", 0.0), lon = loc.optDouble("lon", 0.0))
+                            ))
+                        } else if (o.has("file")) {
+                            val f = o.getJSONObject("file")
+                            fi = FileInfo(f.optString("name"), f.optString("url"), f.optLong("size"))
+                        } else { fi = null }
+                        // continue removed
+                        nm.add(
+                            ChatMessage(
+                                id = o.optString("id"),
+                                from = o.optString("from"),
+                                to = o.optString("to"),
+                                text = o.optString("text"),
+                                time = o.optString("time"),
+                                file = fi,
+                                isGroup = o.optBoolean("is_group"),
+                                delivered = o.optBoolean("delivered", false),
+                                read = o.optBoolean("read", false),
+                                reactions = parseReactionsFromJson(o.optJSONObject("reactions"))
+                            )
+                        )
+                    }
+                    
+                    // t("Загружено сообщений: ${nm.size}")
+                    if (nm.size > lastMessageCount) {
+                        val wasAtBottom = !messagesList.canScrollVertically(1)
+                        handler.post {
+                            // Сохраняем в Room
+                    thread {
+                        try {
+                            val entities = nm.map { msg ->
+                                MessageEntity(
+                                    id = msg.id,
+                                    chatKey = chatKey(me, selId),
+                                    fromUser = msg.from,
+                                    toUser = msg.to,
+                                    text = msg.text,
+                                    time = msg.time,
+                                    fileUrl = msg.file?.url ?: "",
+                                    fileName = msg.file?.name ?: "",
+                                    delivered = msg.delivered,
+                                    isRead = msg.read,
+                                    reactionsJson = "{}"  // реакции только через updateReactions
+                                )
+                            }
+                            db.messageDao().insertMessages(entities)
+                            // Сохраняем реакции из ответа сервера в таблицу reactions
+                            for (msg in nm) {
+                                if (msg.reactions.isNotEmpty()) {
+                                    db.messageDao().clearReactions(msg.id)
+                                    val rEntities = msg.reactions.flatMap { (emoji, users) ->
+                                        users.map { username -> ReactionEntity(msgId = msg.id, emoji = emoji, username = username) }
+                                    }
+                                    if (rEntities.isNotEmpty()) {
+                                        db.messageDao().insertReactions(rEntities)
+                                    }
+                                }
+                            }
+                            // db.messageDao().deleteOldMessages(selId)  // Отключено - вызывает прыжки
+                        } catch (e: Exception) {}
+                    }
+                    // Удаляем временные сообщения (отправленные локально)
+                    thread {
+                        val local = db.messageDao().getMessages(selId)
+                        val tempIds = local.filter { it.id.startsWith("sending_") }.map { it.id }
+                        if (tempIds.isNotEmpty()) {
+                            db.messageDao().deleteTempMessages(tempIds)
+                        }
+                    }
+                    // Фильтруем удалённые сообщения
+                    val filtered = nm.filter { it.text != "Сообщение удалено" }
+                    val oldItems2 = msgAdapter.getItems()
+                    for (m in filtered) {
+                        val old = oldItems2.find { (it as? ChatMessage)?.id == m.id }
+                        if (old != null && m is ChatMessage && old is ChatMessage) {
+                            m.delivered = old.delivered
+                            m.read = old.read
+                            if (old.reactions.isNotEmpty()) {
+                                m.reactions = old.reactions
+                            }
+                        }
+                    }
+                    msgAdapter.update(filtered)
+                            lastMessageCount = nm.size
+                            if (wasAtBottom && nm.isNotEmpty()) {
+                                messagesList.scrollToPosition(msgAdapter.itemCount - 1)
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+
+    private fun showScheduleDialog() {
+        val text = msgInput.text.toString().trim()
+        if (text.isEmpty() || selId.isEmpty()) { t("Введите сообщение"); return }
+        val options = arrayOf("Через 1 час", "Через 3 часа", "Завтра 9:00", "Завтра 18:00")
+        AlertDialog.Builder(this)
+            .setTitle("⏰ Отправить позже")
+            .setItems(options) { _, which ->
+                val now = java.util.Calendar.getInstance()
+                when (which) {
+                    0 -> now.add(java.util.Calendar.HOUR_OF_DAY, 1)
+                    1 -> now.add(java.util.Calendar.HOUR_OF_DAY, 3)
+                    2 -> { now.add(java.util.Calendar.DAY_OF_MONTH, 1); now.set(java.util.Calendar.HOUR_OF_DAY, 9); now.set(java.util.Calendar.MINUTE, 0) }
+                    3 -> { now.add(java.util.Calendar.DAY_OF_MONTH, 1); now.set(java.util.Calendar.HOUR_OF_DAY, 18); now.set(java.util.Calendar.MINUTE, 0) }
+                }
+                val timeStr = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault()).format(now.time)
+                val json = org.json.JSONObject().apply {
+                    put("token", token)
+                    put("to", selId)
+                    put("text", text)
+                    put("scheduled_at", timeStr)
+                }
+                val body = okhttp3.RequestBody.create("application/json".toMediaType(), json.toString())
+                val req = okhttp3.Request.Builder().url("$server/api/message/schedule").post(body).build()
+                client.newCall(req).enqueue(object : okhttp3.Callback {
+                    override fun onFailure(call: okhttp3.Call, e: java.io.IOException) {}
+                    override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                        runOnUiThread { t("✅ Отложено") }
+                    }
+                })
+                msgInput.text.clear()
+            }
+            .show()
+    }
+
+private fun sendMessageTo(to: String, text: String) {
+        val json = JSONObject().apply {
+            put("type", "private")
+            put("to", to)
+            put("text", text)
+        }
+        log("WS send: message"); wsManager?.send(json.toString())
+        // Добавляем в локальный список
+        val msg = ChatMessage(
+            id = "sending_${System.currentTimeMillis()}",
+            from = me,
+            to = to,
+            text = text,
+            time = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Date())
+        )
+        msgAdapter.addMessage(msg)
+    }
+
+    private fun sendMessage() {
+        val t = msgInput.text.toString().trim()
+        log("DEBUG: t='${t.take(20)}' selId='$selId' ws=true")
+        if (t.isEmpty() || selId.isEmpty()) return
+        log("WS send: file"); wsManager?.send(
+            JSONObject().apply {
+                put("type", "private")
+                put("to", selId)
+                put("text", t)
+                replyToMsg?.let { put("reply_to_msg_id", it.id) }
+            }.toString()
+        )
+        msgInput.text.clear()
+        cancelReply()
+        handler.postDelayed({ refreshMessages() }, 200)
+        handler.postDelayed({ loadUsers() }, 500)
+    }
+
+    private fun showAttachmentMenu() {
+        val bottomSheet = BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.bottom_attachment, null)
+        bottomSheet.setContentView(view)
+        
+        view.findViewById<LinearLayout>(R.id.attachCamera).setOnClickListener {
+            bottomSheet.dismiss()
+            // Сразу камера для фото
+            val intent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
+            if (intent.resolveActivity(packageManager) != null) {
+                startActivityForResult(intent, 200)
+            } else {
+                t("Камера не доступна")
+            }
+        }
+        view.findViewById<LinearLayout>(R.id.attachGallery).setOnClickListener {
+            bottomSheet.dismiss()
+            pickPhoto()
+        }
+        view.findViewById<LinearLayout>(R.id.attachLocation).setOnClickListener {
+                bottomSheet.dismiss()
+                sendLocation()
+            }
+            view.findViewById<LinearLayout>(R.id.attachFile).setOnClickListener {
+            bottomSheet.dismiss()
+            pickFile()
+        }
+        
+        // Закрытие по свайпу вниз
+        view.setOnTouchListener { _, event ->
+            if (event.action == android.view.MotionEvent.ACTION_DOWN) {
+                view.tag = event.y
+            }
+            if (event.action == android.view.MotionEvent.ACTION_MOVE) {
+                val startY = view.tag as? Float ?: 0f
+                if (event.y - startY > 100) {
+                    bottomSheet.dismiss()
+                }
+            }
+            false
+        }
+        
+        log("UI: bottomSheet show"); bottomSheet.show()
+    }
+    
+    private fun sendLocation() {
+        try {
+            val locationManager = getSystemService(android.content.Context.LOCATION_SERVICE) as LocationManager
+            handler.post { t("LocationManager получен") }
+            
+            // Проверяем разрешения
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 300)
+                    return
+                }
+            }
+            
+            // Получаем последнюю известную локацию
+            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            
+            if (location != null) {
+                sendLocationMessage(location.latitude, location.longitude)
+            } else {
+                // Запрашиваем обновление локации один раз
+                t("Определение местоположения...")
+                locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, object : LocationListener {
+                    override fun onLocationChanged(loc: Location) {
+                        sendLocationMessage(loc.latitude, loc.longitude)
+                    }
+                    override fun onProviderDisabled(provider: String) {}
+                    override fun onProviderEnabled(provider: String) {}
+                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+                }, null)
+            }
+        } catch (e: Exception) {
+            t("Ошибка: " + e.message)
+        }
+    }
+    
+    private fun startLiveLocation() {
+        isLiveLocation = true
+        t("📍 Live-локация запущена")
+        
+        liveLocationTimer = java.util.Timer()
+        liveLocationTimer?.schedule(object : java.util.TimerTask() {
+            override fun run() {
+                if (!isLiveLocation) {
+                    cancel()
+                    return
+                }
+                try {
+                    val locationManager = getSystemService(android.content.Context.LOCATION_SERVICE) as LocationManager
+            handler.post { t("LocationManager получен") }
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                            return
+                        }
+                    }
+                    val loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                        ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                    loc?.let {
+                        handler.post {
+                            sendLocationUpdate(it.latitude, it.longitude)
+                        }
+                    }
+                } catch (_: Exception) {}
+            }
+        }, 0, 5000) // Каждые 5 секунд
+    }
+    
+    private fun stopLiveLocation() {
+        isLiveLocation = false
+        liveLocationTimer?.cancel()
+        liveLocationTimer = null
+        t("📍 Live-локация остановлена")
+    }
+    
+    private fun sendLocationUpdate(lat: Double, lon: Double) {
+        thread {
+            try {
+                val json = org.json.JSONObject().apply {
+                    put("type", "private")
+                    put("to", selId)
+                    put("text", "🧭 Геолокация")
+                    put("location", org.json.JSONObject().apply {
+                        put("lat", lat)
+                        put("lon", lon)
+                        put("live", true)
+                    })
+                }
+                wsManager?.send(json.toString())
+            } catch (_: Exception) {}
+        }
+    }
+
+    private fun sendLocationMessage(lat: Double, lon: Double) {
+        thread {
+            try {
+                val json = org.json.JSONObject().apply {
+                    put("type", "private")
+                    put("to", selId)
+                    put("text", "🧭 Геолокация")
+                    put("location", org.json.JSONObject().apply {
+                        put("lat", lat)
+                        put("lon", lon)
+                    })
+                }
+                wsManager?.send(json.toString())
+                handler.post { t("📍 Локация отправлена") }
+            } catch (e: Exception) {
+                handler.post { t("Ошибка отправки") }
+            }
+        }
+    }
+
+    private fun pickPhoto() {
+        startActivityForResult(
+            Intent(Intent.ACTION_PICK).apply {
+                type = "image/*"
+            },
+            101
+        )
+    }
+    
+    private fun pickFile() {
+        startActivityForResult(
+            Intent(Intent.ACTION_GET_CONTENT).apply {
+                type = "*/*"
+                addCategory(Intent.CATEGORY_OPENABLE)
+            },
+            100
+        )
+    }
+
+    override fun onActivityResult(rc: Int, rc2: Int, data: Intent?) {
+        super.onActivityResult(rc, rc2, data)
+        if (rc == 200 && rc2 == RESULT_OK) {
+            val bitmap = data?.extras?.get("data") as? android.graphics.Bitmap
+            if (bitmap != null) { uploadBitmap(bitmap) }
+            return
+        }
+        if (rc == 103 && rc2 == RESULT_OK) data?.let { d ->
+            val name = d.getStringExtra("botName") ?: ""
+            val desc = d.getStringExtra("botDesc") ?: ""
+            val type = d.getStringExtra("botType") ?: "ai"
+            val help = d.getStringExtra("botHelp") ?: ""
+            if (name.isNotEmpty()) {
+                wsManager?.send(JSONObject().apply {
+                    put("type", "create_bot")
+                    put("name", name)
+                    put("desc", desc)
+                    put("bot_type", type)
+                    put("help", help)
+                }.toString())
+                t("Бот $name создаётся...")
+            }
+        }
+        if (rc == 101 && rc2 == RESULT_OK) data?.data?.let { showPhotoDialog(it) }
+        if (rc == 100 && rc2 == RESULT_OK) data?.data?.let { uploadFile(it) }
+    }
+
+
+    private fun uploadBitmap(bitmap: android.graphics.Bitmap) {
+        thread {
+            try {
+                val baos = java.io.ByteArrayOutputStream()
+                bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, baos)
+                val bytes = baos.toByteArray()
+                val fn = "photo_${System.currentTimeMillis()}.jpg"
+                val rb = MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("file", fn, bytes.toRequestBody("image/jpeg".toMediaType()))
+                    .build()
+                val r = client.newCall(
+                    Request.Builder().url("$server/upload?token=$token").post(rb).build()
+                ).execute()
+                if (r.isSuccessful) {
+                    val u = JSONObject(r.body!!.string()).optString("url", "")
+                    log("WS send: forward"); wsManager?.send(
+                        JSONObject().apply {
+                            put("type", "private")
+                            put("to", selId)
+                            put("text", "📷 Фото")
+                            put("file", JSONObject().apply {
+                                put("name", fn)
+                                put("url", u)
+                                put("size", bytes.size)
+                            })
+                        }.toString()
+                    )
+                }
+            } catch (e: Exception) {
+                handler.post { t("Ошибка") }
+            }
+        }
+    }
+    
+    private fun showPhotoDialog(uri: Uri) {
+        val dialog = AlertDialog.Builder(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen).create()
+        dialog.window?.setLayout(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        )
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(0xff000000.toInt())
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+        }
+        val closeBtn = ImageButton(this).apply {
+            setImageResource(R.drawable.ic_close)
+            setColorFilter(0xffffffff.toInt())
+            background = null
+            layoutParams = LinearLayout.LayoutParams(48, 48).apply { setMargins(8, 24, 0, 0) }
+        }
+        val imageView = ImageView(this).apply {
+            setImageURI(uri)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
+        }
+        val bottomBar = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = android.view.Gravity.CENTER_VERTICAL
+            setPadding(8, 8, 8, 16)
+            setBackgroundColor(0xff1c1c1e.toInt())
+        }
+        val captionInput = EditText(this).apply {
+            hint = "Добавить подпись..."
+            setTextColor(0xffffffff.toInt())
+            setHintTextColor(0xff636366.toInt())
+            setBackgroundResource(R.drawable.bg_input)
+            setPadding(30, 20, 30, 20)
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        val sendBtn = ImageButton(this).apply {
+            setImageResource(R.drawable.ic_send)
+            background = getDrawable(R.drawable.bg_send_btn)
+            setColorFilter(0xffffffff.toInt())
+            layoutParams = LinearLayout.LayoutParams(48, 48).apply { marginStart = 8 }
+            scaleType = ImageView.ScaleType.CENTER
+        }
+        closeBtn.setOnClickListener { dialog.dismiss() }
+        sendBtn.setOnLongClickListener {
+            showScheduleDialog()
+            true
+        }
+        sendBtn.setOnClickListener {
+            val caption = captionInput.text.toString().trim()
+            uploadFile(uri, caption)
+            dialog.dismiss()
+        }
+        bottomBar.addView(captionInput)
+        bottomBar.addView(sendBtn)
+        container.addView(closeBtn)
+        container.addView(imageView)
+        container.addView(bottomBar)
+        dialog.setView(container)
+        dialog.show()
+    }
+    
+    private fun uploadFile(uri: Uri, caption: String = "") {
+        val pd = AlertDialog.Builder(this)
+            .setTitle("Uploading...")
+            .setView(ProgressBar(this).apply { setPadding(40, 30, 40, 30) })
+            .create()
+        pd.show()
+        thread {
+            try {
+                val ins = contentResolver.openInputStream(uri)
+                val bytes = ins?.readBytes()
+                ins?.close()
+                var fn = "file"
+                contentResolver.query(uri, null, null, null, null)?.use { c ->
+                    if (c.moveToFirst()) fn = c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME)) ?: "file"
+                }
+                val rb = MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("file", fn, bytes!!.toRequestBody("application/octet-stream".toMediaType()))
+                    .build()
+                val r = client.newCall(
+                    Request.Builder().url("$server/upload?token=$token").post(rb).build()
+                ).execute()
+                if (r.isSuccessful) {
+                    val u = JSONObject(r.body!!.string()).optString("url", "")
+                    val isImage = fn.endsWith(".jpg") || fn.endsWith(".jpeg") || fn.endsWith(".png") || fn.endsWith(".gif") || fn.endsWith(".webp")
+                    log("WS send: block"); wsManager?.send(
+                        JSONObject().apply {
+                            put("type", "private")
+                            put("to", selId)
+                            val text = if (caption.isNotEmpty()) caption else if (isImage) "📷 Фото" else "📎 $fn"
+                            put("text", text)
+                            put("file", JSONObject().apply {
+                                put("name", fn)
+                                put("url", u)
+                                put("size", bytes.size)
+                            })
+                        }.toString()
+                    )
+                }
+                handler.post {
+                    pd.dismiss()
+                }
+            } catch (e: Exception) {
+                handler.post {
+                    pd.dismiss()
+                    t("Upload error")
+                }
+            }
+        }
+    }
+
+    private fun downloadFile(url: String, name: String) {
+        log("HTTP: download $name")
+        val fullUrl = if (url.startsWith("http")) url else "$server$url"
+        // Проверяем кеш
+        val cached = FileCache.getCachedFile(fullUrl)
+        if (cached != null) {
+            handler.post {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(androidx.core.content.FileProvider.getUriForFile(this@MainActivity, "$packageName.fileprovider", cached), "*/*")
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                startActivity(intent)
+            }
+            return
+        }
+        thread {
+            try {
+                val bytes = client.newCall(Request.Builder().url(fullUrl).build()).execute()
+                    .body?.bytes() ?: return@thread
+                val f = File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                    name
+                )
+                f.writeBytes(bytes)
+                handler.post {
+                    t("Saved: ${f.absolutePath}")
+                    val uri = FileProvider.getUriForFile(
+                        this,
+                        "$packageName.fileprovider",
+                        f
+                    )
+                    startActivity(
+                        Intent.createChooser(
+                            Intent(Intent.ACTION_VIEW).apply {
+                                setDataAndType(
+                                    uri,
+                                    when (name.substringAfterLast('.').lowercase()) {
+                                        "jpg", "jpeg", "png" -> "image/*"
+                                        "pdf" -> "application/pdf"
+                                        else -> "*/*"
+                                    }
+                                )
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            },
+                            "Open"
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun startPolling() {
+        stopPolling()
+        pollRunnable = object : Runnable {
+            override fun run() {
+                            if (isBlocked) return
+                if (selId.isNotEmpty()) {
+                    updateMessagesSilent()
+                    handler.postDelayed(this, 3000)
+                }
+            }
+        }
+        handler.post(pollRunnable!!)
+    }
+
+    private fun stopPolling() {
+        pollRunnable?.let { handler.removeCallbacks(it) }
+        pollRunnable = null
+    }
+
+    private fun showChatActions(user: User) {
+        selectedUserForDelete = user
+        
+        // Подсвечиваем выбранный элемент
+        val index = users.indexOf(user)
+        if (index >= 0) {
+            chatAdapter.selectedPosition = index
+            chatAdapter.notifyDataSetChanged()
+        // Сохраняем в SharedPreferences для быстрой загрузки
+        val p = PreferenceManager.getDefaultSharedPreferences(this); val ck3 = chatKey(me, selId); p.edit().putBoolean("mute_$ck3", isMuted).apply()
+        }
+        
+        // Показываем меню с анимацией
+        contextMenuBar.visibility = View.VISIBLE
+        contextMenuBar.clearAnimation()
+        val slideDown = TranslateAnimation(
+            Animation.RELATIVE_TO_SELF, 0f,
+            Animation.RELATIVE_TO_SELF, 0f,
+            Animation.RELATIVE_TO_SELF, -1f,
+            Animation.RELATIVE_TO_SELF, 0f
+        )
+        slideDown.duration = 300
+        slideDown.interpolator = android.view.animation.DecelerateInterpolator()
+        contextMenuBar.startAnimation(slideDown)
+    }
+    
+
+    private fun log(msg: String) {
+        // Добавляем в буфер для отправки на сервер
+        val entry = org.json.JSONObject().apply {
+            put("timestamp", android.text.format.DateFormat.format("yyyy-MM-dd'T'HH:mm:ss", java.util.Date()))
+            put("message", msg)
+            put("level", "INFO")
+        }
+        logBuffer.add(entry)
+        // Отправляем если накопилось 10
+        if (logBuffer.size >= 10) {
+            flushLogs()
+        }
+        runOnUiThread {
+            val timestamp = android.text.format.DateFormat.format("HH:mm:ss", java.util.Date())
+            logText.append("$timestamp $msg\n")
+            logScroll.post { logScroll.fullScroll(android.view.View.FOCUS_DOWN) }
+        }
+    }
+
+
+
+    private fun parseReactionsFromJson(obj: org.json.JSONObject?): MutableMap<String, MutableList<String>> {
+        val result = mutableMapOf<String, MutableList<String>>()
+        if (obj == null || obj.length() == 0) return result
+        obj.keys().forEach { emoji ->
+            val arr = obj.optJSONArray(emoji) ?: return@forEach
+            val users = mutableListOf<String>()
+            for (i in 0 until arr.length()) {
+                users.add(arr.optString(i, ""))
+            }
+            if (users.isNotEmpty()) result[emoji] = users
+        }
+        return result
+    }
+
+    private fun parseReactions(json: String): MutableMap<String, MutableList<String>> {
+        log("parseReactions: json=${json.take(100)}")
+        if (json.isEmpty() || json == "{}") return mutableMapOf()
+        return try {
+            val obj = JSONObject(json)
+            val result = mutableMapOf<String, MutableList<String>>()
+            obj.keys().forEach { key ->
+                val arr = obj.getJSONArray(key)
+                val list = mutableListOf<String>()
+                for (i in 0 until arr.length()) list.add(arr.getString(i))
+                result[key] = list
+            }
+            result
+        } catch (e: Exception) {
+            mutableMapOf()
+        }
+    }
+
+    private fun loadReactions(msgs: List<ChatMessage>) {
+        if (msgs.isEmpty()) return
+        log("loadReactions: ${msgs.size} messages (batch)")
+        android.util.Log.d("REACTION_ROOM", "loadReactions called with ${msgs.size} messages")
+        
+        val ids = org.json.JSONArray()
+        msgs.forEach { ids.put(it.id) }
+        val body = org.json.JSONObject().apply { put("msg_ids", ids) }
+            .toString().toRequestBody("application/json".toMediaType())
+        
+        val request = Request.Builder()
+            .url("$server/api/messages/reactions/batch?token=$token")
+            .post(body)
+            .build()
+        
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    val respBody = response.body?.string() ?: return
+                    val json = JSONObject(respBody)
+                    val allReactions = json.optJSONObject("reactions") ?: return
+                    
+                    runOnUiThread {
+                        allReactions.keys().forEach { msgId ->
+                            val r = allReactions.optJSONObject(msgId)
+                            if (r != null && r.length() > 0) {
+                                val reactions = mutableMapOf<String, MutableList<String>>()
+                                r.keys().forEach { key ->
+                                    val arr = r.getJSONArray(key)
+                                    val list = mutableListOf<String>()
+                                    for (i in 0 until arr.length()) list.add(arr.getString(i))
+                                    reactions[key] = list
+                                }
+                                msgAdapter.setReactions(msgId, reactions)
+                                loadedReactions.add(msgId)
+                                val jsonStr = org.json.JSONObject(reactions as Map<*, *>).toString()
+                                thread { // Старый метод, оставлен для совместимости
+db.messageDao().updateReactions(msgId, jsonStr) }
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+    
+    // Старый код удалён
+    private fun loadReactions_OLD(msgs: List<ChatMessage>) {
+        log("loadReactions: ${msgs.size} messages")
+        for (msg in msgs) {
+            val request = Request.Builder()
+                .url("$server/api/messages/reactions/${msg.id}?token=$token")
+                .get()
+                .build()
+            log("HTTP: request"); client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {}
+                override fun onResponse(call: Call, response: Response) {
+                    if (response.isSuccessful) {
+                        val body = response.body?.string() ?: return
+                        log("GET reactions response: ${body.take(100)}")
+                        val json = JSONObject(body)
+                        val reactionsJson = json.optJSONObject("reactions")
+                        if (reactionsJson != null && reactionsJson.length() > 0) {
+                            val reactions = mutableMapOf<String, MutableList<String>>()
+                            reactionsJson.keys().forEach { key ->
+                                val arr = reactionsJson.getJSONArray(key)
+                                val list = mutableListOf<String>()
+                                for (i in 0 until arr.length()) list.add(arr.getString(i))
+                                reactions[key] = list
+                            }
+                            // Сохраняем в Room
+                            val reactionsJson = JSONObject(reactions as Map<*, *>).toString()
+                            CoroutineScope(Dispatchers.IO).launch {
+                                // Старый метод, оставлен для совместимости
+db.messageDao().updateReactions(msg.id, reactionsJson)
+                            }
+                            runOnUiThread {
+                                log("Reactions loaded for ${msg.id}: $reactions")
+                                msgAdapter.setReactions(msg.id, reactions)
+                            // Сохраняем в Room только если есть реакции
+                            if (reactions.isNotEmpty()) {
+                                val json = org.json.JSONObject(reactions as Map<*, *>).toString()
+                                thread { // Старый метод, оставлен для совместимости
+db.messageDao().updateReactions(msg.id, json) }
+                            }
+                            }
+                        }
+                    }
+                }
+            })
+        }
+    }
+
+
+    private fun showSearchOverlay() {
+        val overlay = findViewById<LinearLayout>(R.id.searchOverlay)
+        overlay.visibility = android.view.View.VISIBLE
+        
+        val searchField = overlay.findViewById<EditText>(R.id.searchField)
+        val searchResults = overlay.findViewById<RecyclerView>(R.id.searchResults)
+        val searchCount = overlay.findViewById<TextView>(R.id.searchCount)
+        
+        searchResults.layoutManager = LinearLayoutManager(this)
+        searchField.requestFocus()
+        
+        overlay.findViewById<ImageButton>(R.id.btnSearchClose).setOnClickListener {
+            overlay.visibility = android.view.View.GONE
+        }
+        
+        searchField.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val query = s?.toString() ?: ""
+                if (query.length >= 2) {
+                    thread {
+                        val results = db.messageDao().searchMessages(selId, query)
+                        runOnUiThread {
+                            searchResults.adapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                                override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+                                    val v = LayoutInflater.from(parent.context).inflate(R.layout.item_search_result, parent, false)
+                                    return object : RecyclerView.ViewHolder(v) {}
+                                }
+                                override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+                                    val msg = results[position]
+                                    holder.itemView.findViewById<TextView>(R.id.resultText).text = msg.text
+                                    holder.itemView.findViewById<TextView>(R.id.resultMeta).text = "${msg.fromUser} • ${msg.time}"
+                                }
+                                override fun getItemCount(): Int = results.size
+                            }
+                            searchCount.text = "Найдено: ${results.size}"
+                        }
+                    }
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+    }
+
+
+    private fun flushLogs() {
+        if (logBuffer.isEmpty()) return
+        val logsCopy = logBuffer.toList()
+        logBuffer.clear()
+        val json = org.json.JSONObject().apply {
+            put("logs", org.json.JSONArray(logsCopy))
+        }
+        val body = json.toString().toRequestBody("application/json".toMediaType())
+        val request = okhttp3.Request.Builder()
+            .url("$server/api/logs?token=$token")
+            .post(body)
+            .build()
+        client.newCall(request).enqueue(object : okhttp3.Callback {
+            override fun onFailure(call: okhttp3.Call, e: java.io.IOException) {}
+            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {}
+        })
+    }
+
+
+    private fun cancelReply() {
+        replyToMsg = null
+        replyPreview.visibility = android.view.View.GONE
+    }
+
+
+    private fun Int.dpToPx(): Int = (this * resources.displayMetrics.density).toInt()
+
+    private fun sendVoiceFile(file: java.io.File) {
+        thread {
+            try {
+                val bytes = file.readBytes()
+                val body = okhttp3.MultipartBody.Builder()
+                    .setType(okhttp3.MultipartBody.FORM)
+                    .addFormDataPart("file", "voice.m4a", 
+                        okhttp3.RequestBody.create(null, bytes))
+                    .build()
+                val request = okhttp3.Request.Builder()
+                    .url("$server/upload?token=$token")
+                    .post(body)
+                    .build()
+                val response = client.newCall(request).execute()
+                val respStr = response.body!!.string()
+                    log("VOICE: upload response=$respStr")
+                if (response.isSuccessful) {
+                    val json = org.json.JSONObject(respStr)
+                    val fileId = json.optString("file_id", json.optString("url", ""))
+                    log("VOICE: fileId=$fileId")
+                    val vd = (bytes.size / 800).coerceAtLeast(1)
+                    runOnUiThread {
+                        val msg = org.json.JSONObject().apply {
+                            put("type", "private")
+                            put("to", selId)
+                            put("text", "🎤 Голосовое $fileId")
+                            put("file", org.json.JSONObject().apply {
+                                put("url", fileId)
+                                put("type", "voice")
+                                put("name", "Голосовое ${vd}с")
+                                put("duration", vd)
+                            })
+                        }
+                        wsManager?.send(msg.toString())
+                        log("VOICE: sent successfully"); t("✅ Отправлено")
+                    }
+                } else {
+                    runOnUiThread { log("VOICE: upload failed"); t("Ошибка отправки") }
+                }
+            } catch (e: Exception) {
+                runOnUiThread { log("VOICE: error - ${e.message}"); t("Ошибка: ${e.message}") }
+            }
+        }
+    }
+
+    private fun connectCallSocket() {
+        val callClient = OkHttpClient()
+        val callRequest = Request.Builder().url("ws://2.26.71.102:8000/ws/call").build()
+        callClient.newWebSocket(callRequest, object : WebSocketListener() {
+            override fun onMessage(webSocket: WebSocket, text: String) {
+                val msg = org.json.JSONObject(text)
+                if (msg.optString("type") == "call_offer") {
+                    val from = msg.optString("from")
+                    runOnUiThread {
+                        val intent = android.content.Intent(this@MainActivity, com.mychat.app.activities.CallActivity::class.java).apply {
+                            putExtra("name", from)
+                            putExtra("avatar", from.take(1))
+                            putExtra("caller", false)
+                        }
+                        startActivity(intent)
+                    }
+                }
+            }
+        })
+    }
+    
+    private fun hideContextMenu() {
+        selectedUserForDelete = null
+        chatAdapter.selectedPosition = -1
+        chatAdapter.notifyDataSetChanged()
+        
+        val slideUp = TranslateAnimation(
+            Animation.RELATIVE_TO_SELF, 0f,
+            Animation.RELATIVE_TO_SELF, 0f,
+            Animation.RELATIVE_TO_SELF, 0f,
+            Animation.RELATIVE_TO_SELF, -1f
+        )
+        slideUp.duration = 250
+        slideUp.interpolator = android.view.animation.AccelerateInterpolator()
+        slideUp.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(a: Animation?) {}
+            override fun onAnimationEnd(a: Animation?) {
+                contextMenuBar.visibility = View.GONE
+            }
+            override fun onAnimationRepeat(a: Animation?) {}
+        })
+        contextMenuBar.startAnimation(slideUp)
+    }
+    
+
+    private fun generateChatId(phone1: String, phone2: String): String {
+        val ids = listOf(phone1, phone2).sorted()
+        return java.security.MessageDigest.getInstance("MD5")
+            .digest(ids.joinToString("").toByteArray())
+            .joinToString("") { "%02x".format(it) }
+    }
+
+    private fun deleteChat(user: User) {
+        val chatId = generateChatId(currentUserPhone, user.username)
+        val request = Request.Builder()
+            .url("$server/api/chat/$chatId?user_id=$currentUserId&token=$token")
+            .delete()
+            .build()
+        log("HTTP: request"); client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                runOnUiThread { t("Ошибка удаления") }
+            }
+            override fun onResponse(call: Call, response: Response) {
+                runOnUiThread {
+                    log("Server response: OK, code=${response.code}")
+                            if (response.isSuccessful) {
+                        // Удаляем чат локально из Room
+                        CoroutineScope(Dispatchers.IO).launch {
+                            db.messageDao().deleteChat(chatId)
+                        }
+                        // Удаляем из списка
+                        val index = users.indexOf(user)
+                        if (index >= 0) {
+                            users.removeAt(index)
+                            // Удаляем дубликаты перед показом
+                        val unique = users.distinctBy { it.username }
+                        users.clear()
+                        users.addAll(unique)
+                        if (selId == null || chatLayout.visibility != View.VISIBLE) {
+                            chatAdapter.update(users)
+                        }
+                        }
+                        t("Чат удалён")
+                    } else {
+                        t("Ошибка удаления")
+                        loadUsers()
+                    }
+                }
+            }
+        })
+    }
+    
+    private fun replyToMessage(msg: ChatMessage) {
+        val replyText = "↪ ${msg.from}: ${msg.text.take(50)}...\n"
+        msgInput.setText(replyText)
+        msgInput.setSelection(msgInput.text.length)
+    }
+    
+    private fun showForwardDialog(msg: ChatMessage) {
+        pendingForward = msg
+        closeChat()
+        t("Выберите чат для пересылки")
+    }
+    
+    private fun forwardMessage(msg: ChatMessage) {
+        val forwardData = JSONObject().apply {
+            put("from", msg.from)
+            put("text", msg.text)
+        }
+        // Если текст пустой, но есть файл — добавляем подпись
+        if (msg.file != null) {
+            forwardData.put("file", JSONObject().apply {
+                put("url", msg.file!!.url)
+                put("name", msg.file!!.name)
+                put("size", msg.file!!.size)
+            })
+            if (msg.text.isEmpty()) {
+                forwardData.put("text", "")
+            }
+        }
+        val json = JSONObject().apply {
+            put("type", "forward")
+            put("to", selId)
+            put("forward", forwardData)
+        }
+        log("WS send: delete msg"); wsManager?.send(json.toString())
+        t("Сообщение переслано!")
+    }
+    
+    private fun loadMessages(userId: String) {
+        val request = Request.Builder()
+            .url("$server/messages/$userId?me=$me&token=$token")
+            .build()
+        log("HTTP: request"); client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
+            override fun onResponse(call: Call, response: Response) {
+                response.body?.let { body ->
+                    try {
+                        val json = JSONArray(body.string())
+                        val messages = mutableListOf<ChatMessage>()
+                        for (i in 0 until json.length()) {
+                            val obj = json.getJSONObject(i)
+                            val fileId = obj.optString("file_id", "")
+                            val fileType = obj.optString("file_type", "")
+                            val fileName = obj.optString("file_name", "")
+                            val file = if (fileId.isNotEmpty()) FileInfo(fileName, fileId) else null
+                            val reactionsJson = obj.optJSONObject("reactions")
+                        val reactions = mutableMapOf<String, MutableList<String>>()
+                        if (reactionsJson != null && reactionsJson.length() > 0) {
+                            reactionsJson.keys().forEach { key ->
+                                val arr = reactionsJson.getJSONArray(key)
+                                val list = mutableListOf<String>()
+                                for (j in 0 until arr.length()) list.add(arr.getString(j))
+                                reactions[key] = list
+                            }
+                        }
+                        messages.add(ChatMessage(
+                                id = obj.optString("id"),
+                                from = obj.optString("from"),
+                                to = obj.optString("to"),
+                                text = obj.optString("text"),
+                                time = obj.optString("time"),
+                                file = file,
+                                reactions = reactions
+                            ))
+                        }
+                        runOnUiThread {
+                            msgAdapter = MessageAdapter(
+                                me = me,
+                                onDownload = { url, name -> downloadFile(url, name) },
+                                onMessageLongClick = { msg -> showMessageActions(msg) },
+                                onSaveReaction = { msgId, json ->
+                                    kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                                        log("Saved to Room: $msgId")
+                            // Старый метод, оставлен для совместимости
+db.messageDao().updateReactions(msgId, json)
+                                    }
+                                },
+                                appContext = applicationContext,
+                                onLog = { msg -> log(msg) }
+                            )
+                            messagesList.adapter = msgAdapter
+                            messagesList.scrollToPosition(msgAdapter.itemCount - 1)
+                            loadReactions(messages)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        })
+    }
+    
+    private fun editMessage(msg: ChatMessage) {
+        if (msg.from != me) {
+            t("Можно изменить только свои сообщения")
+            return
+        }
+        val input = EditText(this).apply {
+            setText(msg.text)
+            setTextColor(0xffffffff.toInt())
+            setHintTextColor(0xff636366.toInt())
+            setBackgroundResource(R.drawable.bg_input)
+            setPadding(30, 20, 30, 20)
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Изменить сообщение")
+            .setView(input)
+            .setPositiveButton("Сохранить") { _, _ ->
+                val newText = input.text.toString().trim()
+                if (newText.isNotEmpty() && newText != msg.text) {
+                    val json = JSONObject().apply {
+                        put("type", "edit")
+                        put("to", msg.to)
+                        put("msg_id", msg.id)
+                        put("text", newText)
+                    }
+                    log("WS send: clear history"); wsManager?.send(json.toString())
+                    t("Сообщение изменено")
+                    // Обновляем через 500мс
+                    handler.postDelayed({ refreshMessages() }, 500)
+                }
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
+    
+
+
+    private fun forwardSelectedMessages() {
+        val ids = msgAdapter.selectedIds.toList()
+        if (ids.isEmpty()) {
+            t("Ничего не выбрано")
+            return
+        }
+        // Собираем выбранные сообщения
+        val messagesToForward = msgAdapter.getItems()
+            .filterIsInstance<ChatMessage>()
+            .filter { it.id in ids }
+        
+        pendingForwardMessages = messagesToForward
+        isForwardMode = true
+        log("FORWARD: ${messagesToForward.size} messages to forward")
+        
+        // Выходим из чата
+        exitSelectMode()
+        closeChat()
+        t("Выберите чат для пересылки")
+    }
+
+
+    private fun exitSelectMode() {
+        log("UI: exit select mode")
+        isSelectMode = false
+        msgAdapter.selectMode = false
+        msgAdapter.selectedIds.clear()
+        msgAdapter.notifyDataSetChanged()
+        log("UI: select mode OFF"); selectPanel.visibility = android.view.View.GONE
+        chatHeader.visibility = android.view.View.VISIBLE
+    }
+
+        private fun deleteSelectedMessages() {
+        val ids = msgAdapter.selectedIds.toList()
+        if (ids.isEmpty()) {
+            t("Ничего не выбрано")
+            return
+        }
+        
+        log("DELETE: deleting ${ids.size} messages")
+        
+        // Сначала собираем все сообщения
+        val messagesToDelete = msgAdapter.getItems()
+            .filterIsInstance<ChatMessage>()
+            .filter { it.id in ids }
+            .toList()  // Фиксируем список
+        
+        // Отправляем на сервер и помечаем в Room
+        for (msg in messagesToDelete) {
+            val json = org.json.JSONObject().apply {
+                put("type", "delete")
+                put("to", msg.to)
+                put("msg_id", msg.id)
+            }
+            log("WS send: delete msg"); wsManager?.send(json.toString())
+            thread { db.messageDao().markDeleted(msg.id); log("Room: markDeleted ${msg.id}") }
+        }
+        
+        // Удаляем из адаптера все сразу
+        for (msg in messagesToDelete) {
+            msgAdapter.markDeleted(msg.id)
+        }
+        
+        exitSelectMode()
+        log("DELETE: done ${messagesToDelete.size} messages")
+        t("Удалено: ${messagesToDelete.size}")
+    }
+
+    private fun deleteMessage(msg: ChatMessage) {
+        if (msg.from != me) {
+            t("Можно удалить только свои сообщения")
+            return
+        }
+        val json = JSONObject().apply {
+            put("type", "delete")
+            put("to", msg.to)
+            put("msg_id", msg.id)
+        }
+        log("WS send: mute"); wsManager?.send(json.toString())
+        thread { db.messageDao().markDeleted(msg.id); log("Room: markDeleted ${msg.id}") }
+        msgAdapter.markDeleted(msg.id)
+        // Меняем текст локально сразу
+        msgAdapter.markDeleted(msg.id)
+        t("Сообщение удалено")
+    }
+    
+    private fun addToFavorites(msg: ChatMessage) {
+        val forwardText = "↪ ${msg.from}: ${msg.text}"
+        wsManager?.send(JSONObject().apply {
+            put("type", "private")
+            put("to", "favorites")
+            put("text", forwardText)
+        }.toString())
+        msgAdapter.addMessage(ChatMessage(
+            id = "sending_${System.currentTimeMillis()}",
+            from = me, to = "favorites", text = forwardText,
+            time = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Date())
+        ))
+        t("✅ Добавлено в избранное!")
+    }
+
+    private fun showStickers() {
+        val bs = BottomSheetDialog(this)
+        val v = layoutInflater.inflate(R.layout.bottom_stickers, null)
+        bs.setContentView(v)
         val list = listOf(R.drawable.sticker1, R.drawable.sticker2, R.drawable.sticker3, R.drawable.sticker4, R.drawable.sticker5, R.drawable.sticker6, R.drawable.sticker7, R.drawable.sticker8)
         v.findViewById<RecyclerView>(R.id.stickersGrid).apply {
             layoutManager = GridLayoutManager(this@MainActivity, 4)
