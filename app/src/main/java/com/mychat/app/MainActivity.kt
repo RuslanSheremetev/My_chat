@@ -28,6 +28,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.mychat.app.viewmodel.ChatViewModel
@@ -117,7 +118,7 @@ class MainActivity : AppCompatActivity() {
     private var token = ""
     private var me = ""
     private var selId = ""
-    private lateinit var db: AppDatabase
+    @Inject lateinit var db: AppDatabase
     private val users = mutableListOf<User>()
     private var currentUserId: String = ""
     private var currentUserPhone: String = ""
@@ -141,9 +142,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        db = AppDatabase.getInstance(this)
-        userRepo = UserRepository(db, server)
-        chatRepo = ChatRepository(db, server)
         window.statusBarColor = 0xff1c1c1e.toInt()
         
         // ViewModel
@@ -2673,8 +2671,8 @@ db.messageDao().updateReactions(msgId, json)
     private var isLiveLocation = false
     private var liveLocationTimer: java.util.Timer? = null
     private val loadedReactions = mutableSetOf<String>()
-    private lateinit var userRepo: UserRepository
-    private lateinit var chatRepo: ChatRepository
+    @Inject lateinit var userRepo: UserRepository
+    @Inject lateinit var chatRepo: ChatRepository
     private lateinit var viewModel: ChatViewModel
     private lateinit var wsManager: WebSocketManager
     private var isBlocked = false
