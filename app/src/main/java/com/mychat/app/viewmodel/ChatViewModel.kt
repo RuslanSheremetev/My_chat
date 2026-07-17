@@ -10,6 +10,7 @@ import com.mychat.app.models.User
 import com.mychat.app.network.WebSocketManager
 import com.mychat.app.repository.ChatRepository
 import com.mychat.app.utils.chatKey
+import com.mychat.app.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +30,7 @@ class ChatViewModel @Inject constructor() : ViewModel() {
     private val _me = MutableStateFlow("")
     val me: StateFlow<String> = _me
 
-    private val _server = MutableStateFlow("http://2.26.71.102:8000")
+    private val _server = MutableStateFlow(Constants.SERVER_URL)
     val server: StateFlow<String> = _server
 
     private val _selectedChat = MutableStateFlow<String?>(null)

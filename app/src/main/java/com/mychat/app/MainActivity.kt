@@ -746,7 +746,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         .putString("user_id", currentUserId)
                         .putString("phone", currentUserPhone)
                         .putString("username", me)
-                        .putString("server_url", server)
+                        .putString("server_url", Constants.SERVER_URL)
                         .apply()
                     handler.post {
                         viewModel.init(db, server, currentUserId, token)
