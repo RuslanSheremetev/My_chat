@@ -2536,18 +2536,20 @@ db.messageDao().updateReactions(msgId, json)
     }
     
     private fun addToFavorites(msg: ChatMessage) {
-        val forwardText = "↪ ${msg.from}: ${msg.text}"
-        wsManager?.send(JSONObject().apply {
-            put("type", "private")
-            put("to", "favorites")
-            put("text", forwardText)
-        }.toString())
-        msgAdapter.addMessage(ChatMessage(
-            id = "sending_${System.currentTimeMillis()}",
-            from = me, to = "favorites", text = forwardText,
-            time = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Date())
-        ))
-        t("✅ Добавлено в избранное!")
+        thread {
+            try {
+                val json = JSONObject().apply {
+                    put("msg_id", msg.id)
+                }
+                val body = okhttp3.RequestBody.create("application/json".toMediaType(), json.toString())
+                val response = ApiClient.post("$server/api/favorites/add", token, body)
+                if (response.isSuccessful) {
+                    runOnUiThread { t("✅  Добавлено в избранное!") }
+                }
+            } catch (e: Exception) {
+                runOnUiThread { t("Ошибка: ${e.message}") }
+            }
+        }
     }
 
     private fun showStickers() {
