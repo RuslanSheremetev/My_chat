@@ -33,6 +33,9 @@ class ChatRepository(
             val name = o.optString("name", "")
             val displayName = if (name.isNotEmpty()) name else username
             val lastMsgFrom = o.optString("lastMsgFrom", "")
+            val lastMsgText = o.optString("lastMsg", "")
+            val lastMsgTime = o.optString("last_msg_time", "")
+            val lastMsgStatus = o.optString("lastMsgStatus", "sent")
             users.add(User(
                 username = username,
                 name = displayName,
@@ -45,7 +48,10 @@ class ChatRepository(
                 isGroup = o.optBoolean("is_group", false),
                 isFeed = o.optBoolean("is_feed", false),
                 unread = o.optInt("unread", 0),
-                lastMsgFromMe = (lastMsgFrom == me)
+                lastMsgFromMe = (lastMsgFrom == me),
+                lastMsg = lastMsgText,
+                lastTime = lastMsgTime,
+                lastMsgStatus = lastMsgStatus
             ))
         }
         return users
