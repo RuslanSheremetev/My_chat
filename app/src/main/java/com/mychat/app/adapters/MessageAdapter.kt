@@ -244,7 +244,7 @@ class MessageAdapter(
                             }
                             holder.itemView.context.startActivity(intent)
                         } else {
-                            thread {
+                            CoroutineScope(Dispatchers.IO).launch {
                                 try {
                                     val bytes = java.net.URL(url).readBytes()
                                     val savedFile = com.mychat.app.utils.FileCache.saveToCache(url, bytes)
@@ -370,7 +370,7 @@ class MessageAdapter(
                             }
                             holder.itemView.context.startActivity(intent)
                         } else {
-                            thread {
+                            CoroutineScope(Dispatchers.IO).launch {
                                 try {
                                     val bytes = java.net.URL(url).readBytes()
                                     val savedFile = com.mychat.app.utils.FileCache.saveToCache(url, bytes)
@@ -460,7 +460,7 @@ class MessageAdapter(
             
             // Загружаем с задержкой и уменьшением
             imageView.postDelayed({
-                thread {
+                CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val bytes = java.net.URL(url).readBytes()
                         FileCache.saveToCache(url, bytes)
@@ -558,7 +558,7 @@ class MessageAdapter(
             val json = org.json.JSONObject(newReactions as Map<*, *>).toString()
             val ctx = appContext
             if (ctx != null) {
-                thread {
+                CoroutineScope(Dispatchers.IO).launch {
                     com.mychat.app.data.AppDatabase.getInstance(ctx).messageDao().updateReactions(msgId, json)
                 }
             }
@@ -594,7 +594,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         val match = regex.find(text) ?: return
         val videoId = match.groupValues[1]
         val preview = view.findViewById<LinearLayout>(R.id.ytPreview) ?: return
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val json = org.json.JSONObject(java.net.URL("https://www.youtube.com/oembed?url=https://youtube.com/watch?v=$videoId&format=json").readText())
                 val title = json.optString("title", "YouTube")
@@ -621,7 +621,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         val preview = view.findViewById<LinearLayout>(R.id.linkPreview) ?: return
         preview.visibility = View.GONE  // скрываем по умолчанию
         
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val json = org.json.JSONObject(java.net.URL("http://2.26.71.102:8001/api/preview?url=$url&token=preview").readText())
                 val title = json.optString("title", "")
@@ -634,7 +634,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
                         view.findViewById<TextView>(R.id.previewTitle)?.text = title
                         view.findViewById<TextView>(R.id.previewDesc)?.text = desc
                         if (image.isNotEmpty()) {
-                            thread {
+                            CoroutineScope(Dispatchers.IO).launch {
                                 try {
                                     val bytes = java.net.URL(image).readBytes()
                                     val bmp = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
@@ -662,7 +662,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
             cached.absolutePath
         } else {
             // Фоновое кэширование для следующего раза
-            thread {
+            CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val bytes = java.net.URL(url).readBytes()
                     com.mychat.app.utils.FileCache.saveToCache(cacheKey, bytes)
@@ -683,7 +683,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         val lat = msg.location?.lat ?: return
         val lon = msg.location?.lon ?: return
         val cacheKey = "map_${lat}_${lon}"
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 // Проверяем кэш
                 val cached = com.mychat.app.utils.FileCache.getCachedFile(cacheKey)
@@ -780,7 +780,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
                 val url = msg.file?.url ?: return@setOnClickListener
                 val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8001$url"
                 btn.text = "..."
-                thread {
+                CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val cached = com.mychat.app.utils.FileCache.getCachedFile(fullUrl)
                         if (cached != null) {

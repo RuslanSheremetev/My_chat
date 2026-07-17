@@ -89,7 +89,7 @@ class GalleryActivity : AppCompatActivity() {
         if (cached != null) {
             imageView.setImageBitmap(cached)
         } else {
-            thread {
+            CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val bytes = java.net.URL(url).readBytes()
                     FileCache.saveToCache(url, bytes)
