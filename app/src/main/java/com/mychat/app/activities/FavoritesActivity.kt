@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mychat.app.R
 import com.mychat.app.adapters.FavoritesAdapter
-import com.mychat.app.adapters.FavoriteItem
+import com.mychat.app.models.FavoriteItem
 import com.mychat.app.network.ApiClient
 import com.mychat.app.utils.Constants
 import org.json.JSONArray
@@ -117,7 +117,7 @@ class FavoritesActivity : AppCompatActivity() {
                 val response = ApiClient.post(
                     "$serverUrl/api/favorites/remove/${item.msgId}",
                     token,
-                    okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/json"), "{}")
+                    okhttp3.RequestBody.create("application/json".toMediaType(), "{}")
                 )
                 if (response.isSuccessful) {
                     runOnUiThread {
