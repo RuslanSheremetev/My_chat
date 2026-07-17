@@ -304,7 +304,7 @@ class ChatAdapter(
             }
             
             lastTime.visibility = View.VISIBLE
-            lastTime.text = user.lastTime
+            lastTime.text = formatTime(user.lastTime)
             // Unread badge
             if (user.unread > 0) {
                 unreadBadge.visibility = View.VISIBLE
