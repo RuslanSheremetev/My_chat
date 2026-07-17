@@ -600,7 +600,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         prefs.edit().putString("user_status", bio).apply()
         profileBio.text = bio
-        log("WS send: typing"); ws?.send(JSONObject().apply {
+        log("WS send: typing"); wsManager?.send(JSONObject().apply {
             put("type", "profile_updated")
             put("bio", bio)
             put("status_text", bio)
@@ -662,7 +662,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                 val m = membIn.text.toString().split(",").map { it.trim() }.filter { it.isNotEmpty() }.toMutableList()
                 if (n.isNotEmpty() && m.isNotEmpty()) {
                     m.add(me)
-                    log("WS send: reaction"); ws?.send(JSONObject().apply {
+                    log("WS send: reaction"); wsManager?.send(JSONObject().apply {
                         put("type", "create_group")
                         put("name", n)
                         put("members", JSONArray(m))
@@ -707,7 +707,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             .setPositiveButton("Создать") { _, _ ->
                 val n = nameIn.text.toString().trim()
                 if (n.isNotEmpty()) {
-                    log("WS send: sticker"); ws?.send(JSONObject().apply {
+                    log("WS send: sticker"); wsManager?.send(JSONObject().apply {
                         put("type", "create_feed")
                         put("name", n)
                         put("description", descIn.text.toString().trim())
@@ -861,7 +861,7 @@ db.messageDao().updateReactions(msgId, json)
         val u = users.find { it.username == id }
         // Отправляем статус прочтения
         if (u != null) {
-            ws?.send(JSONObject().apply {
+            wsManager?.send(JSONObject().apply {
                 put("type", "read")
                 put("to", id)
             }.toString())
@@ -895,7 +895,7 @@ db.messageDao().updateReactions(msgId, json)
         // Отмечаем последнее сообщение как прочитанное
         val lastMsg = msgAdapter.getItems().lastOrNull()
         if (lastMsg is ChatMessage) {
-            ws?.send("{\"type\":\"read\",\"from\":\"$me\",\"to\":\"$id\",\"msg_id\":\"${lastMsg.id}\"}")
+            wsManager?.send("{\"type\":\"read\",\"from\":\"$me\",\"to\":\"$id\",\"msg_id\":\"${lastMsg.id}\"}")
         }
         
         lastMessageCount = 0
@@ -1470,7 +1470,7 @@ private fun sendMessageTo(to: String, text: String) {
             put("to", to)
             put("text", text)
         }
-        log("WS send: message"); ws?.send(json.toString())
+        log("WS send: message"); wsManager?.send(json.toString())
         // Добавляем в локальный список
         val msg = ChatMessage(
             id = "sending_${System.currentTimeMillis()}",
@@ -1486,7 +1486,7 @@ private fun sendMessageTo(to: String, text: String) {
         val t = msgInput.text.toString().trim()
         log("DEBUG: t='${t.take(20)}' selId='$selId' ws=${ws != null}")
         if (t.isEmpty() || selId.isEmpty()) return
-        log("WS send: file"); ws?.send(
+        log("WS send: file"); wsManager?.send(
             JSONObject().apply {
                 put("type", "private")
                 put("to", selId)
@@ -1632,7 +1632,7 @@ private fun sendMessageTo(to: String, text: String) {
                         put("live", true)
                     })
                 }
-                ws?.send(json.toString())
+                wsManager?.send(json.toString())
             } catch (_: Exception) {}
         }
     }
@@ -1649,7 +1649,7 @@ private fun sendMessageTo(to: String, text: String) {
                         put("lon", lon)
                     })
                 }
-                ws?.send(json.toString())
+                wsManager?.send(json.toString())
                 handler.post { t("📍 Локация отправлена") }
             } catch (e: Exception) {
                 handler.post { t("Ошибка отправки") }
@@ -1689,7 +1689,7 @@ private fun sendMessageTo(to: String, text: String) {
             val type = d.getStringExtra("botType") ?: "ai"
             val help = d.getStringExtra("botHelp") ?: ""
             if (name.isNotEmpty()) {
-                ws?.send(JSONObject().apply {
+                wsManager?.send(JSONObject().apply {
                     put("type", "create_bot")
                     put("name", name)
                     put("desc", desc)
@@ -1720,7 +1720,7 @@ private fun sendMessageTo(to: String, text: String) {
                 ).execute()
                 if (r.isSuccessful) {
                     val u = JSONObject(r.body!!.string()).optString("url", "")
-                    log("WS send: forward"); ws?.send(
+                    log("WS send: forward"); wsManager?.send(
                         JSONObject().apply {
                             put("type", "private")
                             put("to", selId)
@@ -1829,7 +1829,7 @@ private fun sendMessageTo(to: String, text: String) {
                 if (r.isSuccessful) {
                     val u = JSONObject(r.body!!.string()).optString("url", "")
                     val isImage = fn.endsWith(".jpg") || fn.endsWith(".jpeg") || fn.endsWith(".png") || fn.endsWith(".gif") || fn.endsWith(".webp")
-                    log("WS send: block"); ws?.send(
+                    log("WS send: block"); wsManager?.send(
                         JSONObject().apply {
                             put("type", "private")
                             put("to", selId)
@@ -2208,7 +2208,7 @@ db.messageDao().updateReactions(msg.id, json) }
                                 put("duration", vd)
                             })
                         }
-                        ws?.send(msg.toString())
+                        wsManager?.send(msg.toString())
                         log("VOICE: sent successfully"); t("✅ Отправлено")
                     }
                 } else {
@@ -2345,7 +2345,7 @@ db.messageDao().updateReactions(msg.id, json) }
             put("to", selId)
             put("forward", forwardData)
         }
-        log("WS send: delete msg"); ws?.send(json.toString())
+        log("WS send: delete msg"); wsManager?.send(json.toString())
         t("Сообщение переслано!")
     }
     
@@ -2437,7 +2437,7 @@ db.messageDao().updateReactions(msgId, json)
                         put("msg_id", msg.id)
                         put("text", newText)
                     }
-                    log("WS send: clear history"); ws?.send(json.toString())
+                    log("WS send: clear history"); wsManager?.send(json.toString())
                     t("Сообщение изменено")
                     // Обновляем через 500мс
                     handler.postDelayed({ refreshMessages() }, 500)
@@ -2503,7 +2503,7 @@ db.messageDao().updateReactions(msgId, json)
                 put("to", msg.to)
                 put("msg_id", msg.id)
             }
-            log("WS send: delete msg"); ws?.send(json.toString())
+            log("WS send: delete msg"); wsManager?.send(json.toString())
             thread { db.messageDao().markDeleted(msg.id); log("Room: markDeleted ${msg.id}") }
         }
         
@@ -2527,7 +2527,7 @@ db.messageDao().updateReactions(msgId, json)
             put("to", msg.to)
             put("msg_id", msg.id)
         }
-        log("WS send: mute"); ws?.send(json.toString())
+        log("WS send: mute"); wsManager?.send(json.toString())
         thread { db.messageDao().markDeleted(msg.id); log("Room: markDeleted ${msg.id}") }
         msgAdapter.markDeleted(msg.id)
         // Меняем текст локально сразу
@@ -2537,7 +2537,7 @@ db.messageDao().updateReactions(msgId, json)
     
     private fun addToFavorites(msg: ChatMessage) {
         val forwardText = "↪ ${msg.from}: ${msg.text}"
-        ws?.send(JSONObject().apply {
+        wsManager?.send(JSONObject().apply {
             put("type", "private")
             put("to", "favorites")
             put("text", forwardText)
@@ -2576,7 +2576,7 @@ db.messageDao().updateReactions(msgId, json)
                 put("to", selId)
                 put("text", emoji)
             }
-            ws?.send(json.toString())
+            wsManager?.send(json.toString())
         }
         }
         bs.show()
@@ -2588,7 +2588,7 @@ db.messageDao().updateReactions(msgId, json)
             put("type", "block")
             put("to", selId)
         }
-        ws?.send(json.toString())
+        wsManager?.send(json.toString())
         // Сохраняем в Room
         thread {
             val ck = chatKey(me, selId)
