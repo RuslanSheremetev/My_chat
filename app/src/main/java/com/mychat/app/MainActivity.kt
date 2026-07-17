@@ -56,6 +56,7 @@ import com.mychat.app.data.ReactionEntity
 import com.mychat.app.utils.chatKey
 import com.mychat.app.utils.Constants
 import com.mychat.app.repository.UserRepository
+import com.mychat.app.network.ApiClient
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -132,6 +133,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        db = AppDatabase.getInstance(this)
         userRepo = UserRepository(db, server)
         window.statusBarColor = 0xff1c1c1e.toInt()
         // Контекстное меню для чатов
@@ -156,7 +158,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         FileCache.init(this)
-        db = AppDatabase.getInstance(this)
         
         loginLayout = findViewById(R.id.loginLayout)
         mainContainer = findViewById(R.id.mainContainer)
@@ -3027,14 +3028,13 @@ db.messageDao().updateReactions(msgId, json)
                 } else {
                     db.messageDao().saveChatSettings(ChatSettings(chatKey = ck, isMuted = savedState))
                 }
-                // Отправляем на сервер
+                // Отправляем на сервер через ApiClient (Bearer)
                 try {
                     val json = org.json.JSONObject()
                     json.put("chat_key", ck)
                     json.put("is_muted", savedState)
                     val body = okhttp3.RequestBody.create("application/json".toMediaType(), json.toString())
-                    val req = okhttp3.Request.Builder().url("$server/chat_settings?token=$token").post(body).build()
-                    client.newCall(req).execute().close()
+                    ApiClient.post("$server/chat_settings", token, body).close()
                 } catch (e: Exception) {
                     log("Mute server: ${e.message}")
                 }
