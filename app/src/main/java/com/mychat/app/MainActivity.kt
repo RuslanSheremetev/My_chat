@@ -749,7 +749,10 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         .putString("username", me)
                         .putString("server_url", server)
                         .apply()
-                    handler.post { showMain() }
+                    handler.post {
+                        viewModel.init(db, server, currentUserId, token)
+                        showMain()
+                    }
                 } else {
                     handler.post { t(JSONObject(r.body!!.string()).optString("detail", "Error")) }
                 }
