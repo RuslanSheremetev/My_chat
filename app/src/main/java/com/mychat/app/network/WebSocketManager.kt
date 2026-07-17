@@ -13,9 +13,12 @@ class WebSocketManager(
     var onReconnect: (() -> Unit)? = null
 
     fun connect() {
-        val url = server.replace("http://", "ws://") + "/ws/$username?token=$token"
+        val url = server.replace("http://", "ws://") + "/ws/$username"
         ws = ApiClient.client.newWebSocket(
-            Request.Builder().url(url).build(),
+            Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer $token")
+                .build(),
             object : WebSocketListener() {
                 override fun onMessage(webSocket: WebSocket, text: String) {
                     onMessage?.invoke(text)

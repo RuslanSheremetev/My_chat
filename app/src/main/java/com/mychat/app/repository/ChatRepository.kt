@@ -2,30 +2,26 @@ package com.mychat.app.repository
 
 import com.mychat.app.data.*
 import com.mychat.app.models.*
+import com.mychat.app.network.ApiClient
+import com.mychat.app.utils.Extensions.chatKey
 import org.json.JSONArray
 import org.json.JSONObject
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
-import java.io.IOException
 
 class ChatRepository(
     private val db: AppDatabase,
-    private val client: OkHttpClient,
     private val server: String
 ) {
-    private val me: String get() = currentUser ?: ""
-    private val token: String get() = currentToken ?: ""
-    
     var currentUser: String? = null
     var currentToken: String? = null
-    
-    fun chatKey(u1: String, u2: String) = listOf(u1, u2).sorted().joinToString("_")
-    
-    // Загрузка пользователей
+
+    private val me: String get() = currentUser ?: ""
+    private val token: String get() = currentToken ?: ""
+
+    // Загрузка пользователей через ApiClient (Bearer)
     suspend fun loadUsers(): List<User> {
-        val url = "$server/users/$me?token=$token"
-        val request = Request.Builder().url(url).build()
-        val response = client.newCall(request).execute()
+        val response = ApiClient.get("$server/users/$me", token)
         val json = JSONArray(response.body!!.string())
         val users = mutableListOf<User>()
         for (i in 0 until json.length()) {
@@ -46,13 +42,11 @@ class ChatRepository(
         }
         return users
     }
-    
-    // Получить chat_settings с сервера
+
+    // Синхронизация chat_settings через ApiClient
     suspend fun syncChatSettings(users: List<User>) {
         try {
-            val url = "$server/api/chat_settings/all?me=$me&token=$token"
-            val request = Request.Builder().url(url).build()
-            val response = client.newCall(request).execute()
+            val response = ApiClient.get("$server/api/chat_settings/all?me=$me", token)
             if (response.isSuccessful) {
                 val json = JSONObject(response.body!!.string())
                 for (u in users) {
@@ -61,7 +55,6 @@ class ChatRepository(
                         val s = json.getJSONObject(ck)
                         u.isMuted = s.optBoolean("is_muted", false)
                         u.unread = s.optInt("unread", 0)
-                        // Сохраняем в Room
                         val settings = db.messageDao().getChatSettings(ck) ?: ChatSettings(chatKey = ck)
                         db.messageDao().saveChatSettings(settings.copy(isMuted = u.isMuted, unread = u.unread))
                     }
@@ -69,8 +62,8 @@ class ChatRepository(
             }
         } catch (e: Exception) {}
     }
-    
-    // Сохранить mute
+
+    // Сохранение mute через ApiClient (Bearer)
     fun saveMute(chatKey: String, isMuted: Boolean) {
         val settings = db.messageDao().getChatSettings(chatKey) ?: ChatSettings(chatKey = chatKey)
         db.messageDao().saveChatSettings(settings.copy(isMuted = isMuted))
@@ -82,8 +75,7 @@ class ChatRepository(
                     put("is_muted", isMuted)
                 }
                 val body = RequestBody.create("application/json".toMediaType(), json.toString())
-                val request = Request.Builder().url("$server/chat_settings?token=$token").post(body).build()
-                client.newCall(request).execute()
+                ApiClient.post("$server/chat_settings", token, body)
             } catch (e: Exception) {}
         }.start()
     }
