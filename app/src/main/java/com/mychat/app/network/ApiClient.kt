@@ -9,18 +9,13 @@ object ApiClient {
         .readTimeout(30, TimeUnit.SECONDS)
         .build()
 
-    fun get(url: String, token: String): Response {
-        val request = Request.Builder().url(url)
-            .addHeader("Authorization", "Bearer $token")
-            .build()
+    fun get(url: String): Response {
+        val request = Request.Builder().url(url).build()
         return client.newCall(request).execute()
     }
 
-    fun post(url: String, token: String, body: RequestBody): Response {
-        val request = Request.Builder().url(url)
-            .addHeader("Authorization", "Bearer $token")
-            .post(body)
-            .build()
+    fun post(url: String, body: RequestBody): Response {
+        val request = Request.Builder().url(url).post(body).build()
         return client.newCall(request).execute()
     }
 }
