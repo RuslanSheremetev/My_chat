@@ -27,6 +27,7 @@ import android.os.VibrationEffect
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.mychat.app.viewmodel.ChatViewModel
@@ -78,6 +79,11 @@ import android.location.Location
 import android.location.LocationManager
 import android.location.LocationListener
 
+@androidx.activity.ComponentActivity
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     companion object {
         var onSignalingMessage: ((String) -> Unit)? = null
