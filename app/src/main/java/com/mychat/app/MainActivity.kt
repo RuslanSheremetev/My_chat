@@ -78,9 +78,8 @@ import java.util.concurrent.TimeUnit
 import android.location.Location
 import android.location.LocationManager
 import android.location.LocationListener
-
-@androidx.activity.ComponentActivity
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 @AndroidEntryPoint
