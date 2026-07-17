@@ -3,6 +3,8 @@ package com.mychat.app.activities
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
