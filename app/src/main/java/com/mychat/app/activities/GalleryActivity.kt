@@ -12,6 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.mychat.app.R
 import com.mychat.app.utils.FileCache
 import kotlin.concurrent.thread
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class GalleryActivity : AppCompatActivity() {
     private var photos = mutableListOf<String>()

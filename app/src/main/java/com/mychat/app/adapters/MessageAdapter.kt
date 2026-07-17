@@ -21,6 +21,9 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.thread
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MessageAdapter(
     var selectMode: Boolean = false,
