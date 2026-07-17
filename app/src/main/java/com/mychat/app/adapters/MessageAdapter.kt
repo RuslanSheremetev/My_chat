@@ -698,7 +698,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
                 bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, baos)
                 com.mychat.app.utils.FileCache.saveToCache(cacheKey, baos.toByteArray())
             }
-                    return
+                    // return
                 }
                 // Загружаем и кэшируем
                 val mapUrl = "https://staticmap.openstreetmap.de/staticmap.php?center=$lat,$lon&zoom=15&size=400x400&markers=$lat,$lon,red-pushpin"
