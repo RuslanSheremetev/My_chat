@@ -3,7 +3,7 @@ package com.mychat.app.repository
 import com.mychat.app.data.*
 import com.mychat.app.models.*
 import com.mychat.app.network.ApiClient
-import com.mychat.app.utils.Extensions.chatKey
+import com.mychat.app.utils.chatKey
 import org.json.JSONArray
 import org.json.JSONObject
 import okhttp3.*
