@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navChats: LinearLayout
     private lateinit var navSettings: LinearLayout
     private lateinit var navProfile: LinearLayout
-    private var server = "http://2.26.71.102:8000"
+    private var server = Constants.SERVER_URL"
     private var token = ""
     private var me = ""
     private var selId = ""

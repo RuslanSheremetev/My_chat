@@ -1,4 +1,4 @@
-package com.mychat.app.activities
+import com.mychat.app.utils.Constants
 
 import android.content.Intent
 import android.os.Bundle
@@ -70,7 +70,7 @@ class QrLoginActivity : AppCompatActivity() {
         }
         val body = json.toString().toRequestBody("application/json".toMediaType())
         val request = Request.Builder()
-            .url("http://2.26.71.102:8000/api/qr/login")
+            .url(Constants.SERVER_URL/api/qr/login")
             .post(body)
             .build()
 

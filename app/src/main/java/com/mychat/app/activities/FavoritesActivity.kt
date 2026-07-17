@@ -1,4 +1,4 @@
-package com.mychat.app.activities
+import com.mychat.app.utils.Constants
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -43,7 +43,7 @@ class FavoritesActivity : AppCompatActivity() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         token = intent.getStringExtra("token") ?: prefs.getString("token", "") ?: ""
         username = intent.getStringExtra("username") ?: prefs.getString("username", "") ?: ""
-        serverUrl = prefs.getString("server_url", "http://2.26.71.102:8000") ?: "http://2.26.71.102:8000"
+        serverUrl = prefs.getString("server_url", Constants.SERVER_URL") ?: Constants.SERVER_URL"
 
         initViews()
         setupFilters()
