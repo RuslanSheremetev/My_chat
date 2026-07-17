@@ -1065,97 +1065,93 @@ db.messageDao().updateReactions(msgId, json)
                 try {
                     val j = JSONObject(text)
                     val jtype = j.optString("type")
-                    if (jtype == "call_offer") {
-                        log("Incoming call from " + j.optString("from", ""))
-                        val from = j.optString("from", "")
-                        if (from.isNotEmpty() && from != me) {
-                            val intent = android.content.Intent(this@MainActivity, com.mychat.app.activities.CallActivity::class.java).apply {
-                                putExtra("name", from)
-                                putExtra("caller", false)
-                                putExtra("sdp", j.optJSONObject("sdp")?.toString() ?: "")
-                            }
-                            startActivity(intent)
-                        }
-                        return
-                    }
-                    if (jtype in listOf("call_answer", "ice_candidate", "call_end")) {
-                        onSignalingMessage?.invoke(text)
-                        return
-                    }
-                    if (jtype == "ping") { wsManager.send("{\"type\":\"pong\"}"); return }
-                    if (jtype == "delivered") {
-                        val to = j.optString("to", "")
-                        val u = users.find { it.username == to }
-                        if (u != null) {
-                            u.lastMsgStatus = "delivered"
-                            runOnUiThread { chatAdapter.update(users) }
-                            thread {
-                                val ck = chatKey(me, to)
-                                val s = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
-                                db.messageDao().saveChatSettings(s.copy(lastMsgStatus = "delivered"))
+                    when {
+                        jtype == "call_offer" -> {
+                            log("Incoming call from " + j.optString("from", ""))
+                            val from = j.optString("from", "")
+                            if (from.isNotEmpty() && from != me) {
+                                val intent = android.content.Intent(this@MainActivity, com.mychat.app.activities.CallActivity::class.java).apply {
+                                    putExtra("name", from)
+                                    putExtra("caller", false)
+                                    putExtra("sdp", j.optJSONObject("sdp")?.toString() ?: "")
+                                }
+                                startActivity(intent)
                             }
                         }
-                        if (selId == to) {
-                            runOnUiThread {
-                                msgAdapter.getItems().filterIsInstance<ChatMessage>().forEach { if (it.to == me) it.read = true }
-                                msgAdapter.notifyDataSetChanged()
-                            }
-                            thread { db.messageDao().markAsRead(chatKey(me, to), to) }
+                        jtype in listOf("call_answer", "ice_candidate", "call_end") -> {
+                            onSignalingMessage?.invoke(text)
                         }
-                        return
-                    }
-                    if (jtype == "reaction_added" || jtype == "reaction_removed") {
-                        val msgId = j.optString("msg_id", "")
-                        val emoji = j.optString("emoji", "")
-                        val username = j.optString("username", "")
-                        if (msgId.isNotEmpty() && username.isNotEmpty()) {
-                            runOnUiThread {
-                                if (jtype == "reaction_added") msgAdapter.addReaction(msgId, emoji, username)
-                                else msgAdapter.removeReaction(msgId, emoji, username)
+                        jtype == "ping" -> wsManager.send("{\"type\":\"pong\"}")
+                        jtype == "delivered" -> {
+                            val to = j.optString("to", "")
+                            val u = users.find { it.username == to }
+                            if (u != null) {
+                                u.lastMsgStatus = "delivered"
+                                runOnUiThread { chatAdapter.update(users) }
+                                thread {
+                                    val ck = chatKey(me, to)
+                                    val s = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
+                                    db.messageDao().saveChatSettings(s.copy(lastMsgStatus = "delivered"))
+                                }
                             }
-                            thread {
-                                val reactions = msgAdapter.getReactions(msgId)
-                                db.messageDao().clearReactions(msgId)
-                                val entities = reactions.flatMap { (e, users) -> users.map { ReactionEntity(msgId = msgId, emoji = e, username = it) } }
-                                if (entities.isNotEmpty()) db.messageDao().insertReactions(entities)
-                            }
-                        }
-                        return
-                    }
-                    if (jtype == "read") {
-                        val from = j.optString("from", "")
-                        val u = users.find { it.username == from }
-                        if (u != null) {
-                            u.lastMsgStatus = "read"
-                            runOnUiThread { chatAdapter.update(users) }
-                            thread {
-                                val ck = chatKey(me, from)
-                                val s = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
-                                db.messageDao().saveChatSettings(s.copy(lastMsgStatus = "read"))
+                            if (selId == to) {
+                                runOnUiThread {
+                                    msgAdapter.getItems().filterIsInstance<ChatMessage>().forEach { if (it.to == me) it.read = true }
+                                    msgAdapter.notifyDataSetChanged()
+                                }
+                                thread { db.messageDao().markAsRead(chatKey(me, to), to) }
                             }
                         }
-                        if (selId == from) {
-                            runOnUiThread {
-                                msgAdapter.getItems().filterIsInstance<ChatMessage>().forEach { if (it.from == me) it.read = true }
-                                msgAdapter.notifyDataSetChanged()
-                            }
-                            thread { db.messageDao().markAsRead(chatKey(me, from), from) }
-                        }
-                        return
-                    }
-                    if (isBlocked) return
-                    if (selId.isNotEmpty()) {
-                        handler.post { updateMessagesSilent() }
-                    } else {
-                        val sender = j.optString("from", "")
-                        if (sender.isNotEmpty() && sender != me) {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val settings = db.messageDao().getChatSettings(chatKey(me, sender))
-                                val currentUnread = settings?.unread ?: 0
-                                db.messageDao().updateUnread(sender, currentUnread + 1)
+                        jtype == "reaction_added" || jtype == "reaction_removed" -> {
+                            val msgId = j.optString("msg_id", "")
+                            val emoji = j.optString("emoji", "")
+                            val username = j.optString("username", "")
+                            if (msgId.isNotEmpty() && username.isNotEmpty()) {
+                                runOnUiThread {
+                                    if (jtype == "reaction_added") msgAdapter.addReaction(msgId, emoji, username)
+                                    else msgAdapter.removeReaction(msgId, emoji, username)
+                                }
+                                thread {
+                                    val reactions = msgAdapter.getReactions(msgId)
+                                    db.messageDao().clearReactions(msgId)
+                                    val entities = reactions.flatMap { (e, users) -> users.map { ReactionEntity(msgId = msgId, emoji = e, username = it) } }
+                                    if (entities.isNotEmpty()) db.messageDao().insertReactions(entities)
+                                }
                             }
                         }
-                        handler.post { loadUsers() }
+                        jtype == "read" -> {
+                            val from = j.optString("from", "")
+                            val u = users.find { it.username == from }
+                            if (u != null) {
+                                u.lastMsgStatus = "read"
+                                runOnUiThread { chatAdapter.update(users) }
+                                thread {
+                                    val ck = chatKey(me, from)
+                                    val s = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
+                                    db.messageDao().saveChatSettings(s.copy(lastMsgStatus = "read"))
+                                }
+                            }
+                            if (selId == from) {
+                                runOnUiThread {
+                                    msgAdapter.getItems().filterIsInstance<ChatMessage>().forEach { if (it.from == me) it.read = true }
+                                    msgAdapter.notifyDataSetChanged()
+                                }
+                                thread { db.messageDao().markAsRead(chatKey(me, from), from) }
+                            }
+                        }
+                        isBlocked -> { /* skip */ }
+                        selId.isNotEmpty() -> handler.post { updateMessagesSilent() }
+                        else -> {
+                            val sender = j.optString("from", "")
+                            if (sender.isNotEmpty() && sender != me) {
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    val settings = db.messageDao().getChatSettings(chatKey(me, sender))
+                                    val currentUnread = settings?.unread ?: 0
+                                    db.messageDao().updateUnread(sender, currentUnread + 1)
+                                }
+                            }
+                            handler.post { loadUsers() }
+                        }
                     }
                 } catch (_: Exception) {}
             }
