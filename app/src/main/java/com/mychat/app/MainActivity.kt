@@ -1558,7 +1558,7 @@ private fun sendMessageTo(to: String, text: String) {
         msgInput.text.clear()
         cancelReply()
         handler.postDelayed({ refreshMessages() }, 200)
-        // loadUsers removed - too many calls
+        handler.postDelayed({ loadUsers() }, 500)
     }
 
     private fun showAttachmentMenu() {
