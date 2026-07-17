@@ -49,6 +49,7 @@ import android.widget.FrameLayout
 
 import com.mychat.app.adapters.MessageAdapter
 import com.mychat.app.adapters.StickerAdapter
+import com.mychat.app.adapters.StickerItem
 import com.mychat.app.adapters.circleBg
 import com.mychat.app.models.ChatMessage
 import com.mychat.app.models.ForwardData
