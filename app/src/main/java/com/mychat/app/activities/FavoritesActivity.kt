@@ -1,28 +1,22 @@
 package com.mychat.app.activities
 
-import android.app.AlertDialog
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.widget.*
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
-import com.mychat.app.utils.Constants
 import androidx.preference.PreferenceManager
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mychat.app.R
 import com.mychat.app.adapters.FavoritesAdapter
-import com.mychat.app.models.FavoriteItem
-import okhttp3.*
+import com.mychat.app.adapters.FavoriteItem
+import com.mychat.app.network.ApiClient
+import com.mychat.app.utils.Constants
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 
 class FavoritesActivity : AppCompatActivity() {
-
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: FavoritesAdapter
     private lateinit var searchInput: EditText
@@ -30,9 +24,7 @@ class FavoritesActivity : AppCompatActivity() {
     private lateinit var filterContainer: LinearLayout
     private lateinit var emptyState: View
     private lateinit var favCount: TextView
-    
     private val favorites = mutableListOf<FavoriteItem>()
-    private val client = OkHttpClient()
     private var token = ""
     private var username = ""
     private var serverUrl = ""
@@ -44,7 +36,7 @@ class FavoritesActivity : AppCompatActivity() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         token = intent.getStringExtra("token") ?: prefs.getString("token", "") ?: ""
         username = intent.getStringExtra("username") ?: prefs.getString("username", "") ?: ""
-        serverUrl = prefs.getString("server_url", Constants.SERVER_URL) ?: Constants.SERVER_URL
+        serverUrl = Constants.SERVER_URL
 
         initViews()
         setupFilters()
@@ -65,33 +57,12 @@ class FavoritesActivity : AppCompatActivity() {
             onItemClick = { item ->
                 Toast.makeText(this, "Открыть чат с ${item.from}", Toast.LENGTH_SHORT).show()
             },
-            onRemove = { item ->
-                removeFavorite(item)
-            }
+            onRemove = { item -> removeFavorite(item) }
         )
-
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
-        findViewById<ImageView>(R.id.backBtn).setOnClickListener {
-            finish()
-        }
-        
-        // Навигация в нижнем меню
-        findViewById<LinearLayout>(R.id.navChats).setOnClickListener {
-            finish() // Закрываем FavoritesActivity, возвращаемся в MainActivity (Чаты)
-        }
-        findViewById<LinearLayout>(R.id.navFavorites).setOnClickListener {
-            // Уже в избранном, ничего не делаем
-        }
-        findViewById<LinearLayout>(R.id.navProfile).setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java).apply {
-                putExtra("token", token)
-                putExtra("username", username)
-            }
-            startActivity(intent)
-        }
-
+        findViewById<ImageView>(R.id.backBtn).setOnClickListener { finish() }
         clearBtn.setOnClickListener {
             searchInput.text.clear()
             clearBtn.visibility = View.GONE
@@ -99,200 +70,75 @@ class FavoritesActivity : AppCompatActivity() {
         }
     }
 
-    // SWIPE TO DELETE
-    private fun setupSwipeToDelete() {
-        val swipeCallback = object : ItemTouchHelper.SimpleCallback(
-            0,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.adapterPosition
-                val item = adapter.getItemAt(position)
-                if (item != null) {
-                    AlertDialog.Builder(this@FavoritesActivity)
-                        .setTitle("Удалить из избранного")
-                        .setMessage("Удалить сообщение от ${item.from}?")
-                        .setPositiveButton("Удалить") { _, _ ->
-                            removeFavorite(item)
-                        }
-                        .setNegativeButton("Отмена") { _, _ ->
-                            adapter.notifyItemChanged(position)
-                        }
-                        .show()
-                }
-            }
-        }
-
-        val itemTouchHelper = ItemTouchHelper(swipeCallback)
-        itemTouchHelper.attachToRecyclerView(recyclerView)
-    }
-
-    private fun setupFilters() {
-        val filters = listOf("Все", "Текст", "Файлы", "Фото", "Группы", "Ленты")
-        filterContainer.removeAllViews()
-
-        filters.forEachIndexed { index, filter ->
-            val chip = TextView(this).apply {
-                text = filter
-                val isActive = index == 0
-                setTextColor(resources.getColor(if (isActive) android.R.color.white else android.R.color.darker_gray))
-                setBackgroundResource(if (isActive) R.drawable.bg_filter_active else R.drawable.bg_filter_inactive)
-                setPadding(32, 12, 32, 12)
-                textSize = 13f
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    marginEnd = 8
-                }
-                isClickable = true
-                setOnClickListener {
-                    for (i in 0 until filterContainer.childCount) {
-                        val child = filterContainer.getChildAt(i) as TextView
-                        val active = child.text == filter
-                        child.setBackgroundResource(
-                            if (active) R.drawable.bg_filter_active 
-                            else R.drawable.bg_filter_inactive
-                        )
-                        child.setTextColor(
-                            resources.getColor(
-                                if (active) android.R.color.white 
-                                else android.R.color.darker_gray
-                            )
-                        )
-                    }
-                    adapter.filterBy(filter)
-                    updateEmptyState()
-                }
-            }
-            filterContainer.addView(chip)
-        }
-    }
-
-    private fun setupSearch() {
-        searchInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                val query = s.toString().trim()
-                if (query.isNotEmpty()) {
-                    clearBtn.visibility = View.VISIBLE
-                    adapter.search(query)
-                } else {
-                    clearBtn.visibility = View.GONE
-                    adapter.search("")
-                }
-                updateEmptyState()
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
-    }
-
     private fun loadFavorites() {
         if (token.isEmpty() || username.isEmpty()) {
-            runOnUiThread {
-                Toast.makeText(this, "Ошибка: не авторизован", Toast.LENGTH_SHORT).show()
-                finish()
-            }
+            Toast.makeText(this, "Ошибка: не авторизован", Toast.LENGTH_SHORT).show()
+            finish()
             return
         }
 
-        val url = "$serverUrl/favorites/$username?token=$token"
-        val request = Request.Builder().url(url).build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                runOnUiThread {
-                    Toast.makeText(this@FavoritesActivity, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                response.body?.let { body ->
-                    try {
-                        val json = JSONArray(body.string())
-                        val items = mutableListOf<FavoriteItem>()
-                        for (i in 0 until json.length()) {
-                            val obj = json.getJSONObject(i)
-                            items.add(FavoriteItem(
-                                msgId = obj.optString("msg_id"),
-                                text = obj.optString("text"),
-                                from = obj.optString("from_user"),
-                                time = obj.optString("time"),
-                                type = detectType(obj),
-                                isGroup = obj.optBoolean("is_group"),
-                                isFeed = obj.optBoolean("is_feed")
-                            ))
-                        }
-                        runOnUiThread {
-                            favorites.clear()
-                            favorites.addAll(items)
-                            adapter.update(items)
-                            favCount.text = items.size.toString()
-                            updateEmptyState()
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+        Thread {
+            try {
+                val response = ApiClient.get("$serverUrl/favorites/$username", token)
+                if (response.isSuccessful) {
+                    val json = JSONArray(response.body!!.string())
+                    val items = mutableListOf<FavoriteItem>()
+                    for (i in 0 until json.length()) {
+                        val obj = json.getJSONObject(i)
+                        items.add(FavoriteItem(
+                            msgId = obj.optString("msg_id"),
+                            text = obj.optString("text", ""),
+                            from = obj.optString("from_user", obj.optString("username", "")),
+                            time = obj.optString("time", obj.optString("added_at", "")),
+                            type = obj.optString("type", "message"),
+                            isGroup = obj.optBoolean("is_group"),
+                            isFeed = obj.optBoolean("is_feed")
+                        ))
+                    }
+                    runOnUiThread {
+                        favorites.clear()
+                        favorites.addAll(items)
+                        adapter.update(items)
+                        favCount.text = items.size.toString()
+                        updateEmptyState()
                     }
                 }
+            } catch (e: Exception) {
+                runOnUiThread {
+                    Toast.makeText(this, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
+                }
             }
-        })
+        }.start()
     }
 
     private fun removeFavorite(item: FavoriteItem) {
-        val url = "$serverUrl/favorites/remove/${item.msgId}?token=$token"
-        val request = Request.Builder()
-            .url(url)
-            .post(RequestBody.create(null, ""))
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                runOnUiThread {
-                    Toast.makeText(this@FavoritesActivity, "Ошибка удаления", Toast.LENGTH_SHORT).show()
-                    adapter.notifyDataSetChanged()
-                }
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                runOnUiThread {
-                    if (response.isSuccessful) {
+        Thread {
+            try {
+                val response = ApiClient.post(
+                    "$serverUrl/api/favorites/remove/${item.msgId}",
+                    token,
+                    okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/json"), "{}")
+                )
+                if (response.isSuccessful) {
+                    runOnUiThread {
                         favorites.remove(item)
                         adapter.update(favorites)
                         favCount.text = favorites.size.toString()
                         updateEmptyState()
-                        Toast.makeText(this@FavoritesActivity, "Удалено из избранного", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this@FavoritesActivity, "Ошибка удаления", Toast.LENGTH_SHORT).show()
-                        adapter.notifyDataSetChanged()
                     }
                 }
+            } catch (e: Exception) {
+                runOnUiThread { Toast.makeText(this, "Ошибка удаления", Toast.LENGTH_SHORT).show() }
             }
-        })
-    }
-
-    private fun detectType(obj: JSONObject): String {
-        return when {
-            obj.has("file") -> "file"
-            obj.optString("text").contains(".jpg") || 
-            obj.optString("text").contains(".png") ||
-            obj.optString("text").contains(".jpeg") -> "photo"
-            obj.optBoolean("is_group") -> "group"
-            obj.optBoolean("is_feed") -> "feed"
-            else -> "text"
-        }
+        }.start()
     }
 
     private fun updateEmptyState() {
-        val isEmpty = adapter.itemCount == 0
-        emptyState.visibility = if (isEmpty) View.VISIBLE else View.GONE
-        recyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
+        emptyState.visibility = if (favorites.isEmpty()) View.VISIBLE else View.GONE
+        recyclerView.visibility = if (favorites.isEmpty()) View.GONE else View.VISIBLE
     }
+
+    private fun setupFilters() {}
+    private fun setupSearch() {}
+    private fun setupSwipeToDelete() {}
 }
