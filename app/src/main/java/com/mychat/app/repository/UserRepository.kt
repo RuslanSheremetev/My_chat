@@ -10,7 +10,7 @@ class UserRepository(
     private val server: String
 ) {
     fun loadUsers(me: String, token: String): List<User> {
-        val response = ApiClient.get("$server/users/$me?token=$token")
+        val response = ApiClient.get("$server/users/$me", token)
         val json = JSONArray(response.body!!.string())
         val users = mutableListOf<User>()
         
