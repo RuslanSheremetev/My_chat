@@ -3028,10 +3028,6 @@ db.messageDao().updateReactions(msgId, json)
         chatRepo.currentUser = currentUserId
         chatRepo.currentToken = token
         chatRepo.saveMute(ck, savedState)
-            } catch (e: Exception) {
-                log("Mute save: ${e.message}")
-            }
-        }
     }
 // chatKey теперь в utils/Extensions.kt
     
