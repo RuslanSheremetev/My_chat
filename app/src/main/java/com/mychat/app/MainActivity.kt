@@ -1214,66 +1214,9 @@ db.messageDao().updateReactions(msgId, json)
     }
 
     private fun searchUsers(q: String) {
-        thread {
-            try {
-                viewModel.loadUsers(); return
-                if (userListFromRepo.isNotEmpty()) {
-                    val a = org.json.JSONArray()
-                    for (user in userListFromRepo) {
-                        val o = org.json.JSONObject()
-                        o.put("username", user.username)
-                        o.put("name", user.name)
-                        o.put("avatar_color", user.avatarColor)
-                        o.put("online", user.online)
-                        o.put("last_seen", user.lastSeen)
-                        o.put("bio", user.bio)
-                        o.put("avatar_url", user.avatarUrl)
-                        o.put("is_group", user.isGroup)
-                        o.put("is_feed", user.isFeed)
-                        o.put("is_bot", user.isBot)
-                        o.put("unread", user.unread)
-                        a.put(o)
-                    }
-                    val res = mutableListOf<User>()
-                    for (i in 0 until a.length()) {
-                        val o = a.getJSONObject(i)
-                        val un = o.optString("username")
-                        val nm = o.optString("name", "")
-                        if ((un.contains(q, true) || nm.contains(q, true)) ) {
-                            val displayName = if (nm.isNotEmpty()) nm else un
-                            res.add(
-                                User(
-                                    username = un,
-                                    avatarColor = o.optString("avatar_color", "#2AABEE"),
-                                    online = o.optBoolean("online", false),
-                                    lastSeen = o.optString("last_seen", ""),
-                                    bio = o.optString("bio", ""),
-                                    avatarUrl = o.optString("avatar_url", ""),
-                                    isGroup = o.optBoolean("is_group", false),
-                                    isFeed = o.optBoolean("is_feed", false),
-                                    name = displayName
-                                )
-                            )
-                        }
-                    }
-                    // Загружаем isMuted и unread из Room для результатов поиска
-                            for (u in res) {
-                                val s = db.messageDao().getChatSettings(chatKey(me, u.username))
-                                if (s != null) {
-                                    u.isMuted = s.isMuted
-                                    u.unread = s.unread
-                                }
-                            }
-                        handler.post {
-                            if (selId == null || chatLayout.visibility != View.VISIBLE) {
-                                chatAdapter.update(res)
-                            }
-                        }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
+        val filtered = users.filter { it.username.contains(q, ignoreCase = true) || it.name.contains(q, ignoreCase = true) }
+        chatAdapter.update(filtered.toMutableList())
+        if (filtered.isEmpty()) t("Ничего не найдено")
     }
 
     private fun refreshMessages() {
