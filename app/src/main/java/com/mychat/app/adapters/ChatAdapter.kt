@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.ImageView
 import android.widget.LinearLayout
+import com.mychat.app.utils.formatTime
 import androidx.recyclerview.widget.RecyclerView
 import com.mychat.app.R
 import com.mychat.app.models.User
