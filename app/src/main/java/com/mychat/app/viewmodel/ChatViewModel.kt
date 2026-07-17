@@ -87,7 +87,7 @@ class ChatViewModel : ViewModel() {
         _selectedChat.value = chatId
     }
 
-    private fun handleWsMessage(text: String) {
+    fun handleWsMessage(text: String) {
         try {
             val j = org.json.JSONObject(text)
             val jtype = j.optString("type")
