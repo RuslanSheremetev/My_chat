@@ -32,15 +32,20 @@ class ChatRepository(
             val username = o.optString("username")
             val name = o.optString("name", "")
             val displayName = if (name.isNotEmpty()) name else username
+            val lastMsgFrom = o.optString("lastMsgFrom", "")
             users.add(User(
                 username = username,
                 name = displayName,
                 avatarColor = o.optString("avatar_color", "#2AABEE"),
                 online = o.optBoolean("online", false),
+                lastSeen = o.optString("last_seen", ""),
+                bio = o.optString("bio", ""),
+                avatarUrl = o.optString("avatar_url", ""),
                 isBot = o.optBoolean("is_bot", false),
                 isGroup = o.optBoolean("is_group", false),
                 isFeed = o.optBoolean("is_feed", false),
-                unread = o.optInt("unread", 0)
+                unread = o.optInt("unread", 0),
+                lastMsgFromMe = (lastMsgFrom == me)
             ))
         }
         return users
