@@ -1201,6 +1201,7 @@ db.messageDao().updateReactions(msgId, json)
     }
 
     private fun loadUsers() {
+        if (token.isEmpty()) { log("HTTP: loadUsers skipped (no token)"); return }
         log("HTTP: loadUsers")
         viewModel.loadUsers()
     }
