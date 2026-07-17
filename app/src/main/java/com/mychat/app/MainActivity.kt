@@ -433,7 +433,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
             }
             view.findViewById<LinearLayout>(R.id.menuReport).setOnClickListener {
             popup.dismiss()
-            thread {
+            CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val json = JSONObject().apply {
                         put("reported_user", selId)
@@ -726,7 +726,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         val p = loginPass.text.toString().trim()
         server = serverUrl.text.toString().trim()
         if (u.isEmpty() || p.isEmpty()) return t("Fill all fields")
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val j = JSONObject().apply {
                     put("username", u)
@@ -767,7 +767,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         val p = loginPass.text.toString().trim()
         server = serverUrl.text.toString().trim()
         if (u.isEmpty() || p.isEmpty()) return t("Fill all fields")
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val j = JSONObject().apply {
                     put("username", u)
@@ -848,7 +848,7 @@ db.messageDao().updateReactions(msgId, json)
             }
         }
         // Сбрасываем счётчик на сервере
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val url = java.net.URL("$server/api/mark_read/$id?token=$token")
                 val conn = url.openConnection() as java.net.HttpURLConnection
@@ -916,7 +916,7 @@ db.messageDao().updateReactions(msgId, json)
         }
         val ck2 = chatKey(me, id)
         // Загружаем isMuted из Room в фоне
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             val chatSettings = db.messageDao().getChatSettings(ck2)
             isMuted = chatSettings?.isMuted ?: false
             runOnUiThread {
@@ -926,7 +926,7 @@ db.messageDao().updateReactions(msgId, json)
             }
         }
         // Восстанавливаем блокировку из Room
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             val settings = db.messageDao().getChatSettings(id)
             isBlocked = settings?.isBlocked ?: false
         }
@@ -1002,7 +1002,7 @@ db.messageDao().updateReactions(msgId, json)
                             runOnUiThread {
                                 msgAdapter.addReaction(msg.id, emoji, currentUserPhone)
                             }
-                            thread {
+                            CoroutineScope(Dispatchers.IO).launch {
                                 val reactions = msgAdapter.getReactions(msg.id)
                                 // Сохраняем в новую таблицу reactions
                                 db.messageDao().clearReactions(msg.id)
@@ -1079,7 +1079,7 @@ db.messageDao().updateReactions(msgId, json)
         }
         popupView.findViewById<LinearLayout>(R.id.menuDeleteGlobal).setOnClickListener {
             popup.dismiss()
-            thread { db.messageDao().markDeleted(msg.id) }
+            CoroutineScope(Dispatchers.IO).launch { db.messageDao().markDeleted(msg.id) }
             msgAdapter.markDeleted(msg.id)
         }
         popup.showAtLocation(window.decorView, android.view.Gravity.CENTER, 0, 0)
@@ -1165,7 +1165,7 @@ db.messageDao().updateReactions(msgId, json)
 
     private fun refreshMessages() {
         // Сначала показываем из Room (мгновенно)
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val localMessages = db.messageDao().getMessages(selId)
                 if (localMessages.isNotEmpty()) {
@@ -1193,14 +1193,14 @@ db.messageDao().updateReactions(msgId, json)
                         )
                     }
                     // Обновляем статусы на sent
-                    thread { db.messageDao().markSent(selId) }
+                    CoroutineScope(Dispatchers.IO).launch { db.messageDao().markSent(selId) }
                     handler.post { msgAdapter.update(msgs) }
                 }
             } catch (e: Exception) {}
         }
         // Потом обновляем с сервера
         if (selId.isEmpty()) return
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val r = client.newCall(
                     Request.Builder().url("$server/messages/$selId?me=$me&token=$token").build()
@@ -1245,7 +1245,7 @@ db.messageDao().updateReactions(msgId, json)
                     lastMessageCount = nm.size
                     handler.post {
                         // Сохраняем в Room
-                    thread {
+                    CoroutineScope(Dispatchers.IO).launch {
                         try {
                             val entities = nm.map { msg ->
                                 MessageEntity(
@@ -1279,7 +1279,7 @@ db.messageDao().updateReactions(msgId, json)
                         } catch (e: Exception) {}
                     }
                     // Удаляем временные сообщения (отправленные локально)
-                    thread {
+                    CoroutineScope(Dispatchers.IO).launch {
                         val local = db.messageDao().getMessages(selId)
                         val tempIds = local.filter { it.id.startsWith("sending_") }.map { it.id }
                         if (tempIds.isNotEmpty()) {
@@ -1313,7 +1313,7 @@ db.messageDao().updateReactions(msgId, json)
 
     private fun updateMessagesSilent() {
         if (selId.isEmpty()) return
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val r = client.newCall(
                     Request.Builder().url("$server/messages/$selId?me=$me&token=$token").build()
@@ -1361,7 +1361,7 @@ db.messageDao().updateReactions(msgId, json)
                         val wasAtBottom = !messagesList.canScrollVertically(1)
                         handler.post {
                             // Сохраняем в Room
-                    thread {
+                    CoroutineScope(Dispatchers.IO).launch {
                         try {
                             val entities = nm.map { msg ->
                                 MessageEntity(
@@ -1395,7 +1395,7 @@ db.messageDao().updateReactions(msgId, json)
                         } catch (e: Exception) {}
                     }
                     // Удаляем временные сообщения (отправленные локально)
-                    thread {
+                    CoroutineScope(Dispatchers.IO).launch {
                         val local = db.messageDao().getMessages(selId)
                         val tempIds = local.filter { it.id.startsWith("sending_") }.map { it.id }
                         if (tempIds.isNotEmpty()) {
@@ -1620,7 +1620,7 @@ private fun sendMessageTo(to: String, text: String) {
     }
     
     private fun sendLocationUpdate(lat: Double, lon: Double) {
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val json = org.json.JSONObject().apply {
                     put("type", "private")
@@ -1638,7 +1638,7 @@ private fun sendMessageTo(to: String, text: String) {
     }
 
     private fun sendLocationMessage(lat: Double, lon: Double) {
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val json = org.json.JSONObject().apply {
                     put("type", "private")
@@ -1705,7 +1705,7 @@ private fun sendMessageTo(to: String, text: String) {
 
 
     private fun uploadBitmap(bitmap: android.graphics.Bitmap) {
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val baos = java.io.ByteArrayOutputStream()
                 bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, baos)
@@ -1810,7 +1810,7 @@ private fun sendMessageTo(to: String, text: String) {
             .setView(ProgressBar(this).apply { setPadding(40, 30, 40, 30) })
             .create()
         pd.show()
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val ins = contentResolver.openInputStream(uri)
                 val bytes = ins?.readBytes()
@@ -1870,7 +1870,7 @@ private fun sendMessageTo(to: String, text: String) {
             }
             return
         }
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val bytes = client.newCall(Request.Builder().url(fullUrl).build()).execute()
                     .body?.bytes() ?: return@thread
@@ -2045,7 +2045,7 @@ private fun sendMessageTo(to: String, text: String) {
                                 msgAdapter.setReactions(msgId, reactions)
                                 loadedReactions.add(msgId)
                                 val jsonStr = org.json.JSONObject(reactions as Map<*, *>).toString()
-                                thread { // Старый метод, оставлен для совместимости
+                                CoroutineScope(Dispatchers.IO).launch { // Старый метод, оставлен для совместимости
 db.messageDao().updateReactions(msgId, jsonStr) }
                             }
                         }
@@ -2091,7 +2091,7 @@ db.messageDao().updateReactions(msg.id, reactionsJson)
                             // Сохраняем в Room только если есть реакции
                             if (reactions.isNotEmpty()) {
                                 val json = org.json.JSONObject(reactions as Map<*, *>).toString()
-                                thread { // Старый метод, оставлен для совместимости
+                                CoroutineScope(Dispatchers.IO).launch { // Старый метод, оставлен для совместимости
 db.messageDao().updateReactions(msg.id, json) }
                             }
                             }
@@ -2122,7 +2122,7 @@ db.messageDao().updateReactions(msg.id, json) }
             override fun afterTextChanged(s: Editable?) {
                 val query = s?.toString() ?: ""
                 if (query.length >= 2) {
-                    thread {
+                    CoroutineScope(Dispatchers.IO).launch {
                         val results = db.messageDao().searchMessages(selId, query)
                         runOnUiThread {
                             searchResults.adapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -2176,7 +2176,7 @@ db.messageDao().updateReactions(msg.id, json) }
     private fun Int.dpToPx(): Int = (this * resources.displayMetrics.density).toInt()
 
     private fun sendVoiceFile(file: java.io.File) {
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val bytes = file.readBytes()
                 val body = okhttp3.MultipartBody.Builder()
@@ -2504,7 +2504,7 @@ db.messageDao().updateReactions(msgId, json)
                 put("msg_id", msg.id)
             }
             log("WS send: delete msg"); wsManager?.send(json.toString())
-            thread { db.messageDao().markDeleted(msg.id); log("Room: markDeleted ${msg.id}") }
+            CoroutineScope(Dispatchers.IO).launch { db.messageDao().markDeleted(msg.id); log("Room: markDeleted ${msg.id}") }
         }
         
         // Удаляем из адаптера все сразу
@@ -2528,7 +2528,7 @@ db.messageDao().updateReactions(msgId, json)
             put("msg_id", msg.id)
         }
         log("WS send: mute"); wsManager?.send(json.toString())
-        thread { db.messageDao().markDeleted(msg.id); log("Room: markDeleted ${msg.id}") }
+        CoroutineScope(Dispatchers.IO).launch { db.messageDao().markDeleted(msg.id); log("Room: markDeleted ${msg.id}") }
         msgAdapter.markDeleted(msg.id)
         // Меняем текст локально сразу
         msgAdapter.markDeleted(msg.id)
@@ -2536,7 +2536,7 @@ db.messageDao().updateReactions(msgId, json)
     }
     
     private fun addToFavorites(msg: ChatMessage) {
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val json = JSONObject().apply {
                     put("msg_id", msg.id)
@@ -2560,7 +2560,7 @@ db.messageDao().updateReactions(msgId, json)
         val stickersGrid = v.findViewById<RecyclerView>(R.id.stickersGrid)
         stickersGrid.layoutManager = GridLayoutManager(this@MainActivity, 4)
         
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = ApiClient.get("$server/api/stickers/packs", token)
                 if (response.isSuccessful) {
@@ -2614,7 +2614,7 @@ db.messageDao().updateReactions(msgId, json)
         }
         wsManager?.send(json.toString())
         // Сохраняем в Room
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             val ck = chatKey(me, selId)
             val settings = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
             db.messageDao().saveChatSettings(settings.copy(isBlocked = true))
@@ -2633,7 +2633,7 @@ db.messageDao().updateReactions(msgId, json)
     }
     
         private fun searchInChat(query: String) {
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val results = db.messageDao().searchMessages(selId, query)
                 if (results.isNotEmpty()) {
@@ -2654,7 +2654,7 @@ db.messageDao().updateReactions(msgId, json)
     }
     
     private fun clearHistory() {
-        thread { db.messageDao().deleteChat(selId) }
+        CoroutineScope(Dispatchers.IO).launch { db.messageDao().deleteChat(selId) }
         val ck = chatKey(me, selId)
         val request = Request.Builder()
             .url("$server/chat/clear/$ck?token=$token")
