@@ -11,6 +11,7 @@ class WebSocketManager(
     private var ws: WebSocket? = null
     var onMessage: ((String) -> Unit)? = null
     var onReconnect: (() -> Unit)? = null
+    var onOpen: ((WebSocket) -> Unit)? = null
 
     fun connect() {
         val url = server.replace("http://", "ws://") + "/ws/$username"
@@ -20,6 +21,9 @@ class WebSocketManager(
                 .addHeader("Authorization", "Bearer $token")
                 .build(),
             object : WebSocketListener() {
+                override fun onOpen(webSocket: WebSocket, response: Response) {
+                    onOpen?.invoke(webSocket)
+                }
                 override fun onMessage(webSocket: WebSocket, text: String) {
                     onMessage?.invoke(text)
                 }
