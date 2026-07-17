@@ -1076,13 +1076,13 @@ db.messageDao().updateReactions(msgId, json)
                             }
                             startActivity(intent)
                         }
-                        return@onMessage
+                        return
                     }
                     if (jtype in listOf("call_answer", "ice_candidate", "call_end")) {
                         onSignalingMessage?.invoke(text)
-                        return@onMessage
+                        return
                     }
-                    if (jtype == "ping") { wsManager.send("{\"type\":\"pong\"}"); return@onMessage }
+                    if (jtype == "ping") { wsManager.send("{\"type\":\"pong\"}"); return }
                     if (jtype == "delivered") {
                         val to = j.optString("to", "")
                         val u = users.find { it.username == to }
@@ -1102,7 +1102,7 @@ db.messageDao().updateReactions(msgId, json)
                             }
                             thread { db.messageDao().markAsRead(chatKey(me, to), to) }
                         }
-                        return@onMessage
+                        return
                     }
                     if (jtype == "reaction_added" || jtype == "reaction_removed") {
                         val msgId = j.optString("msg_id", "")
@@ -1120,7 +1120,7 @@ db.messageDao().updateReactions(msgId, json)
                                 if (entities.isNotEmpty()) db.messageDao().insertReactions(entities)
                             }
                         }
-                        return@onMessage
+                        return
                     }
                     if (jtype == "read") {
                         val from = j.optString("from", "")
@@ -1141,9 +1141,9 @@ db.messageDao().updateReactions(msgId, json)
                             }
                             thread { db.messageDao().markAsRead(chatKey(me, from), from) }
                         }
-                        return@onMessage
+                        return
                     }
-                    if (isBlocked) return@onMessage
+                    if (isBlocked) return
                     if (selId.isNotEmpty()) {
                         handler.post { updateMessagesSilent() }
                     } else {
@@ -1165,9 +1165,10 @@ db.messageDao().updateReactions(msgId, json)
             }
             wsManager.connect()
             // Прокси для обратной совместимости
-            ws = object : WebSocket() {
+            ws = object : WebSocket {
                 override fun send(text: String): Boolean { wsManager.send(text); return true }
-                override fun close(code: Int, reason: String?) { wsManager.disconnect() }
+                override fun send(bytes: okio.ByteString): Boolean { return true }
+                override fun close(code: Int, reason: String?): Boolean { wsManager.disconnect(); return true }
                 override fun queueSize(): Long = 0
                 override fun request(): okhttp3.Request = okhttp3.Request.Builder().url("http://localhost").build()
                 override fun cancel() { wsManager.disconnect() }
