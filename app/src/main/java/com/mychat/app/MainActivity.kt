@@ -1060,15 +1060,6 @@ db.messageDao().updateReactions(msgId, json)
         try {
             log("WS connecting...")
             wsManager = WebSocketManager(server, me, token)
-            wsManager.connect()
-            // Прокси для обратной совместимости (ws?.send -> wsManager.send)
-            ws = object : WebSocket() {
-                override fun send(text: String): Boolean { wsManager.send(text); return true }
-                override fun close(code: Int, reason: String?) { wsManager.disconnect() }
-                override fun queueSize(): Long = 0
-                override fun request(): okhttp3.Request = okhttp3.Request.Builder().url("http://localhost").build()
-                override fun cancel() { wsManager.disconnect() }
-            }
             wsManager.onMessage = { text ->
                 log("WS received: ${text.take(50)}...")
                 try {
@@ -1085,53 +1076,33 @@ db.messageDao().updateReactions(msgId, json)
                             }
                             startActivity(intent)
                         }
-                        return
+                        return@onMessage
                     }
                     if (jtype in listOf("call_answer", "ice_candidate", "call_end")) {
                         onSignalingMessage?.invoke(text)
-                        return
+                        return@onMessage
                     }
-                    if (jtype == "ping") { webSocket.send("{\"type\":\"pong\"}"); return }
+                    if (jtype == "ping") { wsManager.send("{\"type\":\"pong\"}"); return@onMessage }
                     if (jtype == "delivered") {
                         val to = j.optString("to", "")
                         val u = users.find { it.username == to }
                         if (u != null) {
                             u.lastMsgStatus = "delivered"
-                            runOnUiThread {
-                                if (selId == null || chatLayout.visibility != View.VISIBLE) {
-                                    if (selId == null || chatLayout.visibility != View.VISIBLE) {
-                            if (selId == null || chatLayout.visibility != View.VISIBLE) {
-                            if (selId == null || chatLayout.visibility != View.VISIBLE) {
-                            chatAdapter.update(users)
-                        }
-                        }
-                        }
-                                }
-                            }
+                            runOnUiThread { chatAdapter.update(users) }
                             thread {
                                 val ck = chatKey(me, to)
                                 val s = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
                                 db.messageDao().saveChatSettings(s.copy(lastMsgStatus = "delivered"))
                             }
                         }
-                        // Обновляем галочки в открытом диалоге
                         if (selId == to) {
                             runOnUiThread {
-                                val msgs = msgAdapter.getItems()
-                                for (m in msgs) {
-                                    if (m is ChatMessage && m.to == me) {
-                                        m.read = true
-                                    }
-                                }
+                                msgAdapter.getItems().filterIsInstance<ChatMessage>().forEach { if (it.to == me) it.read = true }
                                 msgAdapter.notifyDataSetChanged()
                             }
-                            // Сохраняем isRead в Room
-                            val ck = chatKey(me, to)
-                            thread {
-                                db.messageDao().markAsRead(ck, to)
-                            }
+                            thread { db.messageDao().markAsRead(chatKey(me, to), to) }
                         }
-                        return
+                        return@onMessage
                     }
                     if (jtype == "reaction_added" || jtype == "reaction_removed") {
                         val msgId = j.optString("msg_id", "")
@@ -1139,96 +1110,68 @@ db.messageDao().updateReactions(msgId, json)
                         val username = j.optString("username", "")
                         if (msgId.isNotEmpty() && username.isNotEmpty()) {
                             runOnUiThread {
-                                if (jtype == "reaction_added") {
-                                    msgAdapter.addReaction(msgId, emoji, username)
-                                } else {
-                                    msgAdapter.removeReaction(msgId, emoji, username)
-                                }
+                                if (jtype == "reaction_added") msgAdapter.addReaction(msgId, emoji, username)
+                                else msgAdapter.removeReaction(msgId, emoji, username)
                             }
-                            // Сохраняем в Room (новая таблица)
                             thread {
                                 val reactions = msgAdapter.getReactions(msgId)
                                 db.messageDao().clearReactions(msgId)
-                                val entities = reactions.flatMap { (emoji, users) ->
-                                    users.map { username -> ReactionEntity(msgId = msgId, emoji = emoji, username = username) }
-                                }
-                                if (entities.isNotEmpty()) {
-                                    db.messageDao().insertReactions(entities)
-                                }
+                                val entities = reactions.flatMap { (e, users) -> users.map { ReactionEntity(msgId = msgId, emoji = e, username = it) } }
+                                if (entities.isNotEmpty()) db.messageDao().insertReactions(entities)
                             }
                         }
-                        return
+                        return@onMessage
                     }
                     if (jtype == "read") {
                         val from = j.optString("from", "")
                         val u = users.find { it.username == from }
                         if (u != null) {
                             u.lastMsgStatus = "read"
-                            runOnUiThread {
-                                if (selId == null || chatLayout.visibility != View.VISIBLE) {
-                                    if (selId == null || chatLayout.visibility != View.VISIBLE) {
-                            if (selId == null || chatLayout.visibility != View.VISIBLE) {
-                            if (selId == null || chatLayout.visibility != View.VISIBLE) {
-                            chatAdapter.update(users)
-                        }
-                        }
-                        }
-                                }
-                            }
+                            runOnUiThread { chatAdapter.update(users) }
                             thread {
                                 val ck = chatKey(me, from)
                                 val s = db.messageDao().getChatSettings(ck) ?: ChatSettings(ck)
                                 db.messageDao().saveChatSettings(s.copy(lastMsgStatus = "read"))
                             }
                         }
-                        // Обновляем галочки в открытом диалоге
                         if (selId == from) {
                             runOnUiThread {
-                                val msgs = msgAdapter.getItems()
-                                for (m in msgs) {
-                                    if (m is ChatMessage && m.from == me) {
-                                        m.read = true
-                                    }
-                                }
+                                msgAdapter.getItems().filterIsInstance<ChatMessage>().forEach { if (it.from == me) it.read = true }
                                 msgAdapter.notifyDataSetChanged()
                             }
-                            // Сохраняем isRead в Room
-                            val ck = chatKey(me, from)
-                            thread {
-                                db.messageDao().markAsRead(ck, from)
+                            thread { db.messageDao().markAsRead(chatKey(me, from), from) }
+                        }
+                        return@onMessage
+                    }
+                    if (isBlocked) return@onMessage
+                    if (selId.isNotEmpty()) {
+                        handler.post { updateMessagesSilent() }
+                    } else {
+                        val sender = j.optString("from", "")
+                        if (sender.isNotEmpty() && sender != me) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val settings = db.messageDao().getChatSettings(chatKey(me, sender))
+                                val currentUnread = settings?.unread ?: 0
+                                db.messageDao().updateUnread(sender, currentUnread + 1)
                             }
                         }
-                        return
+                        handler.post { loadUsers() }
                     }
-                            if (isBlocked) return
-                            if (selId.isNotEmpty()) {
-                                handler.post {
-                                    updateMessagesSilent()
-                                }
-                            } else {
-                                // Сохраняем unread в Room
-                                val sender = j.optString("from", "")
-                                if (sender.isNotEmpty() && sender != me) {
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        val settings = db.messageDao().getChatSettings(chatKey(me, sender))
-                                        val currentUnread = settings?.unread ?: 0
-                                        db.messageDao().updateUnread(sender, currentUnread + 1)
-                                    }
-                                }
-                                handler.post { loadUsers() }
-                            }
-                        } catch (_: Exception) {}
-                    }
-                    override fun onFailure(webSocket: WebSocket, t: Throwable, response: okhttp3.Response?) {
-                        log("WS failure: ${t.message}, reconnecting in 3s")
-                        handler.postDelayed({ connectWS() }, 3000)
-                    }
-                    override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-                        log("WS closed: $code $reason, reconnecting in 3s")
-                        handler.postDelayed({ connectWS() }, 3000)
-                    }
-                }
-            )
+                } catch (_: Exception) {}
+            }
+            wsManager.onReconnect = {
+                log("WS reconnecting...")
+                handler.postDelayed({ connectWS() }, 3000)
+            }
+            wsManager.connect()
+            // Прокси для обратной совместимости
+            ws = object : WebSocket() {
+                override fun send(text: String): Boolean { wsManager.send(text); return true }
+                override fun close(code: Int, reason: String?) { wsManager.disconnect() }
+                override fun queueSize(): Long = 0
+                override fun request(): okhttp3.Request = okhttp3.Request.Builder().url("http://localhost").build()
+                override fun cancel() { wsManager.disconnect() }
+            }
         } catch (e: Exception) {
             handler.post { t("Connection error: ${e.message}") }
         }
