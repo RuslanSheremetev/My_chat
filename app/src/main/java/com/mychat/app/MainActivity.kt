@@ -1136,15 +1136,7 @@ db.messageDao().updateReactions(msgId, json)
                 handler.postDelayed({ connectWS() }, 3000)
             }
             wsManager.connect()
-            // Прокси для обратной совместимости
-            ws = object : WebSocket {
-                override fun send(text: String): Boolean { wsManager.send(text); return true }
-                override fun send(bytes: okio.ByteString): Boolean { return true }
-                override fun close(code: Int, reason: String?): Boolean { wsManager.disconnect(); return true }
-                override fun queueSize(): Long = 0
-                override fun request(): okhttp3.Request = okhttp3.Request.Builder().url("http://localhost").build()
-                override fun cancel() { wsManager.disconnect() }
-            }
+    // wsManager используется напрямую
         } catch (e: Exception) {
             handler.post { t("Connection error: ${e.message}") }
         }
