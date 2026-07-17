@@ -266,7 +266,7 @@ class CallActivity : AppCompatActivity() {
         
     private fun connectSignaling() {
         logToServer("connecting")
-        val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
+        val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this@CallActivity)
         me = prefs.getString("username", "") ?: ""
         ws = null // WebSocketManager используется
         com.mychat.app.MainActivity.onSignalingMessage = { text ->
@@ -387,7 +387,7 @@ class CallActivity : AppCompatActivity() {
                         })
                     })
                 }
-                val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
+                val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this@CallActivity)
                 val token = prefs.getString("token", "") ?: ""
                 val body = json.toString().toRequestBody("application/json".toMediaType())
                 val request = Request.Builder().url("http://2.26.71.102:8000/api/logs?token=$token").post(body).build()
