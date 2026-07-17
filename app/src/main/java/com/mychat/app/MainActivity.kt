@@ -27,6 +27,11 @@ import android.os.VibrationEffect
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.mychat.app.viewmodel.ChatViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import androidx.core.content.FileProvider
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -139,6 +144,26 @@ class MainActivity : AppCompatActivity() {
         userRepo = UserRepository(db, server)
         chatRepo = ChatRepository(db, server)
         window.statusBarColor = 0xff1c1c1e.toInt()
+        
+        // ViewModel
+        viewModel = ViewModelProvider(this)[ChatViewModel::class.java]
+        viewModel.init(db, server, currentUserId, token)
+        
+        // Коллекторы
+        lifecycleScope.launch {
+            viewModel.users.collectLatest { userList ->
+                if (userList.isNotEmpty()) {
+                    users.clear()
+                    users.addAll(userList)
+                    chatAdapter?.update(users)
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.selectedChat.collectLatest { chatId ->
+                // sync with selId
+            }
+        }
         // Контекстное меню для чатов
         logText = findViewById(R.id.logText)
         logScroll = findViewById(R.id.logScroll)
@@ -1175,11 +1200,8 @@ db.messageDao().updateReactions(msgId, json)
     }
 
     private fun loadUsers() {
-        val currentChat = selId  // сохраняем, какой чат открыт
         log("HTTP: loadUsers")
-        thread {
-            try {
-                val userListFromRepo = userRepo.loadUsers(me, token)
+        viewModel.loadUsers()
                 if (userListFromRepo.isNotEmpty()) {
                     val a = org.json.JSONArray()
                     for (user in userListFromRepo) {
@@ -1373,7 +1395,7 @@ db.messageDao().updateReactions(msgId, json)
     private fun searchUsers(q: String) {
         thread {
             try {
-                val userListFromRepo = userRepo.loadUsers(me, token)
+                viewModel.loadUsers(); return
                 if (userListFromRepo.isNotEmpty()) {
                     val a = org.json.JSONArray()
                     for (user in userListFromRepo) {
@@ -2944,6 +2966,7 @@ db.messageDao().updateReactions(msgId, json)
     private val loadedReactions = mutableSetOf<String>()
     private lateinit var userRepo: UserRepository
     private lateinit var chatRepo: ChatRepository
+    private lateinit var viewModel: ChatViewModel
     private lateinit var wsManager: WebSocketManager
     private var isBlocked = false
     
@@ -2972,9 +2995,7 @@ db.messageDao().updateReactions(msgId, json)
         // === СОХРАНЕНИЕ В ROOM И НА СЕРВЕР через ChatRepository ===
         val savedState = isMuted
         val ck = chatKey(me, selId)
-        chatRepo.currentUser = currentUserId
-        chatRepo.currentToken = token
-        chatRepo.saveMute(ck, savedState)
+        viewModel.toggleMute(selId)
     }
 // chatKey теперь в utils/Extensions.kt
     
