@@ -1115,7 +1115,7 @@ db.messageDao().updateReactions(msgId, json)
                             val to = j.optString("to", "")
                             val u = users.find { it.username == to }
                             if (u != null) {
-                                u.lastMsgStatus = "delivered"
+                                u.lastMsgStatus = "delivered"; runOnUiThread { chatAdapter.notifyDataSetChanged() }
                                 runOnUiThread { chatAdapter.update(users) }
                                 thread {
                                     val ck = chatKey(me, to)
@@ -1152,7 +1152,7 @@ db.messageDao().updateReactions(msgId, json)
                             val from = j.optString("from", "")
                             val u = users.find { it.username == from }
                             if (u != null) {
-                                u.lastMsgStatus = "read"
+                                u.lastMsgStatus = "read"; runOnUiThread { chatAdapter.notifyDataSetChanged() }
                                 runOnUiThread { chatAdapter.update(users) }
                                 thread {
                                     val ck = chatKey(me, from)
