@@ -147,9 +147,8 @@ class MainActivity : AppCompatActivity() {
         
         // ViewModel
         viewModel = ViewModelProvider(this)[ChatViewModel::class.java]
-        viewModel.init(db, server, currentUserId, token)
         
-        // Коллекторы
+        // Коллекторы (users будет пустым пока не получим token)
         lifecycleScope.launch {
             viewModel.users.collectLatest { userList ->
                 if (userList.isNotEmpty()) {
@@ -507,6 +506,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         token = prefs.getString("token", "") ?: ""
         currentUserId = prefs.getString("username", "") ?: ""
+        me = currentUserId
+        viewModel.init(db, server, currentUserId, token)
         chatRepo.currentUser = currentUserId
         chatRepo.currentToken = token
         currentUserPhone = prefs.getString("phone", "") ?: ""
