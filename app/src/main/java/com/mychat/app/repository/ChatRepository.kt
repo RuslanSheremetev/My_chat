@@ -21,7 +21,10 @@ class ChatRepository(
 
     // Загрузка пользователей через ApiClient (Bearer)
     suspend fun loadUsers(): List<User> {
-        val response = ApiClient.get("$server/users/$me", token)
+        android.util.Log.d("ChatRepo", "loadUsers: me=$me, token=${token.take(10)}...")
+        val url = "$server/users/$me"
+        android.util.Log.d("ChatRepo", "GET $url")
+        val response = ApiClient.get(url, token)
         val json = JSONArray(response.body!!.string())
         val users = mutableListOf<User>()
         for (i in 0 until json.length()) {
