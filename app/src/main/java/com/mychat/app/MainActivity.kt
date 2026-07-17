@@ -1873,7 +1873,7 @@ private fun sendMessageTo(to: String, text: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val bytes = client.newCall(Request.Builder().url(fullUrl).build()).execute()
-                    .body?.bytes() ?: return
+                    .body?.bytes() ?: return@launch
                 val f = File(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                     name
@@ -1882,7 +1882,7 @@ private fun sendMessageTo(to: String, text: String) {
                 handler.post {
                     t("Saved: ${f.absolutePath}")
                     val uri = FileProvider.getUriForFile(
-                        this,
+                        this@MainActivity,
                         "$packageName.fileprovider",
                         f
                     )
