@@ -80,7 +80,6 @@ import android.location.LocationListener
 
 class MainActivity : AppCompatActivity() {
     companion object {
-        var mainWs: okhttp3.WebSocket? = null
         var onSignalingMessage: ((String) -> Unit)? = null
         fun sendCallSignal(msg: String) {
             android.util.Log.d("CALL", "sending: $msg")
@@ -116,7 +115,6 @@ class MainActivity : AppCompatActivity() {
     private var me = ""
     private var selId = ""
     private lateinit var db: AppDatabase
-    private var ws: WebSocket? = null
     private val users = mutableListOf<User>()
     private var currentUserId: String = ""
     private var currentUserPhone: String = ""
