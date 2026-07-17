@@ -55,6 +55,7 @@ import com.mychat.app.data.MessageEntity
 import com.mychat.app.data.ReactionEntity
 import com.mychat.app.utils.chatKey
 import com.mychat.app.utils.Constants
+import com.mychat.app.repository.UserRepository
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -131,6 +132,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        userRepo = UserRepository(db, server)
         window.statusBarColor = 0xff1c1c1e.toInt()
         // Контекстное меню для чатов
         logText = findViewById(R.id.logText)
@@ -1226,11 +1228,24 @@ db.messageDao().updateReactions(msgId, json)
         log("HTTP: loadUsers")
         thread {
             try {
-                val r = client.newCall(
-                    Request.Builder().url("$server/users/$me?token=$token").build()
-                ).execute()
-                if (r.isSuccessful) {
-                    val a = JSONArray(r.body!!.string())
+                val userListFromRepo = userRepo.loadUsers(me, token)
+                if (userListFromRepo.isNotEmpty()) {
+                    val a = org.json.JSONArray()
+                    for (user in userListFromRepo) {
+                        val o = org.json.JSONObject()
+                        o.put("username", user.username)
+                        o.put("name", user.name)
+                        o.put("avatar_color", user.avatarColor)
+                        o.put("online", user.online)
+                        o.put("last_seen", user.lastSeen)
+                        o.put("bio", user.bio)
+                        o.put("avatar_url", user.avatarUrl)
+                        o.put("is_group", user.isGroup)
+                        o.put("is_feed", user.isFeed)
+                        o.put("is_bot", user.isBot)
+                        o.put("unread", user.unread)
+                        a.put(o)
+                    }
                     users.clear()
                     val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
                     val savedStatus = prefs.getString("user_status", "No bio") ?: "No bio"
@@ -1407,11 +1422,24 @@ db.messageDao().updateReactions(msgId, json)
     private fun searchUsers(q: String) {
         thread {
             try {
-                val r = client.newCall(
-                    Request.Builder().url("$server/users/$me?token=$token").build()
-                ).execute()
-                if (r.isSuccessful) {
-                    val a = JSONArray(r.body!!.string())
+                val userListFromRepo = userRepo.loadUsers(me, token)
+                if (userListFromRepo.isNotEmpty()) {
+                    val a = org.json.JSONArray()
+                    for (user in userListFromRepo) {
+                        val o = org.json.JSONObject()
+                        o.put("username", user.username)
+                        o.put("name", user.name)
+                        o.put("avatar_color", user.avatarColor)
+                        o.put("online", user.online)
+                        o.put("last_seen", user.lastSeen)
+                        o.put("bio", user.bio)
+                        o.put("avatar_url", user.avatarUrl)
+                        o.put("is_group", user.isGroup)
+                        o.put("is_feed", user.isFeed)
+                        o.put("is_bot", user.isBot)
+                        o.put("unread", user.unread)
+                        a.put(o)
+                    }
                     val res = mutableListOf<User>()
                     for (i in 0 until a.length()) {
                         val o = a.getJSONObject(i)
@@ -2963,6 +2991,7 @@ db.messageDao().updateReactions(msgId, json)
     private var isLiveLocation = false
     private var liveLocationTimer: java.util.Timer? = null
     private val loadedReactions = mutableSetOf<String>()
+    private lateinit var userRepo: UserRepository
     private var isBlocked = false
     
     private fun toggleMute() {
