@@ -9,7 +9,9 @@ import org.json.JSONObject
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 
-class ChatRepository(
+import javax.inject.Inject
+
+class ChatRepository @Inject constructor(
     private val db: AppDatabase,
     private val server: String
 ) {

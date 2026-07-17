@@ -5,7 +5,9 @@ import com.mychat.app.models.User
 import com.mychat.app.network.ApiClient
 import org.json.JSONArray
 
-class UserRepository(
+import javax.inject.Inject
+
+class UserRepository @Inject constructor(
     private val db: AppDatabase,
     private val server: String
 ) {
