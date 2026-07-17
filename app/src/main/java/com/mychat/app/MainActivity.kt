@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navChats: LinearLayout
     private lateinit var navSettings: LinearLayout
     private lateinit var navProfile: LinearLayout
-    private var server = Constants.SERVER_URL"
+    private var server = Constants.SERVER_URL
     private var token = ""
     private var me = ""
     private var selId = ""
@@ -746,7 +746,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
                         .putString("user_id", currentUserId)
                         .putString("phone", currentUserPhone)
                         .putString("username", me)
-                        .putString("server_url", Constants.SERVER_URL)
+                        .putString("server_url", server)
                         .apply()
                     handler.post {
                         viewModel.init(db, server, currentUserId, token)

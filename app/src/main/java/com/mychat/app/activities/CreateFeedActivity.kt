@@ -1,4 +1,4 @@
-import com.mychat.app.utils.Constants
+package com.mychat.app.activities
 
 import android.os.Bundle
 import android.view.View
@@ -69,7 +69,7 @@ class CreateFeedActivity : AppCompatActivity() {
                         })
                     })
                 }
-                val url = java.net.URL(Constants.SERVER_URL/api/logs")
+                val url = java.net.URL("http://2.26.71.102:8001/api/logs")
                 val conn = url.openConnection() as java.net.HttpURLConnection
                 conn.requestMethod = "POST"
                 conn.setRequestProperty("Content-Type", "application/json")

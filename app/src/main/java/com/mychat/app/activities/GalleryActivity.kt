@@ -1,4 +1,4 @@
-import com.mychat.app.utils.Constants
+package com.mychat.app.activities
 
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -83,7 +83,7 @@ class GalleryActivity : AppCompatActivity() {
         scaleFactor = 1f
         
         var url = photos[index]
-        if (!url.startsWith("http")) url = Constants.SERVER_URL$url"
+        if (!url.startsWith("http")) url = "http://2.26.71.102:8001$url"
         
         val cached = FileCache.getBitmap(url)
         if (cached != null) {

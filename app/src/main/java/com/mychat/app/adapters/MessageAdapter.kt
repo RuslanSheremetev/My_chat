@@ -1,4 +1,4 @@
-import com.mychat.app.utils.Constants
+package com.mychat.app.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -229,7 +229,7 @@ class MessageAdapter(
                     holder.text.visibility = View.GONE
                     holder.text.isClickable = true
                     holder.text.setOnClickListener {
-                        val url = item.file!!.url.let { if (it.startsWith("http")) it else Constants.SERVER_URL$it" }
+                        val url = item.file!!.url.let { if (it.startsWith("http")) it else "http://2.26.71.102:8001$it" }
                         // Проверяем кеш
                         val cachedFile = com.mychat.app.utils.FileCache.getCachedFile(url)
                         if (cachedFile != null) {
@@ -355,7 +355,7 @@ class MessageAdapter(
                     holder.text.visibility = View.GONE
                     holder.text.isClickable = true
                     holder.text.setOnClickListener {
-                        val url = item.file!!.url.let { if (it.startsWith("http")) it else Constants.SERVER_URL$it" }
+                        val url = item.file!!.url.let { if (it.startsWith("http")) it else "http://2.26.71.102:8001$it" }
                         // Проверяем кеш
                         val cachedFile = com.mychat.app.utils.FileCache.getCachedFile(url)
                         if (cachedFile != null) {
@@ -448,7 +448,7 @@ class MessageAdapter(
                 imageView.context.startActivity(intent)
             }
             var url = fi.url
-            if (!url.startsWith("http")) url = Constants.SERVER_URL$url"
+            if (!url.startsWith("http")) url = "http://2.26.71.102:8001$url"
             
             // Проверяем кеш
             val cached = FileCache.getCachedFile(url)
@@ -623,7 +623,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         
         thread {
             try {
-                val json = org.json.JSONObject(java.net.URL(Constants.SERVER_URL/api/preview?url=$url&token=preview").readText())
+                val json = org.json.JSONObject(java.net.URL("http://2.26.71.102:8001/api/preview?url=$url&token=preview").readText())
                 val title = json.optString("title", "")
                 val desc = json.optString("description", "")
                 val image = json.optString("image", "")
@@ -653,7 +653,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
 
 
     private fun showVideo(msg: ChatMessage, playerView: PlayerView) {
-        val url = msg.file?.url?.let { if (it.startsWith("http")) it else Constants.SERVER_URL$it" } ?: return
+        val url = msg.file?.url?.let { if (it.startsWith("http")) it else "http://2.26.71.102:8001$it" } ?: return
         val cacheKey = "video_${msg.file?.name ?: url}"
         
         // Проверяем кэш
@@ -778,7 +778,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
             btn.text = "↓ Скачать"
             btn.setOnClickListener {
                 val url = msg.file?.url ?: return@setOnClickListener
-                val fullUrl = if (url.startsWith("http")) url else Constants.SERVER_URL$url"
+                val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8001$url"
                 btn.text = "..."
                 thread {
                     try {
@@ -828,7 +828,7 @@ android.util.Log.d("REACTION", "Saving to Room: $msgId -> $newReactions")
         
         val url = msg.file?.url ?: msg.text.removePrefix("🎤 Голосовое ").trim()
         if (url.isEmpty() || url == "🎤 Голосовое") return
-        val fullUrl = if (url.startsWith("http")) url else Constants.SERVER_URL$url"
+        val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8001$url"
         val playBtn = view.findViewById<TextView>(R.id.btnPlayVoice)
         val durationText = view.findViewById<TextView>(R.id.voiceDuration)
         val waveform = view.findViewById<com.mychat.app.views.WaveformView>(R.id.waveformView)

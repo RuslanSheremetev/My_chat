@@ -10,7 +10,6 @@ import com.mychat.app.models.User
 import com.mychat.app.network.WebSocketManager
 import com.mychat.app.repository.ChatRepository
 import com.mychat.app.utils.chatKey
-import com.mychat.app.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

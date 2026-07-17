@@ -1,4 +1,4 @@
-import com.mychat.app.utils.Constants
+package com.mychat.app.adapters
 
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -350,7 +350,7 @@ class ChatAdapter(
 
     private fun playVoice(playIcon: View, url: String, waveform: WaveformView) {
         if (url.isEmpty()) return
-        val fullUrl = if (url.startsWith("http")) url else Constants.SERVER_URL$url"
+        val fullUrl = if (url.startsWith("http")) url else "http://2.26.71.102:8001$url"
         
         if (mediaPlayer?.isPlaying == true) {
             mediaPlayer?.stop()
