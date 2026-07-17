@@ -88,8 +88,43 @@ class ChatViewModel : ViewModel() {
     }
 
     private fun handleWsMessage(text: String) {
-        // Обработка WebSocket сообщений (reactions, delivered, read, call)
-        // Будет расширена при переносе логики из MainActivity
+        try {
+            val j = org.json.JSONObject(text)
+            val jtype = j.optString("type")
+            when {
+                jtype == "call_offer" -> {
+                    val from = j.optString("from", "")
+                    if (from.isNotEmpty() && from != _me.value) {
+                        onSignalingMessage?.invoke(text)
+                    }
+                }
+                jtype in listOf("call_answer", "ice_candidate", "call_end") -> {
+                    onSignalingMessage?.invoke(text)
+                }
+                jtype == "ping" -> wsManager?.send("{\"type\":\"pong\"}")
+                jtype == "delivered" -> {
+                    val to = j.optString("to", "")
+                    val updated = _users.value.map { u ->
+                        if (u.username == to) u.copy(lastMsgStatus = "delivered") else u
+                    }
+                    _users.value = updated
+                }
+                jtype == "read" -> {
+                    val from = j.optString("from", "")
+                    val updated = _users.value.map { u ->
+                        if (u.username == from) u.copy(lastMsgStatus = "read") else u
+                    }
+                    _users.value = updated
+                }
+                jtype == "reaction_added" || jtype == "reaction_removed" -> {
+                    // Будет обработано в адаптере
+                }
+                else -> {
+                    // Новое сообщение — обновить список
+                    loadUsers()
+                }
+            }
+        } catch (_: Exception) {}
     }
 
     override fun onCleared() {
