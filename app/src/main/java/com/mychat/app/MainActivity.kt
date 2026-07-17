@@ -1482,7 +1482,7 @@ private fun sendMessageTo(to: String, text: String) {
 
     private fun sendMessage() {
         val t = msgInput.text.toString().trim()
-        log("DEBUG: t='${t.take(20)}' selId='$selId' ws=${ws != null}")
+        log("DEBUG: t='${t.take(20)}' selId='$selId' ws=true")
         if (t.isEmpty() || selId.isEmpty()) return
         log("WS send: file"); wsManager?.send(
             JSONObject().apply {

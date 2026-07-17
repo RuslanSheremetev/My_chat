@@ -265,7 +265,7 @@ class CallActivity : AppCompatActivity() {
         logToServer("connecting")
         val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
         me = prefs.getString("username", "") ?: ""
-        ws = com.mychat.app.MainActivity.mainWs
+        ws = null // WebSocketManager используется
         com.mychat.app.MainActivity.onSignalingMessage = { text ->
             try {
                 val msg = JSONObject(text)
