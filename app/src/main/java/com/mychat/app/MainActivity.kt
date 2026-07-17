@@ -82,7 +82,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     companion object {
         var onSignalingMessage: ((String) -> Unit)? = null
