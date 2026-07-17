@@ -57,6 +57,7 @@ import com.mychat.app.utils.chatKey
 import com.mychat.app.utils.Constants
 import com.mychat.app.repository.UserRepository
 import com.mychat.app.network.ApiClient
+import com.mychat.app.repository.ChatRepository
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -135,6 +136,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         db = AppDatabase.getInstance(this)
         userRepo = UserRepository(db, server)
+        chatRepo = ChatRepository(db, server)
         window.statusBarColor = 0xff1c1c1e.toInt()
         // Контекстное меню для чатов
         logText = findViewById(R.id.logText)
@@ -479,6 +481,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         token = prefs.getString("token", "") ?: ""
         currentUserId = prefs.getString("username", "") ?: ""
+        chatRepo.currentUser = currentUserId
+        chatRepo.currentToken = token
         currentUserPhone = prefs.getString("phone", "") ?: ""
         me = prefs.getString("username", "") ?: ""
         me = prefs.getString("username", "") ?: ""
@@ -2993,6 +2997,7 @@ db.messageDao().updateReactions(msgId, json)
     private var liveLocationTimer: java.util.Timer? = null
     private val loadedReactions = mutableSetOf<String>()
     private lateinit var userRepo: UserRepository
+    private lateinit var chatRepo: ChatRepository
     private var isBlocked = false
     
     private fun toggleMute() {
@@ -3017,27 +3022,12 @@ db.messageDao().updateReactions(msgId, json)
         val muteMenuText = findViewById<TextView>(R.id.menuMuteText)
         muteMenuText?.text = if (isMuted) "Включить звук" else "Без звука"
         val muteIconMenu2 = (findViewById<LinearLayout>(R.id.menuMute)?.getChildAt(0) as? ImageView)
-        // === СОХРАНЕНИЕ В ROOM И НА СЕРВЕР ===
+        // === СОХРАНЕНИЕ В ROOM И НА СЕРВЕР через ChatRepository ===
         val savedState = isMuted
-        thread {
-            try {
-                val ck = chatKey(me, selId)
-                val existing = db.messageDao().getChatSettings(ck)
-                if (existing != null) {
-                    db.messageDao().saveChatSettings(existing.copy(isMuted = savedState))
-                } else {
-                    db.messageDao().saveChatSettings(ChatSettings(chatKey = ck, isMuted = savedState))
-                }
-                // Отправляем на сервер через ApiClient (Bearer)
-                try {
-                    val json = org.json.JSONObject()
-                    json.put("chat_key", ck)
-                    json.put("is_muted", savedState)
-                    val body = okhttp3.RequestBody.create("application/json".toMediaType(), json.toString())
-                    ApiClient.post("$server/chat_settings", token, body).close()
-                } catch (e: Exception) {
-                    log("Mute server: ${e.message}")
-                }
+        val ck = chatKey(me, selId)
+        chatRepo.currentUser = currentUserId
+        chatRepo.currentToken = token
+        chatRepo.saveMute(ck, savedState)
             } catch (e: Exception) {
                 log("Mute save: ${e.message}")
             }
