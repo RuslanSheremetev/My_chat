@@ -58,6 +58,7 @@ import com.mychat.app.utils.Constants
 import com.mychat.app.repository.UserRepository
 import com.mychat.app.network.ApiClient
 import com.mychat.app.repository.ChatRepository
+import com.mychat.app.network.WebSocketManager
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -78,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         var onSignalingMessage: ((String) -> Unit)? = null
         fun sendCallSignal(msg: String) {
             android.util.Log.d("CALL", "sending: $msg")
-            mainWs?.send(msg)
+            // WebSocketManager управляет отправкой через ws-прокси
         }
     }
     private lateinit var loginLayout: LinearLayout
@@ -1057,17 +1058,22 @@ db.messageDao().updateReactions(msgId, json)
 
     private fun connectWS() {
         try {
-            log("WS connecting..."); val wsUrl = "ws://${server.replace("http://", "")}/ws/$me?token=$token"
-            ws = client.newWebSocket(
-                Request.Builder().url(wsUrl).build(),
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: okhttp3.Response) {
-                        mainWs = webSocket
-                    }
-                    override fun onMessage(webSocket: WebSocket, text: String) {  log("WS received: ${text.take(50)}...")
-                        try {
-                            val j = JSONObject(text)
-                            val jtype = j.optString("type")
+            log("WS connecting...")
+            wsManager = WebSocketManager(server, me, token)
+            wsManager.connect()
+            // Прокси для обратной совместимости (ws?.send -> wsManager.send)
+            ws = object : WebSocket() {
+                override fun send(text: String): Boolean { wsManager.send(text); return true }
+                override fun close(code: Int, reason: String?) { wsManager.disconnect() }
+                override fun queueSize(): Long = 0
+                override fun request(): okhttp3.Request = okhttp3.Request.Builder().url("http://localhost").build()
+                override fun cancel() { wsManager.disconnect() }
+            }
+            wsManager.onMessage = { text ->
+                log("WS received: ${text.take(50)}...")
+                try {
+                    val j = JSONObject(text)
+                    val jtype = j.optString("type")
                     if (jtype == "call_offer") {
                         log("Incoming call from " + j.optString("from", ""))
                         val from = j.optString("from", "")
@@ -2998,6 +3004,7 @@ db.messageDao().updateReactions(msgId, json)
     private val loadedReactions = mutableSetOf<String>()
     private lateinit var userRepo: UserRepository
     private lateinit var chatRepo: ChatRepository
+    private lateinit var wsManager: WebSocketManager
     private var isBlocked = false
     
     private fun toggleMute() {
