@@ -63,19 +63,20 @@ class ChatRepository(
         } catch (e: Exception) {}
     }
 
-    // Сохранение mute через ApiClient (Bearer)
+    // Сохранение mute через ApiClient (Bearer) — все операции с БД в фоне
     fun saveMute(chatKey: String, isMuted: Boolean) {
-        val settings = db.messageDao().getChatSettings(chatKey) ?: ChatSettings(chatKey = chatKey)
-        db.messageDao().saveChatSettings(settings.copy(isMuted = isMuted))
-        // Отправка на сервер в фоне
         Thread {
             try {
+                // Сохраняем в Room
+                val settings = db.messageDao().getChatSettings(chatKey) ?: ChatSettings(chatKey = chatKey)
+                db.messageDao().saveChatSettings(settings.copy(isMuted = isMuted))
+                // Отправляем на сервер
                 val json = JSONObject().apply {
                     put("chat_key", chatKey)
                     put("is_muted", isMuted)
                 }
                 val body = RequestBody.create("application/json".toMediaType(), json.toString())
-                ApiClient.post("$server/chat_settings", token, body)
+                ApiClient.post("$server/chat_settings", token, body).close()
             } catch (e: Exception) {}
         }.start()
     }
