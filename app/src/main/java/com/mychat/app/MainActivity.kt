@@ -1873,7 +1873,7 @@ private fun sendMessageTo(to: String, text: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val bytes = client.newCall(Request.Builder().url(fullUrl).build()).execute()
-                    .body?.bytes() ?: return@thread
+                    .body?.bytes() ?: return
                 val f = File(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                     name
