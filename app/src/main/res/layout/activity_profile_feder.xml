@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:background="#0F0F0F">
 
-    <!-- 1. Только верхняя панель -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="64dp"
@@ -13,8 +12,7 @@
         android:background="#1A1A1A">
         <TextView android:text="☰" android:textSize="20sp" android:textColor="#ffd9e0" android:layout_marginEnd="12dp"/>
         <TextView android:layout_width="0dp" android:layout_weight="1" android:text="Feder" android:textSize="24sp" android:textColor="#ffd9e0" android:textStyle="bold"/>
-        <TextView android:text="🔍" android:textSize="20sp" android:textColor="#ffd9e0" android:layout_marginEnd="12dp"/>
-        <View android:layout_width="32dp" android:layout_height="32dp" android:background="@drawable/avatar_circle"/>
+        <TextView android:text="🔍" android:textSize="20sp" android:textColor="#ffd9e0"/>
     </LinearLayout>
 
 </FrameLayout>
