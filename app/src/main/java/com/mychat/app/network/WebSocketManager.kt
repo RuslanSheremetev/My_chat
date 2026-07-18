@@ -14,7 +14,7 @@ class WebSocketManager(
     var onOpen: ((WebSocket) -> Unit)? = null
 
     fun connect() {
-        val url = server.replace("http://", "ws://") + "/ws/$username"
+        val url = server.replace("http://", "ws://") + "/ws/$username?token=$token"
         ws = ApiClient.client.newWebSocket(
             Request.Builder()
                 .url(url)
