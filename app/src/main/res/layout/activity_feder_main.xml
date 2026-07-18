@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:background="#0F0F0F">
+
+    <LinearLayout android:id="@+id/loginLayout" android:layout_width="match_parent" android:layout_height="match_parent"
+        android:gravity="center" android:orientation="vertical" android:padding="40dp">
+        <TextView android:text="Feder" android:textSize="32sp" android:textColor="#ffd9e0" android:textStyle="bold" android:layout_marginBottom="40dp"/>
+        <EditText android:id="@+id/loginUser" android:hint="Логин" android:textColor="#e5e2e1" android:textColorHint="#666"
+            android:layout_width="match_parent" android:layout_height="50dp" android:background="@drawable/bg_input"
+            android:padding="12dp" android:layout_marginBottom="12dp"/>
+        <EditText android:id="@+id/loginPass" android:hint="Пароль" android:inputType="textPassword"
+            android:textColor="#e5e2e1" android:textColorHint="#666" android:layout_width="match_parent"
+            android:layout_height="50dp" android:background="@drawable/bg_input" android:padding="12dp" android:layout_marginBottom="24dp"/>
+        <Button android:id="@+id/btnLogin" android:text="Войти" android:textColor="#521f2f" android:layout_width="match_parent"
+            android:layout_height="50dp" android:background="@drawable/bg_fab" android:textSize="16sp"/>
+    </LinearLayout>
+
+    <FrameLayout android:id="@+id/mainContainer" android:layout_width="match_parent" android:layout_height="match_parent" android:visibility="gone">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:paddingHorizontal="20dp"
+            android:gravity="center_vertical" android:background="#1A1A1A">
+            <TextView android:text="Feder" android:textSize="24sp" android:textColor="#ffd9e0" android:textStyle="bold"/>
+        </LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/chatList" android:layout_width="match_parent"
+            android:layout_height="match_parent" android:layout_marginTop="80dp" android:clipToPadding="false" android:paddingBottom="130dp"/>
+        <ImageButton android:id="@+id/fabNewChat" android:layout_width="56dp" android:layout_height="56dp"
+            android:layout_gravity="bottom|end" android:layout_marginEnd="20dp" android:layout_marginBottom="100dp"
+            android:src="@drawable/ic_sticker" android:background="@drawable/bg_fab" android:elevation="8dp"/>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:layout_gravity="bottom"
+            android:layout_marginHorizontal="20dp" android:layout_marginBottom="24dp" android:background="@drawable/bg_nav_capsule"
+            android:elevation="16dp" android:orientation="horizontal" android:gravity="center">
+            <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:orientation="vertical" android:gravity="center">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_home_simple" android:tint="#ffd9e0"/>
+                <TextView android:text="Чаты" android:textSize="10sp" android:textColor="#ffd9e0"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:orientation="vertical" android:gravity="center">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_user" android:tint="#d6c2c5"/>
+                <TextView android:text="Профиль" android:textSize="10sp" android:textColor="#d6c2c5"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:orientation="vertical" android:gravity="center">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_settings_simple" android:tint="#d6c2c5"/>
+                <TextView android:text="Настройки" android:textSize="10sp" android:textColor="#d6c2c5"/>
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>

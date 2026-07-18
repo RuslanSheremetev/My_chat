@@ -16,6 +16,7 @@
         android:usesCleartextTraffic="true">
         
         <activity android:name=".activities.QrScannerActivity" android:screenOrientation="portrait" />
+        <activity android:name=".FederMainActivity" android:exported="false" />
         <activity android:name=".activities.QrLoginActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
