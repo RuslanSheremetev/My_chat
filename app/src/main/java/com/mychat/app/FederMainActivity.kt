@@ -46,7 +46,14 @@ class FederMainActivity : AppCompatActivity() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         token = prefs.getString("token", "") ?: ""
         me = prefs.getString("username", "") ?: ""
-        if (token.isNotEmpty()) { loginLayout.visibility = View.GONE; mainContainer.visibility = View.VISIBLE; loadUsers() }
+        if (token.isEmpty()) {
+            Toast.makeText(this, "Сначала войдите в аккаунт", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+        loginLayout.visibility = View.GONE
+        mainContainer.visibility = View.VISIBLE
+        loadUsers()
     }
 
     private fun login() {
