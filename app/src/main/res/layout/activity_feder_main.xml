@@ -11,8 +11,9 @@
         <EditText android:id="@+id/loginPass" android:hint="Пароль" android:inputType="textPassword"
             android:textColor="#e5e2e1" android:textColorHint="#666" android:layout_width="match_parent"
             android:layout_height="50dp" android:background="@drawable/bg_input" android:padding="12dp" android:layout_marginBottom="24dp"/>
-        <Button android:id="@+id/btnLogin" android:text="Войти" android:textColor="#521f2f" android:layout_width="match_parent"
-            android:layout_height="50dp" android:background="@drawable/bg_fab" android:textSize="16sp"/>
+        <TextView android:id="@+id/btnLogin" android:text="Войти" android:textColor="#521f2f" android:layout_width="match_parent"
+            android:layout_height="50dp" android:background="@drawable/bg_fab" android:textSize="16sp"
+            android:gravity="center" android:textStyle="bold" android:clickable="true" android:focusable="true"/>
     </LinearLayout>
 
     <FrameLayout android:id="@+id/mainContainer" android:layout_width="match_parent" android:layout_height="match_parent" android:visibility="gone">
