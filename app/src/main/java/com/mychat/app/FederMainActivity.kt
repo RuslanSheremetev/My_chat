@@ -19,7 +19,9 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class FederMainActivity : AppCompatActivity() {
     private lateinit var chatList: RecyclerView
     private var chatAdapter: FederChatAdapter? = null
@@ -35,25 +37,32 @@ class FederMainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_feder_main)
-        chatList = findViewById(R.id.chatList)
-        loginLayout = findViewById(R.id.loginLayout)
-        mainContainer = findViewById(R.id.mainContainer)
-        loginUser = findViewById(R.id.loginUser)
-        loginPass = findViewById(R.id.loginPass)
-        chatList.layoutManager = LinearLayoutManager(this)
-        findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        token = prefs.getString("token", "") ?: ""
-        me = prefs.getString("username", "") ?: ""
-        if (token.isEmpty()) {
-            Toast.makeText(this, "Сначала войдите в аккаунт", Toast.LENGTH_SHORT).show()
+        try {
+            setContentView(R.layout.activity_feder_main)
+            chatList = findViewById(R.id.chatList)
+            loginLayout = findViewById(R.id.loginLayout)
+            mainContainer = findViewById(R.id.mainContainer)
+            loginUser = findViewById(R.id.loginUser)
+            loginPass = findViewById(R.id.loginPass)
+            chatList.layoutManager = LinearLayoutManager(this)
+            findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
+            
+            val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+            token = prefs.getString("token", "") ?: ""
+            me = prefs.getString("username", "") ?: ""
+            
+            if (token.isEmpty()) {
+                Toast.makeText(this, "Сначала войдите в аккаунт", Toast.LENGTH_SHORT).show()
+                finish()
+                return
+            }
+            loginLayout.visibility = View.GONE
+            mainContainer.visibility = View.VISIBLE
+            loadUsers()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
             finish()
-            return
         }
-        loginLayout.visibility = View.GONE
-        mainContainer.visibility = View.VISIBLE
-        loadUsers()
     }
 
     private fun login() {
@@ -73,8 +82,12 @@ class FederMainActivity : AppCompatActivity() {
                         .putString("token", token).putString("username", me).putString("server_url", server).apply()
                     loadUsersFromApi()
                     runOnUiThread { loginLayout.visibility = View.GONE; mainContainer.visibility = View.VISIBLE }
+                } else {
+                    runOnUiThread { Toast.makeText(this@FederMainActivity, "Неверный логин или пароль", Toast.LENGTH_SHORT).show() }
                 }
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+                runOnUiThread { Toast.makeText(this@FederMainActivity, "Ошибка сети", Toast.LENGTH_SHORT).show() }
+            }
         }
     }
 
@@ -98,6 +111,8 @@ class FederMainActivity : AppCompatActivity() {
                     chatAdapter?.update(users)
                 }
             }
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+            runOnUiThread { Toast.makeText(this, "Ошибка загрузки чатов", Toast.LENGTH_SHORT).show() }
+        }
     }
 }
