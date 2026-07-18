@@ -57,44 +57,4 @@
         android:textColor="#d6c2c5"
         android:layout_marginTop="4dp"/>
 
-    <!-- Статистика -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/bg_input"
-        android:padding="20dp">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <TextView android:text="1,234" android:textSize="18sp" android:textColor="#ffd9e0" android:textStyle="bold"/>
-            <TextView android:text="Сообщений" android:textSize="12sp" android:textColor="#d6c2c5" android:layout_marginTop="4dp"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <TextView android:text="42" android:textSize="18sp" android:textColor="#81fc82" android:textStyle="bold"/>
-            <TextView android:text="Чатов" android:textSize="12sp" android:textColor="#d6c2c5" android:layout_marginTop="4dp"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <TextView android:text="5" android:textSize="18sp" android:textColor="#ffd9e0" android:textStyle="bold"/>
-            <TextView android:text="Групп" android:textSize="12sp" android:textColor="#d6c2c5" android:layout_marginTop="4dp"/>
-        </LinearLayout>
-    </LinearLayout>
-
 </LinearLayout>
