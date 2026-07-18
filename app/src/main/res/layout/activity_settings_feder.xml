@@ -22,12 +22,28 @@
         android:textStyle="bold"
         android:layout_marginTop="16dp"/>
 
+    <!-- Элемент 1: Приватность -->
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Дизайн в разработке"
-        android:textSize="14sp"
-        android:textColor="#8a919e"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:text="🔒 Приватность и безопасность"
+        android:textSize="16sp"
+        android:textColor="#e5e2e1"
+        android:background="@drawable/bg_input"
+        android:layout_marginTop="24dp"/>
+
+    <!-- Элемент 2: О приложении -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:text="ℹ️ О приложении"
+        android:textSize="16sp"
+        android:textColor="#e5e2e1"
+        android:background="@drawable/bg_input"
         android:layout_marginTop="8dp"/>
 
 </LinearLayout>
