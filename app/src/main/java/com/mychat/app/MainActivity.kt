@@ -540,7 +540,7 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
 
     private fun openProfile() {
         try {
-            val intent = Intent(this, ProfileActivity::class.java).apply {
+            val intent = Intent(this, FederMainActivity::class.java).apply {
                 putExtra("token", token)
                 putExtra("username", me)
             }
