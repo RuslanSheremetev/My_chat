@@ -1,60 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F0F0F"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="40dp">
+    android:background="#0F0F0F">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Feder"
-        android:textSize="42sp"
-        android:textColor="#ffd9e0"
-        android:textStyle="bold"/>
+    <!-- Основной контент -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <!-- Аватарка -->
-    <FrameLayout
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="32dp">
-        <TextView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:gravity="center"
-            android:textSize="36sp"
-            android:textColor="#e5e2e1"
-            android:textStyle="bold"
-            android:background="@drawable/avatar_circle"
-            android:text="Р"/>
+        <!-- Верхняя панель -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="20dp"
+            android:background="#1A1A1A">
+            <TextView android:text="☰" android:textSize="20sp" android:textColor="#ffd9e0" android:layout_marginEnd="12dp"/>
+            <TextView android:layout_width="0dp" android:layout_weight="1" android:text="Feder" android:textSize="24sp" android:textColor="#ffd9e0" android:textStyle="bold"/>
+            <TextView android:text="🔍" android:textSize="20sp" android:textColor="#ffd9e0" android:layout_marginEnd="12dp"/>
+            <View android:layout_width="32dp" android:layout_height="32dp" android:background="@drawable/avatar_circle"/>
+        </LinearLayout>
+
+        <!-- Фильтры -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:orientation="horizontal">
+            <TextView android:text="Все" android:textColor="#ffd9e0" android:background="@drawable/badge_bot" android:paddingHorizontal="20dp" android:paddingVertical="8dp" android:textSize="14sp" android:textStyle="bold"/>
+            <TextView android:text="Личные" android:textColor="#d6c2c5" android:paddingHorizontal="20dp" android:paddingVertical="8dp" android:textSize="14sp"/>
+            <TextView android:text="Группы" android:textColor="#d6c2c5" android:paddingHorizontal="20dp" android:paddingVertical="8dp" android:textSize="14sp"/>
+            <TextView android:text="Каналы" android:textColor="#d6c2c5" android:paddingHorizontal="20dp" android:paddingVertical="8dp" android:textSize="14sp"/>
+        </LinearLayout>
+
+        <!-- Список чатов -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingHorizontal="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="130dp">
+
+                <!-- Избранное -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:padding="12dp" android:gravity="center_vertical">
+                    <View android:layout_width="3dp" android:layout_height="24dp" android:background="#ffd9e0"/>
+                    <TextView android:layout_width="56dp" android:layout_height="56dp" android:gravity="center" android:text="⭐" android:textSize="24sp" android:background="@drawable/avatar_circle" android:layout_marginStart="12dp"/>
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:orientation="vertical" android:paddingStart="16dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                            <TextView android:layout_width="0dp" android:layout_weight="1" android:text="Избранное" android:textSize="18sp" android:textColor="#e5e2e1" android:textStyle="bold"/>
+                            <TextView android:text="12:45" android:textSize="12sp" android:textColor="#d6c2c5"/>
+                        </LinearLayout>
+                        <TextView android:text="Секретный ключ для API..." android:textSize="14sp" android:textColor="#d6c2c5" android:layout_marginTop="2dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Руслан (Muted) -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:padding="12dp" android:gravity="center_vertical">
+                    <FrameLayout android:layout_width="56dp" android:layout_height="56dp">
+                        <TextView android:layout_width="56dp" android:layout_height="56dp" android:gravity="center" android:text="Р" android:textSize="22sp" android:textColor="#e5e2e1" android:textStyle="bold" android:background="@drawable/avatar_circle"/>
+                    </FrameLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:orientation="vertical" android:paddingStart="16dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                            <TextView android:layout_width="0dp" android:layout_weight="1" android:text="Руслан Шереметев" android:textSize="18sp" android:textColor="#d6c2c5" android:textStyle="bold"/>
+                            <TextView android:text="🔇" android:textSize="12sp" android:textColor="#d6c2c5" android:layout_marginEnd="6dp"/>
+                            <TextView android:text="Пн" android:textSize="12sp" android:textColor="#d6c2c5"/>
+                        </LinearLayout>
+                        <TextView android:text="Ок, договорились." android:textSize="14sp" android:textColor="#d6c2c5" android:layout_marginTop="2dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- AI Ассистент (BOT) -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:padding="12dp" android:gravity="center_vertical">
+                    <TextView android:layout_width="56dp" android:layout_height="56dp" android:gravity="center" android:text="🤖" android:textSize="24sp" android:background="@drawable/avatar_circle"/>
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:orientation="vertical" android:paddingStart="16dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                            <TextView android:text="AI Ассистент" android:textSize="18sp" android:textColor="#e5e2e1" android:textStyle="bold"/>
+                            <TextView android:text="BOT" android:textSize="10sp" android:textColor="#ffd9e0" android:background="@drawable/badge_bot" android:paddingHorizontal="6dp" android:paddingVertical="2dp" android:layout_marginStart="8dp"/>
+                        </LinearLayout>
+                        <TextView android:text="Ваш отчет готов к просмотру." android:textSize="14sp" android:textColor="#ffd9e0" android:layout_marginTop="2dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Елена -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:padding="12dp" android:gravity="center_vertical">
+                    <FrameLayout android:layout_width="56dp" android:layout_height="56dp">
+                        <TextView android:layout_width="56dp" android:layout_height="56dp" android:gravity="center" android:text="Е" android:textSize="22sp" android:textColor="#e5e2e1" android:textStyle="bold" android:background="@drawable/avatar_circle"/>
+                        <View android:layout_width="14dp" android:layout_height="14dp" android:layout_gravity="bottom|end" android:background="@drawable/online_dot"/>
+                    </FrameLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:orientation="vertical" android:paddingStart="16dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                            <TextView android:layout_width="0dp" android:layout_weight="1" android:text="Елена Ночная" android:textSize="18sp" android:textColor="#e5e2e1" android:textStyle="bold"/>
+                            <TextView android:text="18:42" android:textSize="12sp" android:textColor="#ffd9e0"/>
+                        </LinearLayout>
+                        <TextView android:text="Скинь локацию ресторана" android:textSize="14sp" android:textColor="#ffd9e0" android:layout_marginTop="2dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- FAB -->
         <View
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_gravity="bottom|end"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="4dp"
-            android:background="@drawable/online_dot"/>
-    </FrameLayout>
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="100dp"
+            android:background="@drawable/bg_fab"
+            android:elevation="8dp">
+            <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="✏️" android:textSize="24sp" android:textColor="#521f2f"/>
+        </View>
 
-    <!-- Имя -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Руслан Шереметев"
-        android:textSize="20sp"
-        android:textColor="#e5e2e1"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp"/>
-
-    <!-- Username -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@ruslan"
-        android:textSize="14sp"
-        android:textColor="#d6c2c5"
-        android:layout_marginTop="4dp"/>
-
-</LinearLayout>
+        <!-- Нижняя навигация -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_nav_capsule"
+            android:elevation="16dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+                <TextView android:text="💬" android:textSize="20sp"/>
+                <TextView android:text="Чаты" android:textSize="10sp" android:textColor="#ffd9e0"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+                <TextView android:text="👤" android:textSize="20sp"/>
+                <TextView android:text="Профиль" android:textSize="10sp" android:textColor="#d6c2c5"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+                <TextView android:text="⚙️" android:textSize="20sp"/>
+                <TextView android:text="Настройки" android:textSize="10sp" android:textColor="#d6c2c5"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>
