@@ -1,5 +1,6 @@
 package com.mychat.app
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.*
@@ -59,6 +60,8 @@ class FederMainActivity : AppCompatActivity() {
             loginLayout.visibility = View.GONE
             mainContainer.visibility = View.VISIBLE
             loadUsers()
+        setupBottomNav()
+
         } catch (e: Exception) {
             Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
             finish()
@@ -91,7 +94,9 @@ class FederMainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadUsers() { CoroutineScope(Dispatchers.IO).launch { loadUsersFromApi() } }
+    private fun loadUsers()
+        setupBottomNav()
+ { CoroutineScope(Dispatchers.IO).launch { loadUsersFromApi() } }
 
     private fun loadUsersFromApi() {
         try {

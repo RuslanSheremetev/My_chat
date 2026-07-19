@@ -26,7 +26,7 @@
         <ImageButton android:id="@+id/fabNewChat" android:layout_width="56dp" android:layout_height="56dp"
             android:layout_gravity="bottom|end" android:layout_marginEnd="20dp" android:layout_marginBottom="100dp"
             android:src="@drawable/ic_sticker" android:background="@drawable/bg_fab" android:elevation="8dp"/>
-        <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:layout_gravity="bottom"
+        <include layout="@layout/bottom_nav_feder"/><LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:layout_gravity="bottom"
             android:layout_marginHorizontal="20dp" android:layout_marginBottom="24dp" android:background="@drawable/bg_nav_capsule"
             android:elevation="16dp" android:orientation="horizontal" android:gravity="center">
             <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
