@@ -4,104 +4,17 @@
     android:layout_height="match_parent"
     android:background="#0F0F0F">
 
-    <!-- Экран логина -->
-    <LinearLayout
-        android:id="@+id/loginLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="40dp">
-
-        <TextView
-            android:text="Feder"
-            android:textSize="32sp"
-            android:textColor="#a1c9ff"
-            android:textStyle="bold"
-            android:layout_marginBottom="40dp"/>
-
-        <EditText
-            android:id="@+id/loginUser"
-            android:hint="Логин"
-            android:textColor="#e5e2e1"
-            android:textColorHint="#666"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_input"
-            android:padding="12dp"
-            android:layout_marginBottom="12dp"/>
-
-        <EditText
-            android:id="@+id/loginPass"
-            android:hint="Пароль"
-            android:inputType="textPassword"
-            android:textColor="#e5e2e1"
-            android:textColorHint="#666"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_input"
-            android:padding="12dp"
-            android:layout_marginBottom="24dp"/>
-
-        <Button
-            android:id="@+id/btnLogin"
-            android:text="Войти"
-            android:textColor="#00325a"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_fab"
-            android:textSize="16sp"
-            android:stateListAnimator="@null"/>
-    </LinearLayout>
-
-    <!-- Основной контейнер -->
+    <!-- Контейнер для фрагментов -->
     <FrameLayout
-        android:id="@+id/mainContainer"
+        android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
+        android:layout_marginBottom="64dp"/>
 
-        <!-- Верхняя панель -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:paddingHorizontal="20dp"
-            android:gravity="center_vertical"
-            android:background="#131313">
-
-            <TextView
-                android:text="Feder"
-                android:textSize="24sp"
-                android:textColor="#a1c9ff"
-                android:textStyle="bold"/>
-        </LinearLayout>
-
-        <!-- Список чатов -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/chatList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="80dp"
-            android:clipToPadding="false"
-            android:paddingBottom="130dp"/>
-
-        <!-- FAB -->
-        <ImageButton
-            android:id="@+id/fabNewChat"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_gravity="bottom|end"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="100dp"
-            android:src="@drawable/ic_sticker"
-            android:background="@drawable/bg_fab"
-            android:elevation="8dp"/>
-
-        <!-- Нижнее меню -->
-        <include
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            layout="@layout/bottom_nav_feder"/>
-    </FrameLayout>
+    <!-- Нижнее меню -->
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        layout="@layout/bottom_nav_feder"/>
 </FrameLayout>
