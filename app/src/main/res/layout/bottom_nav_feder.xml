@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:background="@drawable/bg_nav_bar"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:paddingHorizontal="8dp"
+    android:elevation="16dp">
+
+    <!-- Chats (Active) -->
+    <LinearLayout
+        android:id="@+id/navChats"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+        <TextView android:text="💬" android:textSize="20sp"/>
+        <TextView android:text="Chats" android:textSize="11sp" android:textColor="#a1c9ff"/>
+    </LinearLayout>
+
+    <!-- Stories -->
+    <LinearLayout
+        android:id="@+id/navStories"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+        <TextView android:text="📸" android:textSize="20sp"/>
+        <TextView android:text="Stories" android:textSize="11sp" android:textColor="#c0c7d4"/>
+    </LinearLayout>
+
+    <!-- Contacts -->
+    <LinearLayout
+        android:id="@+id/navContacts"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+        <TextView android:text="👥" android:textSize="20sp"/>
+        <TextView android:text="Contacts" android:textSize="11sp" android:textColor="#c0c7d4"/>
+    </LinearLayout>
+
+    <!-- Settings -->
+    <LinearLayout
+        android:id="@+id/navSettings"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+        <TextView android:text="⚙️" android:textSize="20sp"/>
+        <TextView android:text="Settings" android:textSize="11sp" android:textColor="#c0c7d4"/>
+    </LinearLayout>
+</LinearLayout>

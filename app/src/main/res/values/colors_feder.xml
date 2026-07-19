@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Blue theme -->
+    <color name="feder_primary">#a1c9ff</color>
+    <color name="feder_primary_container">#339dff</color>
+    <color name="feder_background">#131313</color>
+    <color name="feder_surface">#131313</color>
+    <color name="feder_surface_container">#201f1f</color>
+    <color name="feder_surface_high">#2a2a2a</color>
+    <color name="feder_surface_highest">#353534</color>
+    <color name="feder_on_surface">#e5e2e1</color>
+    <color name="feder_on_surface_variant">#c0c7d4</color>
+    <color name="feder_secondary">#c8c6c5</color>
+    <color name="feder_outline">#8a919e</color>
+    <color name="feder_online">#41B35D</color>
+    <color name="feder_nav_bg">#131313</color>
+</resources>
