@@ -479,8 +479,8 @@ findViewById<ImageButton>(R.id.btnCall)?.setOnClickListener { v ->
         }
         findViewById<Button>(R.id.btnSaveProfile).setOnClickListener { saveProfile() }
         
-        navChats.setOnClickListener { showTab(0) }
-        navSettings.setOnClickListener { startActivity(Intent(this@MainActivity, SettingsActivity::class.java).apply { putExtra("username", me); putExtra("token", token) }) }  // Избранное теперь чат
+        // navChats.setOnClickListener { showTab(0) }
+        // navSettings.setOnClickListener { startActivity(Intent(this@MainActivity, SettingsActivity::class.java).apply { putExtra("username", me); putExtra("token", token) }) }  // Избранное теперь чат
         navProfile.setOnClickListener { startActivity(android.content.Intent(this@MainActivity, com.mychat.app.FederMainActivity::class.java)) }
         
         searchInput.addTextChangedListener(object : TextWatcher {
@@ -2749,5 +2749,25 @@ db.messageDao().updateReactions(msgId, json)
             e.printStackTrace()
         }
     }
+
+    private fun setupBottomNav() {
+        val prefs = getSharedPreferences("mychat_prefs", MODE_PRIVATE)
+        val token = prefs.getString("token", "") ?: ""
+        val username = prefs.getString("username", "") ?: ""
+        
+        findViewById<LinearLayout>(R.id.navChats).setOnClickListener { }
+        findViewById<LinearLayout>(R.id.navStories).setOnClickListener {
+            Toast.makeText(this, "Stories — скоро", Toast.LENGTH_SHORT).show()
+        }
+        findViewById<LinearLayout>(R.id.navContacts).setOnClickListener {
+            Toast.makeText(this, "Contacts — скоро", Toast.LENGTH_SHORT).show()
+        }
+        findViewById<LinearLayout>(R.id.navSettings).setOnClickListener {
+            val intent = Intent(this, com.mychat.app.activities.ProfileActivity::class.java)
+            intent.putExtra("token", token)
+            intent.putExtra("username", username)
+            startActivity(intent)
+        }
+    }
+
 }
-// force rebuild
