@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.mychat.app.activities.ProfileActivity
 import com.mychat.app.adapters.FederChatAdapter
 import com.mychat.app.models.User
 import com.mychat.app.network.ApiClient
@@ -24,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class FederMainActivity : AppCompatActivity() {
+
     private lateinit var chatList: RecyclerView
     private var chatAdapter: FederChatAdapter? = null
     private lateinit var loginLayout: LinearLayout
@@ -47,21 +49,21 @@ class FederMainActivity : AppCompatActivity() {
             loginPass = findViewById(R.id.loginPass)
             chatList.layoutManager = LinearLayoutManager(this)
             findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
-            
+
             val prefs = PreferenceManager.getDefaultSharedPreferences(this)
             token = prefs.getString("token", "") ?: ""
             me = prefs.getString("username", "") ?: ""
-            
+
             if (token.isEmpty()) {
                 Toast.makeText(this, "Сначала войдите в аккаунт", Toast.LENGTH_SHORT).show()
                 finish()
                 return
             }
+
             loginLayout.visibility = View.GONE
             mainContainer.visibility = View.VISIBLE
             loadUsers()
-        setupBottomNav()
-
+            setupBottomNav()
         } catch (e: Exception) {
             Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
             finish()
@@ -94,9 +96,9 @@ class FederMainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadUsers()
-        setupBottomNav()
- { CoroutineScope(Dispatchers.IO).launch { loadUsersFromApi() } }
+    private fun loadUsers() {
+        CoroutineScope(Dispatchers.IO).launch { loadUsersFromApi() }
+    }
 
     private fun loadUsersFromApi() {
         try {
@@ -106,18 +108,50 @@ class FederMainActivity : AppCompatActivity() {
                 val list = mutableListOf<User>()
                 for (i in 0 until arr.length()) {
                     val o = arr.getJSONObject(i)
-                    list.add(User(username = o.optString("username"), name = o.optString("name", "").ifEmpty { o.optString("username") },
-                        avatarColor = o.optString("avatar_color", "#2AABEE"), online = o.optBoolean("online"),
-                        isBot = o.optBoolean("is_bot"), isGroup = o.optBoolean("is_group"), isFeed = o.optBoolean("is_feed"), unread = o.optInt("unread")))
+                    list.add(User(
+                        username = o.optString("username"),
+                        name = o.optString("name", "").ifEmpty { o.optString("username") },
+                        avatarColor = o.optString("avatar_color", "#2AABEE"),
+                        online = o.optBoolean("online"),
+                        isBot = o.optBoolean("is_bot"),
+                        isGroup = o.optBoolean("is_group"),
+                        isFeed = o.optBoolean("is_feed"),
+                        unread = o.optInt("unread")
+                    ))
                 }
                 runOnUiThread {
                     users.clear(); users.addAll(list)
-                    if (chatAdapter == null) { chatAdapter = FederChatAdapter { }; chatList.adapter = chatAdapter }
+                    if (chatAdapter == null) {
+                        chatAdapter = FederChatAdapter { }
+                        chatList.adapter = chatAdapter
+                    }
                     chatAdapter?.update(users)
                 }
             }
         } catch (e: Exception) {
             runOnUiThread { Toast.makeText(this, "Ошибка загрузки чатов", Toast.LENGTH_SHORT).show() }
+        }
+    }
+
+    private fun setupBottomNav() {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val token = prefs.getString("token", "") ?: ""
+        val username = prefs.getString("username", "") ?: ""
+
+        findViewById<LinearLayout>(R.id.navChats).setOnClickListener {
+            // Уже на экране чатов
+        }
+        findViewById<LinearLayout>(R.id.navStories).setOnClickListener {
+            Toast.makeText(this, "Stories — скоро", Toast.LENGTH_SHORT).show()
+        }
+        findViewById<LinearLayout>(R.id.navContacts).setOnClickListener {
+            Toast.makeText(this, "Contacts — скоро", Toast.LENGTH_SHORT).show()
+        }
+        findViewById<LinearLayout>(R.id.navSettings).setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            intent.putExtra("token", token)
+            intent.putExtra("username", username)
+            startActivity(intent)
         }
     }
 }
